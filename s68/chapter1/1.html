@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>chapter 1</title>
+    <style>
+        *, html, body { margin:0; padding:0;}
+        h1 { margin:10px;}
+        p {margin:10px;}
+        .lecture {border:1px solid black; margin:10px; padding:10px;}
+        .para1 { float:left; margin: 20px 20px 0px 0px}
+        .clearfix {clear:both;}
+        .c1 { border:3px solid red; text-align:center; padding:20px; 
+              color:deeppink;background-color:pink}
+    </style>
+</head>
+<body>
+    <h1>웹 페이지의 단 구조</h1>
+
+    <div class="lecture">
+        <h2>1-1 웹페이지의 단 구조</h2>
+        <p>단 구조 : 웹에서의 단 구조란, 글자나 그림을 여러 개의 단으로 나누는 레이아웃을 말한다.</p>
+        <p>
+            웹페이지를 구성하는 HTML과 CSS에는 단을 나누는 기능이 없다.
+            하지만 여러개의 박스를 가로로 나열하고 박스 내부에 글자 또는 그림을 넣으면 단 구조처럼 보이게 만들수 있다.
+        </p>
+        <br/><br/><br/>
+        <div class="lecture">
+            <div class="c1 box1">box1</div> 
+            <div class="c1 box2">box2</div>            
+            <div class="c1 box3">box3</div>        
+            <div class="c1 box4">box4</div>        
+        </div>
+        <div class="lecture">
+            <div class="c1 box1">box1</div> 
+            <div class="boxA">
+                <div class="c1 box2">box2</div>            
+                <div class="c1 box3">box3</div>        
+            </div>
+            <div class="c1 box4">box4</div>        
+        </div>
+        <div class="lecture">
+            <div class="c1 box1">box1</div> 
+            <div class="c1 box2">box2</div>            
+            <div class="c1 box3">box3</div>        
+            <div class="c1 box4">box4</div>        
+        </div>
+
+    </div>
+
+    <div class="lecture">
+        <h2>1-2 박스 가로 정렬</h2>
+        
+
+    </div>
+
+    <div class="lecture">
+        <h2>1-3 박스 분할</h2>
+        
+    </div>
+
+    <div class="lecture">
+        <h2>1-4 박스의 너비를 지정</h2>
+        
+    </div>
+
+    <div class="lecture">
+        <h2>1-5 박스 정렬 순서 지정</h2>
+        
+    </div>
+
+    <div class="lecture">
+        <h2>1-5 반응형 웹 디자인과 관련된 설정</h2>
+        
+
+    </div>
+
+</body>
+</html>
