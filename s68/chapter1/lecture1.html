@@ -1,0 +1,47 @@
+
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>block formatting context</title>
+</head>
+<body>
+<!-- root 로 BFC 생성  -->
+<!-- body BFC에 소속되어 있는 블럭 박스가 바로 아래 div -->
+<div style="background:rgb(39,241,188)">
+    <!-- 아래 div는 BFC 박스이다. 하지만 안의 박스도 float이기 대문에 자기 영역만큼만 존재하고 안의 박스는 float로  떠있다. -->
+	<div style="float:left;width:100px;height:100px;background:#f00">
+        <!-- float로 인해서 아래 div는 위의 div 기준으로 계산하게 된다. BFC가 생성되기 때문이다. -->
+		<div style="margin:10px;float:left;width:50px;height:200px;background:#ff0"></div>
+	</div>
+	sample inline text. sample inline text. sample inline text. sample inline text. sample inline text.
+</div>
+<!--
+지오메트리를 계산해서 다시 그리는 것을 리플로우라고한다.
+요즘 브라우저는 부분적인 리플로우가 가능하게 되어 있다.
+리페인트는 거기 색깔만 다시 칠하기 위해서 작동함
+마우스만 움직여도 리페인트가 일어난다. 리페인트는 부하가 적다.
+
+지오메트리는 칼큘레이트 시스템..
+HTML이 어떻게 그려지는지 컨텍스트를 알아야 한다.
+-->
+<div style="clear:both;margin-bottom:200px"></div>
+
+<!-- overflow로 인해서 BFC생성 -->
+<!-- BFC에서 그래픽 입장에서 자식들은 다 표현해야 함.-->
+<div style="overflow:hidden;background:rgb(39,241,188)">
+    <!--BFC박스는 그안의 모든 것과 BFC까지는 포함, BFC안의 자식은 포함안함.-->
+    <!-- 빨간박스는 표현해야 하기 때문에 민트 박스가 빨간 색만큼 높이를 차지 한다. -->
+	<div style="float:left;width:100px;height:500px;background:#f00">
+		<div style="margin:10px;float:left;width:50px;height:700px;background:#ff0"></div>
+	</div>
+    <div style="border:1px solid black">test</div>
+    <div style="border:1px solid black">test1</div>
+    <div style="border:1px solid black">test2</div>
+    <div style="border:1px solid black">test3</div>
+    <div style="border:1px solid black">test4</div>
+	sample inline text. sample inline text. sample inline text. sample inline text. sample inline text.
+</div>
+    <!--?? overflow:hidden에 bfc 적용 되는 부분은 그냥 되고 그 안의 자손은 적용됨??  -->
+</body>
+</html>
