@@ -1,0 +1,80 @@
+
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>4 - 3</title>
+<style>
+* {
+  box-sizing: border-box;
+}
+
+dl > div {
+  padding: 24px 0 0 0;
+}
+
+dt {
+  background: #B8C1C8;
+  border-bottom: 1px solid #989EA4;
+  border-top: 1px solid #717D85;
+  color: #FFF;
+  font: bold 18px/21px Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 2px 0 0 12px;
+  position: -webkit-sticky;
+  position: sticky;
+  top:-1px 
+  /* 
+    자기 엘리먼트으로부터의 오프셋 탑을 나타냄
+    본인의 엘리먼트에서 위치를 나타냄.
+    스티키에 대해서 top은 표준으로 구현되어 있지만,
+    bottom에 대한 구현은 블우저 마다 제각각 다르다.
+  */
+}
+
+dd {
+  font: bold 20px/45px Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0 0 0 12px;
+  white-space: nowrap;
+}
+
+dd + dd {
+  border-top: 1px solid #CCC
+}
+</style>
+</head>
+<body>
+<dl>
+  <div>
+    <dt>A</dt>
+    <dd>Andrew W.K.</dd>
+    <dd>Apparat</dd>
+    <dd>Arcade Fire</dd>
+    <dd>At The Drive-In</dd>
+    <dd>Aziz Ansari</dd>
+  </div>
+  <div>
+    <dt>C</dt>
+    <dd>Chromeo</dd>
+    <dd>Common</dd>
+    <dd>Converge</dd>
+    <dd>Crystal Castles</dd>
+    <dd>Cursive</dd>
+  </div>
+  <div>
+    <dt>E</dt>
+    <dd>Explosions In The Sky</dd>
+  </div>
+  <div>
+    <dt>T</dt>
+    <dd>Ted Leo &amp; The Pharmacists</dd>
+    <dd>T-Pain</dd>
+    <dd>Thrice</dd>
+    <dd>TV On The Radio</dd>
+    <dd>Two Gallants</dd>
+  </div>
+</dl>
+</body>
+</html>
+
