@@ -1,0 +1,93 @@
+body { 
+    font-family: '맑은 고딕', 'Apple SD Gothic New', 'sans-serif'; margin:0; padding:0
+}
+/* 앞에서 부터 적용된다. sans-serif는 폰트 적용 방식이다.
+    serif : 장식이 있다.
+    san-serif : 장식이 없다. 예로 고딕계열.
+    monospace : 기본적인 것으로 각 글자의 너비가 같다.
+    앞쪽에는 원하는 것, 뒤쪽에는 위의 3가지중에 하나를 적용한다.
+    , 콤마로 구분된다. 
+    폰트의 파서는 브라우저마다 다르지만 ' 작은 따옴표로는 동일하게 읽는다.
+    만약 sanseif없으면 브라우저 기본 글꼴으로 넣는다.
+
+    영타를 늘리기 위해서는 한손가락으로 a-z까지 3~5번 이상 1분안에 돌아야 한다.
+
+    shift, ctrl 등으로 이동하는 것을 ...
+
+    단계적으로 접근하기.
+    블록 방식에서 서로의 간격을 뛰울때에는 
+        마진을 많이 주었을때 공간만 띄운다.
+        보더 칼라는 먹지만 글자 안의 배경색은 바뀌지 않는다.
+        패딩으로 줄경우 글자 뒤의 배경색까지 다 바뀐다.
+    
+    TRBL :  위 오른 아래 왼쪽
+    폰트 사이즈가 폰트 마다 서로 조금씩 다르기 때문에
+    line-height 를 따로 주면서 사이즈를 통제한다.
+
+    실력을 키울려면 포토샵 시안과 동일하게 맞추는 것을 연습한다.
+    
+    텐션을 조정할 줄 알아야 한다.
+    텐션 : 얼마나 열정적으로 할수 있는가.. 그 열정?
+    텐션을 조정하는 것. 환기를 해줘야 한다.
+    하나 하나 체크, 완성하면 그만큼 반영되고 완료되는 것.
+    예를 들면 메뉴, 한 레이아웃이 완성 되면 그것에 대한 백그라운드를 제거하면서
+    환기를 시킨다.
+
+    CSS 에서는 맨 마지막에는 ;가 없어야 한다. 있을 경우에는 하나의 객체를 더 만든다.
+
+*/
+
+
+/* 사이트 이름 =========================================================== */
+.site h1{ margin:0; font-size:30px }
+.site h1 a{ color:#000;text-decoration: none }
+
+/* 내비게이션 ===========================================================  */
+.menu ul{ margin:0; padding:0; list-style:none }
+.menu ul:after{ content:""; display:block; clear:both }
+
+.menu ul li{ float:left; width:auto }
+.menu ul li a{ display:block; padding:5px; color:#000; font-size:14px; text-decoration:none }
+.menu ul li a:hover{ background-color:#eee }
+
+/* 기사  =========================================================== */
+.story h1{ margin-top:0; margin-bottom:20px; font-size:36px }
+.story p{ margin-top:0; margin-bottom:20px }
+
+/* 우측 메뉴  =========================================================== */
+
+    /* 사이드 메뉴  =========================================================== */
+    .sidemenu{ margin-bottom:30px}
+    .sidemenu h1{ margin-top:0; margin-bottom:10px; border-bottom: dotted 2px #ddd; color:#666; font-size:18px }
+    .sidemenu ul{ margin:0; padding:0; list-style:none }
+    .sidemenu li a{ display:block; padding:5px; color:#000; font-size:14px; text-decoration:none }
+    .sidemenu li a:hover{ background-color:#eee }
+
+    /* 사이드 메뉴  =========================================================== */
+    .recommend{ margin-bottom:30px}
+    .recommend h1{ margin-top:0; margin-bottom:10px; border-bottom: dotted 2px #ddd; color:#666; font-size:18px }
+    .recommend ul{ margin:0; padding:0; list-style:none }
+    .recommend li a{ display:block; padding:5px; color:#000; font-size:14px; text-decoration:none }
+    .recommend li a:hover{ background-color:#eee }
+
+    /* 사이드 메뉴  =========================================================== */
+    .popular h1{ margin-top:0; margin-bottom:10px; border-bottom: dotted 2px #ddd; color:#666; font-size:18px }
+    .popular ul{ margin:0; padding:0; list-style:none }
+    .popular li a{ display:block; padding:5px; color:#000; font-size:14px; text-decoration:none }
+    .popular li a:hover{ background-color:#eee }
+
+/* 우측 메뉴 끝 =========================================================== */
+.copyright p{ margin:0; color:#666; font-size:14px}
+
+@media (min-width : 768px) {
+
+    /* 가상 디스플레이에서는 디스플레이 속성을 주어야 한다.*/
+    .boxA:after{ content:""; display:block;clear:both }
+    /*  내부 요소에 %를 줄경우에는 외부 요소에 이것을 
+        max width, min width를 주는 식으로 컨트롤
+    */
+    .box3{ float:left; width:70% }
+    .box4{ float:left; width:30% }
+
+}
+
