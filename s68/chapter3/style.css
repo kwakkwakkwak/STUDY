@@ -37,22 +37,30 @@ body {
 
 */
 
+/* 레이아웃 =========================================================== */
+.box1{ padding:8px 0 }
+.box3,.box4{ padding:40px 0 30px }
+/*.box4{ padding:40px 0 30px }*/
+.box5{ padding:15px 0 }
 
 /* 사이트 이름 =========================================================== */
 .site h1{ margin:0; font-size:30px }
 .site h1 a{ color:#000;text-decoration: none }
 
 /* 내비게이션 ===========================================================  */
+.box2{ background-color:#7cbac1 }
 .menu ul{ margin:0; padding:0; list-style:none }
 .menu ul:after{ content:""; display:block; clear:both }
 
 .menu ul li{ float:left; width:auto }
-.menu ul li a{ display:block; padding:5px; color:#000; font-size:14px; text-decoration:none }
+.menu ul li a{ display:block; padding:15px; color:#000; font-size:14px; text-decoration:none }
 .menu ul li a:hover{ background-color:#eee }
 
 /* 기사  =========================================================== */
 .story h1{ margin-top:0; margin-bottom:20px; font-size:36px }
 .story p{ margin-top:0; margin-bottom:20px }
+.story img{ max-width:100%; height:auto;}
+/* 원래 따로 너비 높이 안주면 auto이다. */
 
 /* 우측 메뉴  =========================================================== */
 
@@ -76,18 +84,29 @@ body {
     .popular li a{ display:block; padding:5px; color:#000; font-size:14px; text-decoration:none }
     .popular li a:hover{ background-color:#eee }
 
-/* 우측 메뉴 끝 =========================================================== */
+/* =========================================================== 우측 메뉴 끝  */
 .copyright p{ margin:0; color:#666; font-size:14px}
+.box5{ border-top:solid 1px #ddd}
+
+/* 1단 레이아웃에서 더 작은 화면 대응 =========================================================== */
+@media (min-width : 599px) {
+}
 
 @media (min-width : 768px) {
-
+    /* 중앙 레이아웃 =========================================================== */
     /* 가상 디스플레이에서는 디스플레이 속성을 주어야 한다.*/
     .boxA:after{ content:""; display:block;clear:both }
     /*  내부 요소에 %를 줄경우에는 외부 요소에 이것을 
         max width, min width를 주는 식으로 컨트롤
     */
-    .box3{ float:left; width:70% }
+    .box3{ float:left; width:70%; }
     .box4{ float:left; width:30% }
+    /* =========================================================== 중앙 레이아웃 끝  */
+
+    /* 기사영역 내부 조정 =========================================================== */
+    /* 일단은 정확하게 한국어로 쓰는게 좋다. 주석을 잘 쓰기전까지는.. */
+    .box3 { padding-right:50px; box-sizing:border-box}
+    /* =========================================================== 기사영역 내부 조정 끝  */
 
 }
 
