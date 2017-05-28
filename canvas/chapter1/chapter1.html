@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+    body {
+        background:#ddd;
+    }
+    #canvas1 {
+        margin:10px;
+        padding:10px;
+        background:#fff;
+        border:thin inset #aaa;
+    }
+
+    #canvas2 {
+        margin:10px;
+        padding:10px;
+        background:#fff;
+        border:thin inset #aaa;
+        width:600px;
+        height:300px;
+    }
+</style>
+<body>
+    <canvas id='canvas3' width='600' height='300'>1</canvas>
+    <!--<canvas id='canvas1' width='600' height='300'>Canvas not supported</canvas>
+    <canvas id='canvas2'>1</canvas>-->
+</body>
+<script>
+
+    var canvas3 = document.getElementById('canvas3');
+    context3 = canvas3.getContext('2d');
+    context3.fillStyle = 'black';
+    context3.strokeStyle = 'black';
+    context3.save();
+    FONT_HEIGHT = 15,
+    MARGIN = 35,
+    HAND_TRUNCATION = canvas3.width/25,
+    HOUR_HAND_TRUNCATION = canvas3.width/10,
+    NUMERAL_SPACING = 20,
+    RADIUS = canvas3.height/2 - MARGIN,
+    HAND_RADIUS = RADIUS + NUMERAL_SPACING;
+
+    function drawCircle() {
+        context3.strokeStyle = "blue";
+        context3.beginPath();
+        //arc(x, y, radius, startAngle, endAngle, anticlockwise)
+        context3.arc(canvas3.height/2, canvas3.height/2, RADIUS, 0, Math.PI*2, true);
+        context3.stroke();
+        context3.closePath(); 
+        context3.restore();
+        
+    }
+    drawCircle();
+
+    function drawPoint() {
+        context3.strokeStyle = "yellow";
+        context3.beginPath();
+        context3.arc(canvas3.height/2, canvas3.height/2, 10, 0, Math.PI*2, true);
+        context3.closePath(); 
+        context3.fill();     
+        
+        
+        context3.stroke();     
+    }
+    drawPoint();
+    
+    function drawPoint2() {
+        context3.strokeStyle = "white";
+        context3.fillStyle = "blue";
+        context3.beginPath();
+        context3.arc(canvas3.height, canvas3.height/2, 10, 0, Math.PI*2, true);
+        context3.closePath(); 
+        context3.fill();     
+        
+        
+        context3.stroke();     
+    }
+    drawPoint2();
+
+    function drawRect() {
+        context3.fillStyle = "black";
+        
+        context3.strokeStyle = "black";
+        
+        context3.fillRect( 425, 25, 100, 100 );    // x, y, width, height;
+        context3.clearRect( 435,35, 80, 80 );
+        context3.strokeRect( 450, 50, 50, 50 );
+    }
+    drawRect();
+
+    function drawNumerals() {
+        var numerals = [1,2,3,4,5,6,7,8,9,10,11,12],
+            angle = 0,
+            numberalWidth = 0;
+        
+        numerals.forEach( function(numeral) { 
+            angle = Math.PI / 6 * (numeral - 3);    //
+            numeralWidth = context3.measureText(numeral).width;
+            // console.log("angle", angle);
+            // console.log("x",canvas3.height/2 + Math.cos(angle) * (HAND_RADIUS) - numeralWidth/2);
+            // console.log("y",canvas3.height/2 + Math.sin(angle) * (HAND_RADIUS) - numeralWidth/2);
+            context3.fillText(numeral,
+                canvas3.height/2 + Math.cos(angle) * (HAND_RADIUS) - numeralWidth/2,
+                canvas3.height/2 + Math.sin(angle) * (HAND_RADIUS) - numeralWidth/2);
+        });
+    }
+    drawNumerals();
+
+    function lineDraw() {
+        context3.beginPath();
+        context3.moveTo(canvas3.height/2,20);
+        context3.lineTo(canvas3.height/2,270);
+        context3.stroke();
+
+        context3.beginPath();
+        context3.moveTo(10,canvas3.height/2);
+        context3.lineTo(canvas3.height,canvas3.height/2);
+        context3.stroke();
+
+        context3.closePath();
+    }
+    lineDraw();
+    
+
+    // var canvas = document.getElementById('canvas1'),
+    //     context = canvas.getContext('2d');
+
+    //     context.font = '38pt Arial';
+    //     context.fillStyle = 'cornflowerblue';
+    //     context.strokeStyle = 'blue';
+
+    //     context.fillText('Hello Canvas',
+    //                      canvas.width / 2 - 150,
+    //                      canvas.height / 2 + 15);
+    //     context.strokeText('Hello Canvas',
+    //                        canvas.width / 2 - 150,
+    //                        canvas.height / 2 + 15);
+
+    // var canvas2 = document.getElementById('canvas2');
+    //     context2 = canvas2.getContext('2d');
+    //     context2.font = '38pt Arial';
+    //     context2.fillStyle = 'cornflowerblue';
+    //     context2.strokeStyle = 'blue';
+    //     context2.fillText('Hello Canvas',
+    //                      canvas.width / 2 - 150,
+    //                      canvas.height / 2 + 15);
+    //     context2.strokeText('Hello Canvas',
+    //                        canvas.width / 2 - 150,
+    //                        canvas.height / 2 + 15);
+    //     // base64는 인코딩 하면 용량이 33%증가한다.
+    //     // 4kb이하 파일들에 대해서는 toDataURL는 좋다.
+
+    //     // var tt = canvas2.toDataURL(1);
+    //     // window.open(tt);
+
+    // function drawGrid(strokeStyle, fillStyle) {
+    //     controlContext.save();
+    //     controlContext.fillStyle = fillStyle;
+    //     controlContext.strokeStyle = strokeStyle;
+
+    //     // 격자 무늬 그리기
+
+    //     controlContext.restore();
+    // }
+    
+</script>
+</html>

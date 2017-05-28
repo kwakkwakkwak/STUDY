@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        body { background-color:#eee; margin:0; padding:0;}
+        canvas { background-color:#fff; }
+    </style>
+</head>
+<body>
+    <canvas id = "c1" width="500" height="300"></canvas>
+</body>
+<script>
+    var c1 = document.getElementById('c1');
+    var ctx1 = c1.getContext('2d');
+
+    ctx1.strokeStyle = "white";
+    ctx1.font = "bold 15pt Times New Roman ";
+
+    var RECT_WIDTH = 100;
+    var RECT_HEIGHT = 50;
+
+    ctx1.fillStyle = "red";
+    console.log(ctx1.measureText("red"));
+    ctx1.fillRect(10, 10, RECT_WIDTH, RECT_HEIGHT);
+    ctx1.fillText('RED', RECT_WIDTH + 10, 60);
+
+    ctx1.strokeText('RED', 10, 60);
+    ctx1.fillStyle = "white";
+    ctx1.fillText('RED', 10, 60);
+
+    
+    
+
+    ctx1.fillStyle = "yellow";
+    ctx1.fillRect(60, 70, RECT_WIDTH, RECT_HEIGHT);
+    ctx1.fillText('YELLOW', RECT_WIDTH + 60, 120);
+    
+    ctx1.strokeText('YELLOW', 60, 120);
+    ctx1.fillStyle = "white";
+    ctx1.fillText('YELLOW', 60, 120);
+    
+
+
+    ctx1.fillStyle = "blue";
+    ctx1.fillRect(110, 130, RECT_WIDTH, RECT_HEIGHT);
+    ctx1.fillText('BLUE', RECT_WIDTH + 110, 180);
+
+    ctx1.strokeText('BLUE', 110, 180);
+    ctx1.fillStyle = "white";
+    ctx1.fillText('BLUE', 110, 180);
+
+
+
+
+</script>
+</html>
