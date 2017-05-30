@@ -7,13 +7,13 @@
     <title>Document</title>
     <style>
         *, body{margin:0;padding:0;list-style: none;}
-        .todoList{width:700px;margin:50px auto;background-color:gray}
+        .todoList{width:500px;margin:50px auto;background-color:gray}
         .todoList header{padding:1%;line-height:1%;background-color:#ece2cc;}
         .todoList section{background-color:#eca1ac;}       
         .todoList .taskLists .taskList > li{float:left;text-align:center;padding:10px 1%}
         .todoList .taskLists .taskList > li:first-child{width:10%;}
-        .todoList .taskLists .taskList > li:nth-child(2){width:62%;}
-        .todoList .taskLists .taskList > li:nth-child(3){width:10%;}
+        .todoList .taskLists .taskList > li:nth-child(2){width:52%;}
+        .todoList .taskLists .taskList > li:nth-child(3){width:20%;}
         .todoList .taskLists .taskList > li:nth-child(4){width:10%;}
         .todoList .taskLists .taskList:hover{background-color:#8b91e0;cursor:pointer;}
         .todoList .taskLists .taskList:last-child{clear:both;overflow:hidden;content:"";}
@@ -36,6 +36,11 @@
 </body>
 
 <script>
+// 1. 이미 통과된 validation을 다시 할 필요가 있을까?
+// 2. validation의 코드들을 추상화할수는 없을까?
+// 3. 세부적인 것인데, 인자값 체크할때 맞지 않으면 false값을 가진 화이트 리스트를
+//    리턴해야하는 것인지, 아니면 그냥 false를 리턴해야하는 것인지 모르겠다.
+
 
 // id : 접근가능한 것은 addTask
 // state : STATE_C, STATE_P로만 처리한다.
@@ -63,6 +68,33 @@ var TASK_TEMPLATE = `
             </ul>
         </li>`;
 
+// validation 테스트 하는 함수.
+function validation( returnValue, condition, errorText ) {
+    var COND = false;
+    var R_VALUE = false;
+    var ERR_TEXT = false;
+
+    if( typeof condition !== "boolean" ) {
+        warning("condition Invalid Value : " + condition );
+        return R_VALUE;
+    }
+    if( typeof errorText !== "string" ) {
+        warning("errorText Invalid value : " + errorText );
+        return R_VALUE;
+    }
+
+    COND = condition;
+    ERR_TEXT = errorText;
+
+    if( COND === true ) {
+        R_VALUE = returnValue;
+    } else {
+        warning( errorText + returnValue );
+    }
+
+    return R_VALUE;
+}
+
 
 // tasks에 값을 추가한다.
 var addTask = (function() {
@@ -72,17 +104,14 @@ var addTask = (function() {
     return function( title ) {
         // validation
         var TITLE = false;
-            
-        if( typeof title === "string" && title.trim().length > 0 ) {
-            TITLE = title;
-        }
 
-        if( TITLE === false ) {
-            warning( 'addTask : Invalid title value : ' + title );
+        TITLE = validation( title, typeof title === "string" && title.trim().length > 0, 'addTask : Invalid title value : ' );
+
+        if( TITLE === false) {
+            alert("내용이 제대로 입력되지 않았습니다.");
             return false;
         }
 
-        // add
         tasks.push({id:id++, title:TITLE, state:STATE_P});
         return true;
     };
@@ -90,18 +119,13 @@ var addTask = (function() {
 
 // 인풋 안의 값을 없애고 포인터를 위치시킨다.
 var inputInit = function( id ) {
-    var temp = document.getElementById(id),
-        TARGET = false;
+    var temp = document.getElementById(id);
+    var TARGET = false;
 
-    if( temp instanceof HTMLElement ) {
-        TARGET = temp;
-    }
+    TARGET = validation( temp, temp instanceof HTMLElement, "inputInit : Invalid value : ");
 
-    if( TARGET === false ) {
-        warning( "inputInit : Invalid id value : " + id );
-        return false;
-    }
-
+    if( TARGET === false ) return false;
+    
     TARGET.value = null;
     TARGET.focus();
 
@@ -110,42 +134,51 @@ var inputInit = function( id ) {
 
 // 추가 클릭 이벤트가 발생했을 때 addTask를 호출하고 커서, 렌더링 호출한다.
 var clickAddTask = function( id ) {
-  var temp = document.getElementById(id),
-      TARGET = false;
+    var temp = document.getElementById(id);
+    var TARGET = false;
 
-    if( temp instanceof HTMLElement ) {
-        TARGET = temp;
-    }
+    TARGET = validation( temp, temp instanceof HTMLElement, "clickAddTask : Invalid value : " );
 
-    if( TARGET === false ) {
-        warning( "inputInit : Invalid id value : " + id );
-    }
-
-    // 추가가 되었을대만 다시 렌더링을 한다.
+    if( TARGET === false ) return false;
+    
     if( addTask( TARGET.value ) ) {
         rendering();
     }
-    inputInit( id );
-    
+    inputInit( id );  
 }
 
+// 입력된 ID를 체크하고, 해당 ID의 인덱스 값을 반환한다. 없으면 false 반환
+function findIdInTask( target ) {
+    var ID = false;
+    var INDEX = false;
 
-// tasks의 데이터 값 하나를 삭제한다.
-var removeTask = function( id ) {
-    var isRemoved = false;
+    ID = validation( target, typeof target === 'number', "findIdInTask : Invalid target value : ");
+
+    if( ID === false ) return false;
 
     for( var i = 0; i<tasks.length; i++ ){
-        if(tasks[i].id === id){
-            tasks.splice( i, 1 );
-            isRemoved = true;
+        if(tasks[i].id === ID){
+            INDEX = i;
         }
     }
 
-    if(isRemoved === false) {
-        warning("removeTask : Invalid id value : " + id);
-    }
+    return INDEX;
+}
 
-    return isRemoved;
+// tasks의 데이터 값 하나를 삭제한다.
+var removeTask = function( id ) {
+    var ID = false;
+    var INDEX = false;
+
+    INDEX = findIdInTask( id );
+
+    if( INDEX === false ) {
+        warning( "존재하지 않는 id 입니다. ");
+        return false;
+    }
+    tasks.splice( INDEX, 1 );
+
+    return true;
 }
 
 // 제거 클릭 이벤트가 발생했을 때 removeTask 호출하고 커서, 렌더링 호출한다.
@@ -163,20 +196,10 @@ var changeState = function( id, state ) {
     var INDEX = false,
         STATE = false;
 
-    for( var i = 0; i<tasks.length; i++ ){
-        if(tasks[i].id === id){
-            INDEX = i;
-        }
-    }
-    
-    if( state === STATE_C || state === STATE_P ) {
-        STATE = state;
-    }
+    INDEX = findIdInTask(id);   // findIdInTask에서 validation 체크함.
+    STATE = validation( state, state === STATE_C || state === STATE_P, "changeState : Invalid state value : "  );
 
-    if( INDEX === false || STATE === false ) {
-        warning("changeState : Invalid id, state value : " + id + "//" + state);
-        return false;
-    }
+    if( INDEX === false || STATE === false ) return false;
 
     tasks[INDEX].state = returnOtherState(STATE);
     return true;
@@ -195,13 +218,9 @@ var clickChangeState = function( id, state ) {
 var returnOtherState = function( state ) {
     var STATE = false;
 
-    if( state === STATE_C || state === STATE_P ) {
-        STATE = state;
-    }
-    if( STATE === false ) {
-        warning("returnOtherState : Invalid state value : " + state);
-        return STATE;
-    }
+    STATE = validation( state, state === STATE_C || state === STATE_P, "returnOtherState : Invalid state value : " );
+
+    if( STATE === false ) return false;
 
     return STATE === STATE_C? STATE_P : STATE_C;
 }
@@ -212,19 +231,14 @@ var rendering = function() {
 }
 
 // HTML의 특정 ID에 랜더링 한다. 타겟 아이디와 템플릿을 받는다.
-var renderHtmlId = function( targetId, template) {
+var renderHtmlId = function( targetId, template ) {
     var TARGET = false,
         content = "",
         temp = document.getElementById( targetId )
 
-    if( temp instanceof HTMLElement ) {
-        TARGET = temp;
-    }
-
-    if( TARGET === false ) {
-        warning( "renderHtmlId : Invalid targetId value : " + targetId );
-        return false;
-    }
+    TARGET = validation( temp, temp instanceof HTMLElement, 'renderHtmlId : Invalid value' );
+    
+    if( TARGET === false ) return false;
 
     for( var i = 0; i< tasks.length; i++ ) {
         content += template
@@ -242,18 +256,11 @@ var replaceAll = function( target, newText ) {
     var TARGET = false, 
         NEWTEXT = false;
 
-    if( typeof target === "string" 
-        && typeof newText === "string" ) {
-            TARGET = target;
-            NEWTEXT = newText;
-    }
+    TARGET = validation( target, typeof target === "string", "replaceAll : Invalid target : ");
+    NEWTEXT = validation( newText, typeof newText === "string", "replaceAll : Invalid newText : ");
 
-    if( TARGET === false || NEWTEXT === false ) {
+    if( TARGET === false || NEWTEXT === false ) return false;
 
-        warning( "replaceAll : Invalid target,newText value : " 
-                 + TARGET + "::" + target + "//" + NEWTEXT + "::" + newText );
-        return false;
-    }
     return this.split( TARGET ).join( NEWTEXT );
 }
 
