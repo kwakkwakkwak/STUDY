@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+<script>
+    function run( idol, fans ) {
+        var iArr = idol.split("");
+        var fArr = fans.split("");
+        var totalLen = fArr.length - iArr.length +1;
+        var cnt = 0;
+
+        // console.log(iArr, fArr );
+
+        while( fArr.length >= iArr.length ) {
+            iArr.forEach( (a,index) => {
+                if( a === fArr[index] && a === "M" ) {
+                    cnt += 1;
+                }
+            });
+            if( cnt > 0 ) {
+                totalLen--;
+            }
+            cnt = 0;
+            fArr.shift();
+        }
+        console.log( totalLen );
+
+
+
+
+
+        // for( var i = 0; i < fArr.length - iArr.length + 1; i++) {
+        //     for( var j = i; j < i + iArr.length; i < j++ ) { 
+        //         if( iArr[i] === fArr[j] && fArr[j] === "M" ) {
+        //             isManMan += 1;
+        //         }
+        //     }
+        //     if( isManMan > 0) {
+        //         cnt += 1;
+        //     }
+        //     isManMan = 0;
+        // }
+        // console.log( fArr.length - iArr.length +1 - cnt);
+    }
+
+    var getAllHugCnt = function( idols, fans ) {
+        idols = idols.split("");
+        fans = fans.split("");
+
+        var allHugCnt = 0;
+        while( fans.length >= idols.length ) {
+            
+            var isAllHug = true;
+
+            for( var i = 0; i < idols.length; i++) {
+                var isManIdol = (idols[i] === 'M');
+                var isManFan = (fans[i] === 'M');
+
+                if( isManIdol && isManFan ) {
+                    isAllHug = false;
+                }
+
+            }
+            fans.shift();
+            
+            if(isAllHug) {
+                allHugCnt++;
+            }
+
+        }
+        console.log(allHugCnt);
+    };
+
+    var getAllHugCnt2 = ( idols, fans ) => {
+        idols = idols.split("");
+        fans = fans.split("");
+
+        var allHugCnt = 0;       
+
+        while( fans.length >= idols.length ) {
+            var isNotHug = idols.filter( (idol, index) => idol ==='M' && fans[index] === 'M' );
+            if( isNotHug.length < 1 ) {
+                allHugCnt++;
+            }
+            fans.shift();
+        }
+        console.log(allHugCnt);
+    }
+
+
+    run('FFFMMM', 'MMMFFF');
+    run('FFFFF', 'FFFFFFFFFF');
+    run('FFFFM', 'FFFFFMMMMF');
+    console.log("====================");
+    getAllHugCnt('FFFMMM', 'MMMFFF');
+    getAllHugCnt('FFFFF', 'FFFFFFFFFF');
+    getAllHugCnt('FFFFM', 'FFFFFMMMMF');
+    console.log("====================");
+    getAllHugCnt2('FFFMMM', 'MMMFFF');
+    getAllHugCnt2('FFFFF', 'FFFFFFFFFF');
+    getAllHugCnt2('FFFFM', 'FFFFFMMMMF');
+
+</script>
+</html>

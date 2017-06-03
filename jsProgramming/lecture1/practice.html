@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <section>   
+        <input type="text" id="inputNum" placeholder="가위 : 0, 바위 : 1, 보 : 2">
+        <input type="button" id="startBtn" value="시작!" onclick="run()">
+    </section>
+    <section>
+        <h2>결과</h2>
+        <div id="result"></div>
+    </section>
+
+</body>
+<script>
+   
+
+function LinkedList() {
+    this.node = function(value) {
+        this.value = value;
+        this.left;
+        this.right;
+    }
+    this.list = {};
+    this.start;
+    this.last;
+    this.length = 0;
+}
+
+LinkedList.prototype.append = function(value){
+    this.length += 1;
+
+    if( this.start === undefined ) {
+        var temp = new this.node( value );
+        this.start = temp;
+        this.start.right = temp;
+        this.start.left = temp;
+
+        this.last = temp;
+        this.last.right = temp;
+        this.last.left = temp;
+
+        this.list[value] = temp;
+    }else {
+        var temp = new this.node( value );
+        this.last.right = temp;
+        temp.left = this.last;
+        temp.right = this.start;
+        this.last = temp;
+
+        this.start.left = this.last;
+        this.list[value] = temp;
+    }
+}
+
+LinkedList.prototype.remove = function( value ){
+    if( value in this.list ) {
+        if(this.length === 1) {
+            this.start = "";
+            this.last = "";
+            delete(this.list[value]);
+        } else {
+            var temp = this.list[value];
+            var right = temp.right;
+            var left = temp.left;
+
+            right.left = left;
+            left.right = right;
+
+            if( temp == this.start ){ this.start = right; }
+            if( temp == this.last ){ this.last = left; }
+
+            delete( this.list[value] );
+        }
+        this.length -= 1;
+    } else {
+        warning("value 값이 존재하지 않습니다.");
+    }
+}
+
+LinkedList.prototype.search = function( value ){
+    if( value in this.list ) {
+        return this.list[value];
+    }
+}
+
+LinkedList.prototype.print = function(){
+    for( one in this.list ) {
+        console.log(`left : ${this.list[one].left.value} -- 
+                        value : ${one} -- 
+                        right : ${this.list[one].right.value}`);
+    }
+}
+
+function warning(value) {
+    console.log(value);
+}
+
+// 플랫폼과 분리
+// 링크드 리스트와의 분리
+// 좀더 코어 로직 부분을 퓨어하게 짜주어야 한다.
+
+
+(function(module){
+    var module = module || window;
+    var SRP = function( params ) {
+
+        const RESULT_TYPE_WIN = "승리",
+              RESULT_TYPE_LOSE = "패배",
+              RESULT_TYPE_DRAW = "무승부";
+
+        const SELECT_TYPE_SCISSOR = "가위",
+              SELECT_TYPE_ROCK = "바위",
+              SELECT_TYPE_PAPER = "보";
+
+        var MODE = params.mode; 
+        var SHOW_ID = params.showID;
+        var INPUT_ID = params.inputID;
+
+        const SELECT_TYPE = makeSelectType();
+        var USER_VALUE = 0;
+        var COM_VALUE = 0;
+
+
+        // USER_VALUE = numToType( prompt("가위 : 0, 바위 : 1, 보 : 2 중에 하나의 숫자를 입력하세요.") );
+
+
+        function makeSelectType() {
+            temp = new LinkedList();
+            temp.append(SELECT_TYPE_SCISSOR);
+            temp.append(SELECT_TYPE_ROCK);
+            temp.append(SELECT_TYPE_PAPER);
+            return temp;
+        }
+
+        function numToType(num) {
+            switch (num) {
+                case 0: return SELECT_TYPE_SCISSOR;
+                case 1: return SELECT_TYPE_ROCK;
+                case 2: return SELECT_TYPE_PAPER;
+            }
+        }
+
+        function compareSelectType() {
+            var temp = SELECT_TYPE.search(USER_VALUE);
+
+            if( temp.right.value === COM_VALUE ) return RESULT_TYPE_LOSE;
+            if( temp.left.value === COM_VALUE ) return RESULT_TYPE_WIN;
+            return RESULT_TYPE_DRAW;
+        }
+
+        function random012() {
+            return ~~(Math.random() * 3);
+        }
+
+        function render() {
+            switch(MODE) {
+                case "html" : break;
+                case "console" : 
+                    console.log(`USER : ${USER_VALUE} VS COM : ${COM_VALUE} || 결과 : `+compareSelectType());
+                    break;
+            }
+        }
+
+        function start() {
+            debugger;
+            COM_VALUE = numToType( random012() );
+            USER_VALUE = numToType( random012() );
+            render();
+        }
+
+        return start;
+    }
+
+    module.SRP = SRP;
+
+})(window);
+
+
+    var run = SRP('#inputNum', '#startBtn', 'console');
+
+</script>
+</html> 

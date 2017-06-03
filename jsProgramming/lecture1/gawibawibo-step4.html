@@ -1,0 +1,56 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="text/javascript">
+var ATTACK_TYPE_GAWI    = 1;    // 공격 타입 - 가위
+var ATTACK_TYPE_BAWI    = 2;    // 공격 타입 - 바위
+var ATTACK_TYPE_BO      = 3;    // 공격 타입 - 보
+
+var RESULT_TYPE_WIN     = 1;    // 결과 타입 - 승리
+var RESULT_TYPE_LOSE    = 2;    // 결과 타입 - 패배
+var RESULT_TYPE_DRAW    = 3;    // 결과 타입 - 비김
+
+var gawibawibo = function(myAttackType, yourAttackType) {
+    if (myAttackType === ATTACK_TYPE_GAWI) {
+        if (yourAttackType === ATTACK_TYPE_BAWI)
+            return RESULT_TYPE_LOSE;
+
+        if (yourAttackType === ATTACK_TYPE_BO)
+            return RESULT_TYPE_WIN;
+
+        if (yourAttackType === ATTACK_TYPE_GAWI)
+            return RESULT_TYPE_DRAW;
+
+        return RESULT_TYPE_WIN;
+    } else if (myAttackType === ATTACK_TYPE_BAWI) {
+        if (yourAttackType === ATTACK_TYPE_BO)
+            return RESULT_TYPE_LOSE;
+
+        if (yourAttackType === ATTACK_TYPE_GAWI)
+            return RESULT_TYPE_WIN;
+
+        if (yourAttackType === ATTACK_TYPE_BAWI)
+            return RESULT_TYPE_DRAW;
+
+        return RESULT_TYPE_WIN;
+    } else if (myAttackType === ATTACK_TYPE_BO) {
+        if (yourAttackType === ATTACK_TYPE_GAWI)
+            return RESULT_TYPE_LOSE;
+
+        if (yourAttackType === ATTACK_TYPE_BAWI)
+            return RESULT_TYPE_WIN;
+
+        if (yourAttackType === ATTACK_TYPE_BO)
+            return RESULT_TYPE_DRAW;
+
+        return RESULT_TYPE_WIN;
+    }
+
+    return RESULT_TYPE_LOSE;
+};
+
+var resultType = gawibawibo(ATTACK_TYPE_GAWI, ATTACK_TYPE_BAWI);
+
+// 여기까지가 완성입니다.
+// 이 코드를 어떻게 줄일 수 있을까요?
+
+// step5로 넘어가기 전에 한번 생각해보세요.
+</script>

@@ -1,0 +1,34 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="text/javascript">
+var ATTACK_TYPE_GAWI    = 1;    // 공격 타입 - 가위
+var ATTACK_TYPE_BAWI    = 2;    // 공격 타입 - 바위
+var ATTACK_TYPE_BO      = 3;    // 공격 타입 - 보
+
+var RESULT_TYPE_WIN     = 1;    // 결과 타입 - 승리
+var RESULT_TYPE_LOSE    = 2;    // 결과 타입 - 패배
+var RESULT_TYPE_DRAW    = 3;    // 결과 타입 - 비김
+
+var gawibawibo = function(myAttackType, yourAttackType) {
+    // 1. 모든 로직은 통으로 생각하면 답이 없습니다. 우선 문제를 나누어 정의합니다.
+    //   가위바위보는 내 패와 상대방의 패를 비교하여 결과를 내는 게임입니다.
+    //   이는 즉 내 패가 무엇일때, 상대방의 패가 무엇일 경우 결과가 산정된다는 의미입니다.
+
+    //  2. 문제는 3개로 나눌 수 있습니다.
+    if (myAttackType === ATTACK_TYPE_GAWI) {
+        // 내 패가 가위일 때
+    } else if (myAttackType === ATTACK_TYPE_BAWI) {
+        // 내 패가 바위일 때
+    } else if (myAttackType === ATTACK_TYPE_BO) {
+        // 내 패가 보일때
+    }
+
+    return RESULT_TYPE_WIN;
+};
+
+var resultType = gawibawibo(ATTACK_TYPE_GAWI, ATTACK_TYPE_BAWI);
+
+// 4. 문제를 나누었을 뿐, 아무런 작동을 하지 않으므로 아직까지도 무조건 내가 이기는 부정한 게임입니다.
+//   여기까지 코드가 구현되었으면 큰 문제 분할은 끝났습니다.
+
+// step3로 넘어가기전에 이 안에서 직접 구현해보세요.
+</script>

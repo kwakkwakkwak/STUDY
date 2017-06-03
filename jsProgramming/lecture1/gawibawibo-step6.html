@@ -1,0 +1,29 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="text/javascript">
+var ATTACK_TYPE_GAWI    = 1;    // 공격 타입 - 가위
+var ATTACK_TYPE_BAWI    = 2;    // 공격 타입 - 바위
+var ATTACK_TYPE_BO      = 3;    // 공격 타입 - 보
+
+var RESULT_TYPE_WIN     = 1;    // 결과 타입 - 승리
+var RESULT_TYPE_LOSE    = 2;    // 결과 타입 - 패배
+var RESULT_TYPE_DRAW    = 3;    // 결과 타입 - 비김
+
+var gawibawibo = function(myAttackType, yourAttackType) {
+    if (myAttackType === yourAttackType)
+        return RESULT_TYPE_DRAW;
+
+    // 스위치 문으로 변환 후, 3항 연산자로 식을 줄여보았습니다.
+    switch (myAttackType) {
+        case ATTACK_TYPE_GAWI:
+            return (yourAttackType === ATTACK_TYPE_BAWI) ? RESULT_TYPE_LOSE : RESULT_TYPE_WIN;
+        case ATTACK_TYPE_BAWI:
+            return (yourAttackType === ATTACK_TYPE_BO) ? RESULT_TYPE_LOSE : RESULT_TYPE_WIN;
+        case ATTACK_TYPE_BO:
+            return (yourAttackType === ATTACK_TYPE_GAWI) ? RESULT_TYPE_LOSE : RESULT_TYPE_WIN;
+    }
+
+    return RESULT_TYPE_LOSE;
+};
+
+var resultType = gawibawibo(ATTACK_TYPE_GAWI, ATTACK_TYPE_BAWI);
+</script>

@@ -1,0 +1,41 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="text/javascript">
+var ATTACK_TYPE_GAWI    = 1;    // 공격 타입 - 가위
+var ATTACK_TYPE_BAWI    = 2;    // 공격 타입 - 바위
+var ATTACK_TYPE_BO      = 3;    // 공격 타입 - 보
+
+var RESULT_TYPE_WIN     = 1;    // 결과 타입 - 승리
+var RESULT_TYPE_LOSE    = 2;    // 결과 타입 - 패배
+var RESULT_TYPE_DRAW    = 3;    // 결과 타입 - 비김
+
+var gawibawibo = function(myAttackType, yourAttackType) {
+    if (myAttackType === ATTACK_TYPE_GAWI) {
+        // 1. 내 패가 가위일때, 상대방이 무엇을 내야 승리이고 패배이고 비길가요?
+        //   이를 코드로 구현해 봅시다.
+        if (yourAttackType === ATTACK_TYPE_BAWI)
+            return RESULT_TYPE_LOSE;
+
+        if (yourAttackType === ATTACK_TYPE_BO)
+            return RESULT_TYPE_WIN;
+
+        if (yourAttackType === ATTACK_TYPE_GAWI)
+            return RESULT_TYPE_DRAW;
+
+        // 만약 상대방의 패가 가위바위보 외의 다른 패라면 부정으로 취급하여 승리
+        return RESULT_TYPE_WIN;
+    } else if (myAttackType === ATTACK_TYPE_BAWI) {
+    } else if (myAttackType === ATTACK_TYPE_BO) {
+    }
+
+    // 만약 내 패가 가위바위보 외의 다른 패라면 부정으로 취급하여 패배
+    return RESULT_TYPE_LOSE;
+};
+
+var resultType = gawibawibo(ATTACK_TYPE_GAWI, ATTACK_TYPE_BAWI);
+
+// 2. 이제 내 패가 가위일 경우에 한해서는 공평한 게임이 이루어집니다.
+//   나머지 문제는 여러분들이 코드를 구현하는데 아무런 문제가 되지 않습니다.
+//   문제의 성질이 똑같거든요.
+
+// step4로 넘어가기전에 이 안에서 직접 구현해보세요.
+</script>
