@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvas" width="600" height="600"></canvas>
+</body>
+<style>
+#canvas{border:1px solid black;}
+</style>
+
+<script>
+
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('2d');
+
+
+
+function drawGrid( color, stepx, stepy ) {
+
+    ctx.save();
+    
+    ctx.shadowColor = undefined;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    ctx.strokeStyle = color;
+    ctx.fillStyle = '#ffffff';
+    ctx.lineWidth = 0.5;
+    // ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height );
+
+    for( var i = stepx + 0.5; i < ctx.canvas.width; i += stepx ) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, ctx.canvas.height);
+        ctx.stroke();
+    }
+    
+
+    for( var i = stepy + 0.5; i < ctx.canvas.height; i += stepy ) {
+        ctx.beginPath();
+        ctx.moveTo(0, i);
+        ctx.lineTo(ctx.canvas.width, i);
+        ctx.stroke();
+    }
+
+    ctx.restore();
+}
+
+function drawCircle( x, y, radius, fillColor, strokeColor, lineWidth ) {
+    ctx.save();
+    // 그리드를 그리는 함수에서 맨 마지막에 끊긴 곳에서 맺음 하고 다시
+    // 시작하기 위해서 beginPath를 사용한다. 그러지 않으면 선이 그어진다.
+    ctx.beginPath();
+    ctx.arc( x, y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = fillColor;
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = (lineWidth || ctx.lineWidth);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.restore();
+}
+
+function convertLength( angle, length ) {
+    var rad = Math.PI / 180 * angle;
+    var x = Math.cos(rad) * length;
+    var y = Math.sin(rad) * length;
+    return {'x' : x, 'y' : y};
+}
+
+function drawArchPillar( target ) {
+
+    var x = target.x, 
+        y = target.y, 
+        angle = target.angle.angle, 
+        length = target.length, 
+        thickness = target.thickness, 
+        fillColor = target.fillColor, 
+        strokeColor = target.strokeColor, 
+        lineWidth = target.lineWidth;
+
+    var centerX = x,
+        centerY = y;
+
+    var startXY = convertLength( angle-90, thickness/2),
+        lengthXY = convertLength( angle, length ),
+        archXY = convertLength( angle, thickness/2),
+        thickXY = convertLength( angle+90, thickness );
+
+    x = x + startXY.x;
+    y = y + startXY.y;
+
+    ctx.save();
+
+    ctx.fillStyle = (fillColor || ctx.fillStyle);
+    ctx.strokeStyle = (strokeColor || ctx.strokeStyle);
+    ctx.lineWidth = (lineWidth || ctx.lineWidth);
+
+    // console.log(ctx.lineWidth);
+
+    ctx.beginPath();
+    ctx.moveTo( x, y );
+    ctx.lineTo( x+lengthXY.x, y+lengthXY.y );
+    ctx.arcTo( x+lengthXY.x+archXY.x, y+lengthXY.y+archXY.y, 
+               x+lengthXY.x+archXY.x+thickXY.x/2, y+lengthXY.y+archXY.y+thickXY.y/2, 
+               thickness/2 );
+
+    ctx.arcTo( x+lengthXY.x+archXY.x+thickXY.x, y+lengthXY.y+archXY.y+thickXY.y, 
+               x+lengthXY.x+thickXY.x, y+lengthXY.y+thickXY.y,
+               thickness/2 );
+    
+    ctx.lineTo( x+thickXY.x, y+thickXY.y );
+    ctx.fill();
+    ctx.stroke();
+    // 캔버스에서 stroke는 fill의 영역으로 확장이 된다.
+    // 따라서 stroke를 fill 보다 늦게 해야지 제대로 된다.
+    ctx.restore();
+}
+
+function drawLine() {
+
+}
+
+var armAngle = {angle:240};
+var armLength = 100;
+
+var arm1 = { x:350, 
+             y:400, 
+             angle:armAngle, 
+             length:armLength,
+             thickness:50, 
+             fillColor:'#DE9C29',
+             strokeColor:'black', 
+             lineWidth:7} ;
+
+var arm2 = { x:470, 
+             y:400, 
+             angle:armAngle, 
+             length:armLength,
+             thickness:50, 
+             fillColor:'#DE9C29',
+             strokeColor:'black', 
+             lineWidth:7 };
+
+// drawGrid('lightgray', 10, 10);
+
+function render() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawArchPillar( arm1 );
+    drawCircle(400, 300, 100, '#DE9C29', 'black', 7);
+    drawArchPillar( arm2 );
+
+}
+
+render();
+
+var down = false;
+setInterval(function() {
+    if( armAngle.angle <= 180 ) { down = false; }
+    if( armAngle.angle >= 240 ) { down = true; }
+
+    down ? armAngle.angle-- : armAngle.angle++ ;
+    render();
+
+}, 1000/60);
+
+</script>
+</html>

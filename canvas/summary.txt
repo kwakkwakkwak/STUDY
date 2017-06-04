@@ -1,0 +1,128 @@
+그리드
+
+좌표공간 : coordinate space
+그리드 1단위 = 캔버스 1픽셀
+(0,0) 은 왼쪽위를 기준으로 한다.
+
+캔버스는 오직 하나의 원시적인 도형만인 직사각형만 제공한다.
+다른 모든 도형들은 하나 이상의 path와 여러 점으로 이어진 선으로 만들어진다.
+
+Color, Styles, Shadows
+fillStyle : color | gradient | pattern 도형을 채우는 영역을 설정한다. 초기 검은색
+strokeStyle :  color | gradient | pattern 도형의 윤곽선을 설정한다. 초기 검은색
+현재 게코 엔진에서는 CSS 색상값을 모두 지원하지는 않는다.
+
+globalAlpha : transparencyValue 투명도 값이 설정되면 이후 모든 도형들의 투명서 변경
+strokeStyle, fillstyle 에서 rgba로도 설정 가능하다.
+
+createLinearGradient(x1, y1, x2, y2) 시작점 좌표와 종점 좌표로 선형 그레디언트 객체
+createRadialGradient(x1, y1, r1, x2, y2, r2) 반지름이 r1 이고 시점, 종점의 각 원을 이용한 그레이디언트
+
+
+
+shadowColor : 
+shdowBlur : 
+shadowOffsetX : 
+shadowOffsetY : 
+
+
+Paths
+
+Path는 직사각형 이외의 유일한 원시적인 도형이다.
+path는 점들의 집합이며 선의 한 부분과 연결되면서 여러가지 도형, 곡선을 이루고 
+두께외 색을 나타내게 된다. Path, subpath는 닫힐 수 있다.
+path 는 도형을 이루는 sub-path( 선, 아치 등 )의 모음으로 이루어져 있다.
+
+단계
+1. Path 만들기
+- beginPath() 메소드가 사용될때마다 sub-path의 모음은 리셋되며, 새 도형을 그릴수 있다.
+
+2. Drawing command 를 이용해서 path에 그리기
+- path가 그려지는 위치를 설정하는 메소드를 사용한다.
+
+3. Path 닫기
+- 선택적이다. closePath() 메소드를 사용한다.
+
+4. Path가 한번 만들어졌다면 path를 렌더링 하기 위해서 윤곽선을 그리거나 도형 내부를 채울 수 있다.
+
+beginPath() : 새로운 path를 만든다. 
+moveto() : x,y 좌표로 subPath의 시작점을 옮긴다.
+lineTo() : 현재 드로잉 위치에서 x, y 로 설정된 좌표점까지 연결하는 선을 그린다.
+bezierCurveTo() : 베지에 곡선을 추가한다. 
+quadraticCurveTo() : 이차 곡선을 추가한다.
+arc() : 호를 추가한다.
+arcTo() : 주어진반지름과 기준점을 가지고 다른 기준점을 짓는 직선 그린다.
+stroke() : 윤곽선을 이어줌으로써 도형을 그린다.
+fill() : path 내부를 채움으로써 도형을 그린다.
+closePath() : 시작점과 현재 점을 직선으로  이어주고 path를 닫는다.
+clip() : 마치 overflow:hidden과 같은 효과를 준다. 위의 도형에 대해서 아래 도형에 적용
+isPointInPath(x, y [,fillRule]) : 0~x, 0~y 의 좌표범위 내에서 만 그려지게 한다.
+
+
+
+
+참고
+fill() 메소드 사용시 열린 도형은 자동으로 닫힌다.
+beginPath() 또는 캔버스를 새로 열었을때 첫 path 커맨드는 커맨드 내용 상관없이 moveTO()로 여겨지게 된다. 
+
+
+Lines
+beginPath() : 새로운 path를 만든다. 
+moveto() : x,y 좌표로 subPath의 시작점을 옮긴다.
+lineTo(x, y) : 현재 드로잉 위치에서 x, y 로 설정된 좌표점까지 연결하는 선을 그린다.
+closePath() : 시작점과 현재 점을 직선으로  이어주고 path를 닫는다.
+stroke() : 윤곽선을 이어줌으로써 도형을 그린다.
+fill() : path 내부를 채움으로써 도형을 그린다.
+lineCap : 라인 끝부분을 모양으로 만든다. ( butt, round, square )
+lineJoin : 두 라인이 만나는 지점을 처리한다. ( bevel, round, miter )
+lineWidth : 라인 두께를 한다. 단위 픽셀이지만 숫자만 넣는다.
+miterLimit : miter 길이를 리턴한다. 안쪽 코너와 바깥쪽 코너간의 길이 설정한다.
+
+
+
+arc (아치, 호)
+arc( x, y, radius, startAngle, endAngle, anticclockwise )
+x, y 위치에 중점을 두면서, 반지름 radius 를 가지고 startAngle에서 시작하여,
+endAngle에서 끝나며, 주어진 anticclockwise 방향으로 향하는 아치를 그린다.
+
+arcTo( x1, y1, x2, y2, radius )
+주어진 반지름( radius )과 기준점( x1, y1 ) 을가지고 다음 기준점 (x2, y2)을 잇는
+직선을 그린다.
+
+참고
+arc function에서 각도는 각이 아닌 라디안 값을 사용한다.
+각도를 라디안으로 바꾸는 것은 다음과 같다.
+radians = (Math.PI/180) * degrees
+
+라디안이란?
+1라디안은 원둘레 위에서 반지름의 길이와 같은 길이로 갖는 호에 대응하는 중심각의 크기이다.
+호도 또는 rad로 줄여 쓰기도 한다. 
+1rad = 360도 / 2PI = 180도 / PI =유사값= 57.2958도
+1도 = PI / 180도 =유사값= 0.0175rad
+x도에 대한 라디안 값은 => (Math.PI(/180) * 각도)
+
+
+베지에 곡성, 이차 곡선
+quadraticCurveTo( cp1x, cp1y, x, y )
+cp1x, cp1y 로 설정된 기준점을 사용하여, 현재 펜 위치에서 x,y 좌표로 주어진 끝점까지 
+이차 베지에곡선을 그린다.
+
+bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y)
+cp1x, cp1y 와 cp2x, cp2y로 설정된 기준점을 사용하여 현재 펜 위치에서 x,y 좌표로 
+주어진 끝점까지 삼차 베지에 곡선을 그린다.
+
+
+
+
+
+Shapes
+
+fillRect( x, y, width, height ) : 색칠된 직사각형을 그린다.
+strokeRect( x, y, width, height ) : 직사각형 윤관선을 그린다.
+clearRect( x, y, width, height ) : 특정 부분을 지우는 투명한 직사각형이다.
+
+rect(x, y, width, height) : width와 height의 가로 세로 크기, x,y좌표의 직사각형 그린다.
+이 메소드가 실행후 0,0 좌표의 moveTo 메소드가 호출된다. 펜위치가 자동으로 해당 좌표로 리셋된다.
+
+
+

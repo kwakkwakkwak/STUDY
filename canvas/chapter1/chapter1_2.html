@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #canvas {border:1px solid black;}
+    </style>
+</head>
+<body>
+    
+<canvas id="canvas" width='600' height='400'>캔버스가 실행되지 않습니다.</canvas>
+
+</body>
+<script>
+
+var canvas = document.getElementById("canvas");
+var context = canvas.getContext('2d');
+
+// context.lineWidth = 9;
+context.lineWidth = 6;
+
+context.lineCap = "round";
+
+context.fillStyle = "#DD9A25";
+
+ax = 350;
+context.moveTo(ax + 20, 150);
+context.bezierCurveTo(ax,180,ax-10,210,ax,250);
+// context.stroke();
+// context.fill();
+
+ax = 450;
+context.moveTo(ax-20, 100);
+context.bezierCurveTo(ax+20,180,ax+60,250,ax,250);
+// context.stroke();
+// context.fill();
+
+ax = 350;
+context.moveTo(ax+10, 190);
+context.bezierCurveTo(ax,270,ax+20,330,ax+40,350);
+context.lineTo(ax+60, 350);
+context.lineTo(ax+55, 300);
+context.lineTo(ax+60, 300);
+context.lineTo(ax+68, 350);
+context.lineTo(ax+93, 350);
+context.bezierCurveTo(ax+100, 320, ax+97, 290, ax+97, 200);
+context.fill();
+context.stroke();
+
+
+
+context.beginPath();
+context.arc( 375, 40, 20, 0, Math.PI * 2, true );
+context.stroke();
+context.fill();
+
+context.beginPath();
+context.arc( 440, 40, 20, 0, Math.PI * 2, true );
+context.stroke();
+context.fill();
+
+context.beginPath();
+context.arc( 400, 100, 75, 0, Math.PI * 2, true );
+context.stroke();
+context.fill();
+
+
+context.beginPath();
+context.moveTo(345, 50);
+context.lineTo(370, 50);
+context.stroke();
+
+context.beginPath();
+context.moveTo(400, 50);
+context.lineTo(430, 50);
+context.stroke();
+
+// context.save();
+
+context.fillStyle = "black";
+context.beginPath();
+context.arc( 355, 65, 5, 0, Math.PI * 2, true );
+context.fill();
+
+context.beginPath();
+context.arc( 415, 65, 5, 0, Math.PI * 2, true );
+context.fill();
+
+
+context.fillStyle = "white"
+context.beginPath();
+context.arc( 372, 91, 13,  
+             Math.PI * (300 / 180) , Math.PI * (40 / 180) , 
+             true );
+
+context.stroke();
+context.fill();
+
+context.beginPath();
+context.arc( 390, 91, 13,  
+             Math.PI * (210 / 180) , Math.PI * (130 / 180) , 
+             false );
+context.stroke();
+context.fill();
+
+context.fillStyle = "black";
+context.beginPath();
+context.arc( 380, 80, 5, 0, Math.PI * 2, true );
+context.fill();
+context.stroke();
+
+// arc 에 대해서.. 비율하는 것. context.scale
+// 다만 이것을 쓰면 restore로 복구가 되지 않아서 
+// context.setTransform(1, 0, 0, 1, 0, 0)
+// elipse 타원 그리는 메소드
+
+// context.restore();
+
+// context.lineWidth = 10;
+
+// moveto~
+// arcto 이런시긍로 쓰면 직선 끝에 곡선을 그릴수 있다.
+
+
+
+</script>
+</html>
