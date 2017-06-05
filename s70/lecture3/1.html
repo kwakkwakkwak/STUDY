@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+*, body{margin:0;padding:0;list-style: none;}
+.todoList{width:500px;margin:50px auto;background-color:gray}
+.todoList header{padding:1%;line-height:1%;background-color:#ece2cc;}
+.todoList section{background-color:#eca1ac;}       
+.todoList .taskLists .taskList > li{float:left;text-align:center;padding:10px 1%}
+.todoList .taskLists .taskList > li:first-child{width:10%;}
+.todoList .taskLists .taskList > li:nth-child(2){width:52%;}
+.todoList .taskLists .taskList > li:nth-child(3){width:20%;}
+.todoList .taskLists .taskList > li:nth-child(4){width:10%;}
+.todoList .taskLists .taskList:hover{background-color:#8b91e0;cursor:pointer;}
+.todoList .taskLists .taskList:last-child{clear:both;overflow:hidden;content:"";}
+</style>
+<body>
+    <div class="todoList" >
+        <header>
+            <input type="text" id="todoTitle">
+            <input type="button" id="addBtn" value="ADD" onclick="TODOLIST.add()">
+        </header>
+        <section class="taskLists">
+            <ul id="show"></ul>
+        </section>
+    </div>
+</body>
+<script>
+
+    var TODOLIST = (function( inputId, showId ) {
+
+        var INPUT_ID = false;
+        var SHOW_ID = false;
+
+        // 초기화 함수로, replaceAll과 INPUT_ID, SHOW_ID 를 체크한다.
+        function init() {
+            if( checkID(inputId) === false || checkID(showId) === false ) {
+                throw Error("INPUT_ID, SHOW_ID 가 잘못되었습니다.");
+            }
+            INPUT_ID = inputId;
+            SHOW_ID = showId;
+
+            String.prototype.replaceAll = replaceAll;
+            controller.render();
+        }
+
+        // id가 제대로 들어왔는지를 확인한다.
+        function checkID( id ) {
+            return TARGET = document.getElementById( id ) || false;
+        }
+
+        // replace를 여러개 할때 사용한다. String.prototype에 붙여놓아서 string 객체면 다 사용가능하다.
+        var replaceAll = function( target, newText ) {
+            var TARGET = false, 
+                NEWTEXT = false;
+
+            if( typeof target === "string" 
+                && typeof newText === "string" ) {
+                    TARGET = target;
+                    NEWTEXT = newText;
+            }
+
+            if( TARGET === false || NEWTEXT === false ) {
+
+                warning( "replaceAll : Invalid target,newText value : " 
+                        + TARGET + target + "//" + NEWTEXT + newText );
+                return false;
+            }
+            return this.split( TARGET ).join( NEWTEXT );
+        }
+
+
+        // =========================================================== model =================================================================
+
+        // 1. 핵심 로직 만들기
+        var model = (function() {
+
+            const STATE_TYPE_TRUE = "!완료!";
+            const STATE_TYPE_FALSE = "진행";
+            const TASKS = [{ id:0, title:'타이틀', state:STATE_TYPE_TRUE}];
+
+            // TASKS 확인용 메소드
+            var show = function(){console.table(TASKS)};
+
+            // render를 위한 리턴함수, 값을 복사해서 리턴하므로 원본에 영향줄 수 없다.
+            var returnTASKS = function(){return TASKS.concat();}
+
+            //   1-1. addTitle
+            var addTask = (function(){
+                var id = TASKS.length;
+                return function( title ) {
+                    TASKS.push({ id:id, title:title, state:STATE_TYPE_FALSE });
+                    return id++;
+                }
+            })();
+        
+            var searchId = function( id ) {
+                var INDEX = TASKS.findIndex( task => task.id === id );
+                return ( INDEX > -1)? INDEX : false;
+            }
+
+            //   1-2. delTitle
+            var delTask = function( index ) {
+                TASKS.splice( index, 1);
+                return true;
+            }
+
+            //   1-3. changeState
+            var changeState = function( index ) {
+                var STATE = TASKS[index].state;
+
+                TASKS[index].state = (STATE === STATE_TYPE_FALSE)
+                                    ? STATE_TYPE_TRUE 
+                                    : STATE_TYPE_FALSE;
+                return true;
+            }
+
+            return {
+                // show : show,
+                returnTASKS : returnTASKS,
+                searchId : searchId,
+                addTask : addTask,
+                delTask : delTask,
+                changeState : changeState
+            }
+
+        })();
+
+
+
+        // 2. 화면 렌더링, 그외 메소드 만들기
+
+        // =========================================================== model 끝 =================================================================
+
+        // =========================================================== view =================================================================
+
+
+        // view는 화면 렌더링에 대한 것만 가지고 있음.
+        var view = (function() {
+            var TASK_TEMPLATE = `
+                <li onclick="TODOLIST.changeState( {{id}} )">
+                    <ul class="taskList">
+                    <li>{{id}}</li>
+                    <li>{{title}}</li>
+                    <li>{{state}}</li>
+                    <li>
+                        <input type="button" value="remove" 
+                        onclick="TODOLIST.del({{id}})">
+                    </li>
+                    </ul>
+                </li>`;
+            
+            function renderHTML() {
+                var TASKS = model.returnTASKS();
+                var CONTENT = "";
+
+                TASKS.forEach( task => {
+                CONTENT += TASK_TEMPLATE
+                    .replaceAll('{{id}}', "" + task.id)
+                    .replaceAll('{{title}}', task.title)
+                    .replaceAll('{{state}}', task.state);
+                });
+
+                document.getElementById(SHOW_ID).innerHTML = CONTENT;
+            }
+
+            function renderConsole() {
+                var TASKS = model.returnTASKS();
+                console.log("TODOLIST 현황");
+                TASKS.forEach( task => {
+                    console.log(`${task.state} -- ${task.title}`);
+                });
+            }
+
+            return {
+                render : { "html" : renderHTML, "console" : renderConsole }
+            }
+
+        })();
+
+        // =========================================================== view 끝 =================================================================
+
+        // =========================================================== controller =================================================================
+
+        // controller는 페이지에서 들어온 값을 확인하고 간단하게 확인하고 model이나 view의 메소드를 호출한다.
+        var controller = (function() {
+            const MODE_TYPE_HTML = "html";
+            const MODE_TYPE_CONSOLE = "console";
+            var MODE = MODE_TYPE_HTML;
+
+            var changeMode = function() {
+                MODE = ( MODE === MODE_TYPE_HTML )
+                        ? MODE_TYPE_CONSOLE 
+                        : MODE_TYPE_HTML;
+                render();
+            }
+
+            var render = function() {
+                view.render[MODE]();
+            }
+
+            var inputInit = function() {
+                var TARGET = document.getElementById(INPUT_ID);
+                TARGET.value = null;
+                TARGET.focus();
+            }
+
+            var add = function () {
+                var TITLE = document.getElementById(INPUT_ID).value;
+                model.addTask(TITLE);
+                render();
+                inputInit();
+            }
+
+            var del = function (id) {
+                event.stopPropagation();
+
+                var INDEX = model.searchId( id );
+                if( INDEX === false ) { return alert("없는 항목입니다."); }    
+
+                model.delTask( INDEX );
+                render();
+            }
+
+            var changeState = function(id) {
+        
+                var INDEX = model.searchId( id );
+                if( INDEX === false ) { return alert("없는 항목입니다."); } 
+
+                model.changeState( INDEX );
+                render();
+            }
+
+
+            return {
+                add : add,
+                del : del,
+                render : render,
+                changeState : changeState,
+                changeMode : changeMode
+            }
+        })();
+
+        // =========================================================== controller 끝 =================================================================
+
+        init();
+
+        return {
+            changeMode : controller.changeMode,
+            add : controller.add,
+            del : controller.del,
+            changeState : controller.changeState
+        }
+
+    })('todoTitle', 'show');
+
+</script>
+</html>
