@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        body {background:#ddd;}
+        #canvas {
+            position : absolute;
+            left : 0px;
+            top : 40px;
+            margin : 20px;
+            background : #fff;
+            border : thin inset rbga(100,150,230,0.5);
+            cursor:pointer;
+        }
+
+        #readout {
+            margin-top : 40px;
+            margin-left : 15px;
+            color : blue;
+        }
+    </style>
+</head>
+<body>
+    <h1>스프라이트 시트 인스펙터 : HTML</h1>
+    <div id="readout"></div>
+    <canvas id='canvas' width='1000' height='500'>
+        no support CANVAS
+    </canvas>
+</body>
+<script>
+    var canvas = document.getElementById('canvas'),
+        readout = document.getElementById('readout'),
+        context = canvas.getContext('2d'),
+        spritesheet = new Image();
+
+    // 함수 .....
+
+    function windowToCanvas(canvas, x, y) {
+        
+    }
+</script>
+</html>
