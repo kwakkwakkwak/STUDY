@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>함수 설계 능력 테스트
+</title>
+</head>
+<body>
+함수 설계 능력 테스트
+
+1. 영어 점수는 소수점 3자리수까지 올림
+2. 수학점수는 소수점 4자릿수 까지 올림
+3. 국어 점수는 소수점 1자리수 까지 올림
+
+영어 49.828592점
+수학 98.389947점
+국어 70.573814점
+일때 중앙의 화면과 동일한 결과가 나오는 프로그램을 작성하시오.
+
+</body>
+
+<script>
+
+    var score1 = {
+        english : 49.828592,
+        math : 98.389947,
+        korea : 70.573814
+    }
+
+    // argument는 기저 함수 만들때 유용하다고 한다.
+
+    function run( scores ) {
+        var subjects = {
+            english : { name : "영어", len : 3 },
+            math : { name : "수학", len : 4 },
+            korea : { name : "국어", len : 1 }
+        };
+        var average = averageScore(scores);
+
+        for( one in scores ) {
+            console.log( subjects[one].name 
+                + "(" + checkScore( scores[one] ) + ")" 
+                + " : " + up(scores[one], subjects[one].len) );
+        }
+        console.log( "평균은 " + up(average, 2) + "점 입니다. " );
+        console.log( checkF( scores ) );
+
+    }
+
+    function averageScore( scores ) {
+        var result = 0;
+        var cnt = 0;
+        for( one in scores ) {
+            result += scores[one];
+            cnt ++;
+        }
+        return result / cnt;
+    }
+
+    function isFailure() {
+        for( var i = 0; i < arguments.length; i++ ) {
+            if( arguments[i] < 50 ) return true;
+        }
+        return false;
+    }
+
+    var isFail = [20,60,70].some( one => one < 50 );
+
+    function checkScore( score ) {
+        var referScore = ['F', 'F', 'F', "F", "F", "E", "D", "C", "B", "A", "A"];
+        return referScore[ ~~(score/10) ];
+    };
+
+    function checkF( scores ) {
+        var result = "";
+        var cnt = 0;
+
+        for ( one in scores ) {
+            if( scores[one] < 50 ) cnt++;
+        }
+        result = cnt > 0 ? "낙제입니다." : "낙제가 아닙니다.";
+        return ( cnt + "과목이 F이므로 " + result );
+    }
+
+    function up( score, num ) {
+        var tens = Math.pow(10, num);
+        return Math.ceil(score * tens) / tens;
+    }
+
+</script>
+</html>
