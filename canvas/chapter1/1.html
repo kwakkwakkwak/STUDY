@@ -50,12 +50,24 @@ function drawGrid( color, stepx, stepy ) {
     ctx.restore();
 }
 
-function drawCircle( x, y, radius, fillColor, strokeColor, lineWidth ) {
+function drawCircle( target ) {
+    var x = target.x, 
+        y = target.y, 
+        startAngle = target.startAngle || 0,
+        endAngle = target.endAngle || 360,
+        clock = target.clock || false,
+        radius = target.radius,
+        fillColor = target.fillColor, 
+        strokeColor = target.strokeColor, 
+        lineWidth = target.lineWidth;
+
     ctx.save();
     // 그리드를 그리는 함수에서 맨 마지막에 끊긴 곳에서 맺음 하고 다시
     // 시작하기 위해서 beginPath를 사용한다. 그러지 않으면 선이 그어진다.
     ctx.beginPath();
-    ctx.arc( x, y, radius, 0, Math.PI * 2);
+    ctx.arc( x, y, radius, 
+             Math.PI / 180 * startAngle, 
+             Math.PI / 180 * endAngle, clock);
     ctx.fillStyle = fillColor;
     ctx.strokeStyle = strokeColor;
     ctx.lineWidth = (lineWidth || ctx.lineWidth);
@@ -121,52 +133,155 @@ function drawArchPillar( target ) {
     ctx.restore();
 }
 
-function drawLine() {
+function drawLine( target ) {
+
+    var x = target.x, 
+        y = target.y, 
+        angle = target.angle.angle, 
+        length = target.length, 
+        lineCap = target.lineCap,
+        strokeColor = target.strokeColor, 
+        lineWidth = target.lineWidth,
+        lengthXY = convertLength( angle, length );
+ 
+    ctx.save();
+    ctx.strokeStyle = (strokeColor || ctx.strokeStyle);
+    ctx.lineWidth = (lineWidth || ctx.lineWidth);
+    ctx.lineCap = (lineCap || ctx.lineCap);
+    ctx.beginPath();
+    ctx.moveTo( x, y );
+    ctx.lineTo( x+lengthXY.x, y+lengthXY.y );
+    ctx.stroke();
+    ctx.restore();
 
 }
+
+function drawRect( target ) {
+    var x = target.x,
+        y = target.y,
+        width = target.width,
+        height = target.height,
+        strokeColor = target.strokeColor,
+        lineWidth = target.lineWidth,
+        fillStyle = target.fillStyle;
+
+    ctx.save();
+    ctx.strokeStyle = (strokeColor || ctx.strokeStyle);
+    ctx.lineWidth = (lineWidth || ctx.lineWidth);
+    ctx.fillStyle = (fillStyle || ctx.fillStyle);
+    ctx.rect( x, y, width, height );
+    ctx.stroke();
+    ctx.fill();
+    ctx.restore();
+}
+
+function drawOtherRect( target ) {
+    var x = target.x,
+        y = target.y,
+        length = target.length,
+        width = target.width,
+        height = target.height,
+        strokeColor = target.strokeColor,
+        lineWidth = target.lineWidth,
+        fillStyle = target.fillStyle,
+        angle = target.angle.angle,
+        lengthXY = convertLength( angle, length );
+        
+
+    ctx.save();
+    drawCircle({'x':x, 'y':y, 'radius' : 1});
+    ctx.strokeStyle = (strokeColor || ctx.strokeStyle);
+    ctx.lineWidth = (lineWidth || ctx.lineWidth);
+    ctx.fillStyle = (fillStyle || ctx.fillStyle);
+    ctx.translate(-100,-100)
+    // ctx.translate(-canvas.width, -canvas.height); 
+    // ctx.transform()
+    ctx.rotate((Math.PI/180)*0); // rotate
+    ctx.rect( x, y, width, height );
+
+
+    // ctx.rotate( Math.PI / 180 * angle );
+    // ctx.rect( x+lengthXY.x/3, y+lengthXY.y, width, height );
+    ctx.stroke();
+    ctx.fill();
+    ctx.restore();
+}
+
+
+var bar = {
+    x : 470,
+    y : 400,
+    length : 100,
+    angle : {angle:0},
+    width : 10,
+    height : 100,
+    strokeColor : 'black',
+    lineWidth : 5,
+    fillStyle : 'white',
+}
+
+
 
 var armAngle = {angle:240};
 var armLength = 100;
 
-var arm1 = { x:350, 
-             y:400, 
-             angle:armAngle, 
-             length:armLength,
-             thickness:50, 
-             fillColor:'#DE9C29',
-             strokeColor:'black', 
-             lineWidth:7} ;
+var face = { x : 400, y : 300, radius : 100, fillColor : '#DE9C29', strokeColor : 'black', lineWidth : 6 }
 
-var arm2 = { x:470, 
-             y:400, 
-             angle:armAngle, 
-             length:armLength,
-             thickness:50, 
-             fillColor:'#DE9C29',
-             strokeColor:'black', 
-             lineWidth:7 };
+var arm1 = { x:350, y:400, angle:armAngle, length:armLength,thickness:50, fillColor:'#DE9C29',strokeColor:'black', lineWidth: 6 } ;
+var arm2 = { x:470, y:400, angle:armAngle, length:armLength,thickness:50, fillColor:'#DE9C29',strokeColor:'black', lineWidth: 6 };
 
-// drawGrid('lightgray', 10, 10);
+var ear1 = { x : 370, y : 220, radius : 25, fillColor:'#DE9C29', strokeColor:'black', lineWidth : 6 }
+var ear2 = { x : 460, y : 230, radius : 25, fillColor:'#DE9C29', strokeColor:'black', lineWidth : 6 }
+
+var eye1 = { x : 347, y : 250, radius : 5, fillColor:'black', strokeColor:'black', lineWidth : 3 }
+var eye2 = { x : 420, y : 250, radius : 5, fillColor:'black', strokeColor:'black', lineWidth : 3 }
+
+var eyeBrush1 = { x:335, y:230, angle:{angle:0}, length:30, lineCap:'round', fillColor:'black', strokeColor:'black', lineWidth:7 }
+var eyeBrush2 = { x:410, y:230, angle:{angle:0}, length:30, lineCap:'round', fillColor:'black', strokeColor:'black', lineWidth:7 }
+
+var nose = { x : 375, y : 267, radius : 6, fillColor:'black', strokeColor:'black', lineWidth : 3 }
+var nose_sub1 = { x : 367,  y : 282,  startAngle : 35, endAngle : 320, radius : 15,  fillColor:'white',  strokeColor:'black',  lineWidth : 6 }
+var nose_sub2 = { x : 383,  y : 282,  startAngle :230, endAngle : 130, radius : 15,  fillColor:'white',  strokeColor:'black',  lineWidth : 6 }
+
 
 function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawGrid( "lightgray", 10, 10 );
     drawArchPillar( arm1 );
-    drawCircle(400, 300, 100, '#DE9C29', 'black', 7);
+    drawCircle( ear1 );
+    drawCircle( ear2 );
+    drawCircle( face );
+    drawCircle( eye1 );
+    drawCircle( eye2 );
+    drawCircle( nose_sub1 );
+    drawCircle( nose_sub2 );
+    drawCircle( nose );
+    drawLine(eyeBrush1);
+    drawLine(eyeBrush2);
     drawArchPillar( arm2 );
-
+    drawOtherRect(bar);
 }
 
 render();
 
 var down = false;
-setInterval(function() {
-    if( armAngle.angle <= 180 ) { down = false; }
+// setInterval(function() {
+//     if( armAngle.angle <= 200 ) { down = false; }
+//     if( armAngle.angle >= 240 ) { down = true; }
+
+//     down ? armAngle.angle-=2 : armAngle.angle+=2 ;
+//     render();
+
+// }, 1000/60);
+
+function animate() {
+    requestAnimationFrame(animate);
+    if( armAngle.angle <= 200 ) { down = false; }
     if( armAngle.angle >= 240 ) { down = true; }
 
-    down ? armAngle.angle-- : armAngle.angle++ ;
+    down ? armAngle.angle-=2 : armAngle.angle+=2 ;
     render();
-
-}, 1000/60);
-
+}
+// animate();
 </script>
 </html>

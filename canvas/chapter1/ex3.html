@@ -10,7 +10,7 @@
         #canvas {
             position : absolute;
             left : 0px;
-            top : 40px;
+            top : 120px;
             margin : 20px;
             background : #fff;
             border : thin inset rbga(100,150,230,0.5);
@@ -26,12 +26,18 @@
 </head>
 <body>
     <h1>스프라이트 시트 인스펙터 : HTML</h1>
-    <div id="readout"></div>
+    <div id="readout">1123123</div>
     <canvas id='canvas' width='1000' height='500'>
         no support CANVAS
     </canvas>
 </body>
 <script>
+    /* 
+        canvas : 캔버스 영역
+        readout : 좌표 찍어주는 영역
+        spritesheet : 이미지 태그를 만들어준다. 즉 HTMLImageElement를 생성한다.
+    
+    */
     var canvas = document.getElementById('canvas'),
         readout = document.getElementById('readout'),
         context = canvas.getContext('2d'),
@@ -39,8 +45,84 @@
 
     // 함수 .....
 
+    /* 캔버스의 해당 좌표를 리턴한다. */
     function windowToCanvas(canvas, x, y) {
-        
+        var bbox = canvas.getBoundingClientRect();
+        return {
+            x : x - bbox.left * ( canvas.width / bbox.width ),
+            y : y - bbox.top * ( canvas.height / bbox.height )
+        };
     }
+
+    /* 수평선이 있는 배경을 그린다. */
+    function drawBackground() {
+        var VERTICAL_LINE_SPACING = 10,
+            i = context.canvas.height;
+
+        // 겹쳐지지 않도록 클리어 해준다.
+        context.clearRect( 0, 0, canvas.width, canvas.height );
+        context.strokeStyle = 'lightgray';
+        context.lineWidth = 0.5;
+
+        // 뒷 배경의 회색 라인을 그려주는 실질적인 코드
+        while( i > VERTICAL_LINE_SPACING * 4 ) {
+            context.beginPath();
+            context.moveTo( 0, i );
+            context.lineTo( context.canvas.width, i );
+            context.stroke();
+            i -= VERTICAL_LINE_SPACING;
+        }
+    }
+
+    function drawSpritesheet() {
+        // drawImage : 한곳에서 저장된 이미지의 일부나 전부를 다른곳에 복사가능, 저장된 이미지 전첼르 캔버스에 그린다.
+        context.drawImage( spritesheet, 0, 0 );
+    }
+
+    function drawGuidelines( x, y ) {
+        context.strokeStyle = 'rgba( 0, 0, 230, 0.8 )';
+        context.lineWidth = 0.5;
+        drawVerticalLine( x );
+        drawHorizontalLine( y );
+    }
+
+    function updateReadout( x, y ) {
+        readout.innerText = `( ${x.toFixed(0)} , ${y.toFixed(0)} )`;
+    }
+
+    function drawHorizontalLine( y ) {
+        context.beginPath();
+        context.moveTo( 0, y + 0.5 );
+        context.lineTo( context.canvas.width, y + 0.5 );
+        context.stroke();
+    }
+
+    function drawVerticalLine( x ) {
+        context.beginPath();
+        context.moveTo( x + 0.5, 0);
+        context.lineTo( x + 0.5, context.canvas.height );
+        context.stroke();
+    }
+
+    // 이벤트 핸들러 ............................
+    canvas.onmousemove = function( e ) {
+        // 마우스 무브가 생기면 해당 좌표를 받아온다.
+        var loc = windowToCanvas( canvas, e.clientX, e.clientY );
+
+        // 
+        drawBackground();
+        drawSpritesheet();
+        drawGuidelines( loc.x, loc.y );
+        updateReadout( loc.x, loc.y );
+    }
+
+    // 초기화 ..................................
+    spritesheet.src = 'running-sprite-sheet.png';
+    spritesheet.onload = function( e ) {
+        drawSpritesheet();
+    };
+
+    drawBackground();
+
 </script>
 </html>
