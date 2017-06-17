@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+<script>
+    var Array2 = function() {
+        this.length = 0;
+    }
+    
+    Array2.prototype.push = function(value) {
+        this[this.length] = value;
+        this.length += 1;
+    }
+    
+    Array2.prototype.join = function(value) {
+        var temp = "";
+        if( this.length === 0 ) return temp;
+
+        for( var i = 0; i < this.length-1; i++ ) {
+            temp += this[i] + value;
+        }
+        temp += this[i];
+        return temp;
+    }
+    
+    Array2.prototype.pop = function() {
+        if( this.length === 0 ) return;
+
+        this.length--;
+        var result = this[this.length];
+        delete this[this.length];
+        return result;
+    }
+
+    // 114 키로바이트 이상의 대규모 배열에서는 v8도 엄청 느려진다.
+    Array2.prototype.shift = function() {   // 대용량 처리에는 shift에도 좋지 않다.
+        if( this.length === 0 ) return;
+        
+        var result = this[0];
+        for( var i = 0; i < this.length-1; i++ ) {
+            this[i] = this[i+1];
+        }
+        
+        // this.length--;
+        // delete this[this.length];
+
+        this.pop(); //<=이것도 가능
+        return result;
+    }
+
+
+    // var arr = [];
+    var arr = new Array2();
+    arr.push("Park");
+    arr.push("Shin");
+    arr.push("Kim");
+
+    var arrJoin = arr.join(',');
+    console.log('arr.join() : ', arrJoin);
+    console.log('arr.length : ', arr.length);
+
+    var arrPop = arr.pop();
+    var arrJoin = arr.join(',');
+
+    console.log("arr.pop() : ", arrPop)
+    console.log("arr.join() : ", arrJoin)
+    console.log("arr.length : ", arr.length)
+
+    var arrShift = arr.shift();
+    var arrJoin = arr.join(',');
+
+    console.log('arr.shift() : ', arrShift);
+    console.log('arr.join() : ', arrJoin);
+    console.log('arr.length : ', arr.length);
+
+
+
+
+// var t1 = new Array2();
+// t1.push(111);
+// t1.push(222);
+// t1.push(333);
+
+
+</script>
+</html>
