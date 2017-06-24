@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    1차원의 좌표계가 있다.
+    여러종류의 점포들이 있는데, 모든 종류의 점포들을 가장 가깝게 갈수 잇는 땅이 가장 가치가 높다.
+    해당 땅이 좌표를구하는 함수를 작성하세요.
+
+    [ 까페&마켓, ,  피씨룸,  마켓, 까페, 피씨룸]
+</body>
+<script>
+    var SHOP_TYPE_MARKET = 1;
+    var SHOP_TYPE_CAFE = 2;
+    var SHOP_TYPE_PC_ROOM = 3;
+    var SHOP_TYPE_LIBRARY = 4;
+    var SHOP_TYPE_MC = 5;
+
+    func([
+        [-100, SHOP_TYPE_MARKET],
+        [-10, SHOP_TYPE_MARKET],
+        [0, SHOP_TYPE_MARKET],
+        [1, SHOP_TYPE_MARKET],
+        [2, SHOP_TYPE_MARKET]
+    ]);
+
+    func([
+        [-2, SHOP_TYPE_MARKET],
+        [0, SHOP_TYPE_PC_ROOM],
+        [-1, SHOP_TYPE_CAFE],
+        [1, SHOP_TYPE_LIBRARY],
+        [2, SHOP_TYPE_MC]
+    ]);
+
+    func([
+        [0, SHOP_TYPE_MARKET],
+        [6, SHOP_TYPE_CAFE],
+        [7, SHOP_TYPE_PC_ROOM],
+        [0, SHOP_TYPE_CAFE],
+        [1, SHOP_TYPE_PC_ROOM],
+        [5, SHOP_TYPE_MARKET]
+    ]);
+
+    func([
+        [0, SHOP_TYPE_PC_ROOM],
+        [1, SHOP_TYPE_CAFE],
+        [2, SHOP_TYPE_LIBRARY],
+        [3, SHOP_TYPE_MARKET],
+        [4, SHOP_TYPE_CAFE],
+        [5, SHOP_TYPE_PC_ROOM],
+        [6, SHOP_TYPE_LIBRARY],
+        [7, SHOP_TYPE_MC]
+    ]);
+
+    function func( arr ) {
+        var temp = {};
+        var check = 0;
+        var tempSum = 0;
+        var onePoint = 0;
+        var result = arr.map( (one, index) => {
+            tempSum = 0;
+            temp = {};
+            onePoint = one[0];
+            for( var i = 0; i < arr.length; i++) {
+                var len = Math.abs(onePoint - arr[i][0]);
+                if( temp[arr[i][1]] === undefined ) {
+                    temp[arr[i][1]] = len;
+                } else {
+                    temp[arr[i][1]] = temp[arr[i][1]] < len ? temp[arr[i][1]] : len;
+                }
+            }
+            for( it in temp ) {
+                tempSum += temp[it]*1;
+            }
+            return [one[0], tempSum];
+        });
+        console.table(result);
+    }
+
+
+</script>
+</html>

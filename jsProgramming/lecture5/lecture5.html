@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+<script>
+// 상태와 그리는 것을 별개로 해야 한다. 원본은 유지해야 한다.
+// 총 5개의 맵이 있어야 한다.
+
+const map1 = [
+    [0,0,0,9,0,],
+    [0,9,0,0,0,],
+    [0,0,0,0,0,],
+    [0,0,0,0,9,],
+    [9,0,0,0,0,]
+];
+
+// 키이벤트에 따라서 바뀐다.
+
+// 캐릭터 상태 => 1. row, 2. col, 3. check B , 4. 이동 상하좌우
+var player = { "row" : 0, "col" : 0 };
+var mapObject = {0:"[ ]", 9:"[B]", "*" : "^_^"};
+
+
+
+function go( arrow ) {
+    switch ( arrow ) {
+        case 37: left(); refreshDraw();break;
+        case 38: up(); refreshDraw(); break;
+        case 39: right(); refreshDraw(); break;
+        case 40: down(); refreshDraw(); break;
+    }
+}
+
+function isBlock(row, col) {
+    return result = map1[row][col] === 9;
+}
+
+function down() {
+    player["row"] !== 4 && !isBlock(player["row"]+1, player["col"]) && player["row"]++;
+    
+    // if (player["row"] === 4 ) return;
+    // if (isBlock(player["row"]+1, player["col"])) return;
+
+    // player["row"] += 1;
+}
+
+function up() {
+    player["row"] !== 0 && !isBlock(player["row"]-1, player["col"]) && player["row"]--;
+
+    // if (player["row"] === 0 ) return;
+    // if (isBlock(player["row"]-1, player["col"])) return;
+
+    // player["row"] -= 1;
+}
+
+function left() {
+    player["col"] !== 0 && !isBlock(player["row"], player["col"]-1) && player["col"]--;
+
+    // if( player["col"] === 0 ) return;
+    // if (isBlock(player["row"], player["col"]-1)) return;
+
+    // player["col"] -= 1;    
+}
+
+function right() {
+    player["col"] !== 4 && !isBlock(player["row"], player["col"]+1) && player["col"]++;
+
+    // if( player["col"] === 4 ) return;
+    // if (isBlock(player["row"], player["col"]+1)) return;
+
+    // player["col"] += 1;    
+}
+
+function draw( field ) {
+    field.forEach( x=> console.log( x.map( _=>mapObject[_] ).join(" ") ) );
+}
+
+function refreshDraw() {
+    var targetMap = changePlayer();
+    console.clear();
+    draw(targetMap);
+}
+
+function changePlayer() {
+    var temp = map1.map( one=>one.concat() );
+    temp[player["row"]][player["col"]] = "*";
+    return temp;
+}
+
+function init() {
+    draw(changePlayer());
+    window.addEventListener('keydown', e=>go(e.keyCode));
+}
+
+init();
+
+</script>
+</html>

@@ -22,6 +22,7 @@
     Array2.prototype.join = function(value) {
         var temp = "";
         if( this.length === 0 ) return temp;
+        if( value === undefined ) value = "";
 
         for( var i = 0; i < this.length-1; i++ ) {
             temp += this[i] + value;
@@ -37,6 +38,10 @@
         var result = this[this.length];
         delete this[this.length];
         return result;
+    }
+
+    Array2.prototype.toString = function() {
+
     }
 
     // 114 키로바이트 이상의 대규모 배열에서는 v8도 엄청 느려진다.
@@ -56,8 +61,8 @@
     }
 
 
-    // var arr = [];
     var arr = new Array2();
+    // var arr = [];
     arr.push("Park");
     arr.push("Shin");
     arr.push("Kim");
