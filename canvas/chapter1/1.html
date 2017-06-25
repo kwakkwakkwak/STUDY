@@ -7,7 +7,7 @@
     <title>Document</title>
 </head>
 <body>
-    <canvas id="canvas" width="600" height="600"></canvas>
+    <canvas id="canvas" width="600" height="500"></canvas>
 </body>
 <style>
 #canvas{border:1px solid black;}
@@ -50,6 +50,30 @@ function drawGrid( color, stepx, stepy ) {
     ctx.restore();
 }
 
+
+
+var tOne = {
+    x: 100, 
+    y: 100,
+    radius : 5,
+    d : {x:5, y:5}
+}
+
+var tOne2 = {
+    x: 400, 
+    y: 400,
+    radius : 5,
+    d : {x:-5, y:5}
+}
+
+var tOne3 = {
+    x: 300, 
+    y: 300,
+    radius : 5,
+    d : {x:5, y:-5}
+}
+
+
 function drawCircle( target ) {
     var x = target.x, 
         y = target.y, 
@@ -57,9 +81,9 @@ function drawCircle( target ) {
         endAngle = target.endAngle || 360,
         clock = target.clock || false,
         radius = target.radius,
-        fillColor = target.fillColor, 
-        strokeColor = target.strokeColor, 
-        lineWidth = target.lineWidth;
+        fillColor = target.fillColor || ctx.fillColor, 
+        strokeColor = target.strokeColor || ctx.strokeColor, 
+        lineWidth = target.lineWidth || 1;
 
     ctx.save();
     // 그리드를 그리는 함수에서 맨 마지막에 끊긴 곳에서 맺음 하고 다시
@@ -75,6 +99,17 @@ function drawCircle( target ) {
     ctx.stroke();
 
     ctx.restore();
+}
+
+function circleMove( target ) {
+    if(target.x - target.d.x === 0 ){ target.d.x = -target.d.x}
+    if(target.x - target.d.x >= canvas.width ){ target.d.x = -target.d.x}
+    if(target.y - target.d.y === 0 ){ target.d.y = -target.d.y}
+    if(target.y - target.d.y >= canvas.height ){ target.d.y = -target.d.y}
+
+    target.x -= target.d.x;
+    target.y -= target.d.y
+    drawCircle( target );
 }
 
 function convertLength( angle, length ) {
@@ -189,41 +224,30 @@ function drawOtherRect( target ) {
         
 
     ctx.save();
-    drawCircle({'x':x, 'y':y, 'radius' : 1});
+    var width1 = x;
+    var height1 = y;
+    var lenXY =convertLength(angle, length);
+    ctx.translate(width1, height1);
+    drawCircle({'x':x - width1, 'y':y-height1, 'radius' : 1});
     ctx.strokeStyle = (strokeColor || ctx.strokeStyle);
     ctx.lineWidth = (lineWidth || ctx.lineWidth);
     ctx.fillStyle = (fillStyle || ctx.fillStyle);
-    ctx.translate(-100,-100)
-    // ctx.translate(-canvas.width, -canvas.height); 
-    // ctx.transform()
-    ctx.rotate((Math.PI/180)*0); // rotate
-    ctx.rect( x, y, width, height );
+    ctx.rotate((Math.PI/180)*angle); // rotate
+    ctx.rect( height, 0, width, height );
 
-
-    // ctx.rotate( Math.PI / 180 * angle );
-    // ctx.rect( x+lengthXY.x/3, y+lengthXY.y, width, height );
+    // console.log(angle, lenXY );
     ctx.stroke();
     ctx.fill();
     ctx.restore();
 }
 
 
-var bar = {
-    x : 470,
-    y : 400,
-    length : 100,
-    angle : {angle:0},
-    width : 10,
-    height : 100,
-    strokeColor : 'black',
-    lineWidth : 5,
-    fillStyle : 'white',
-}
-
-
 
 var armAngle = {angle:240};
 var armLength = 100;
+
+var bar = { x : 470, y : 400, length : 100, angle : armAngle, width : 10, height : 100, strokeColor : 'black', lineWidth : 5, fillStyle : 'white',}
+var bar2 = { x : 350, y : 400, length : 100, angle : armAngle, width : 10, height : 100, strokeColor : 'black', lineWidth : 5, fillStyle : 'white',}
 
 var face = { x : 400, y : 300, radius : 100, fillColor : '#DE9C29', strokeColor : 'black', lineWidth : 6 }
 
@@ -243,10 +267,29 @@ var nose = { x : 375, y : 267, radius : 6, fillColor:'black', strokeColor:'black
 var nose_sub1 = { x : 367,  y : 282,  startAngle : 35, endAngle : 320, radius : 15,  fillColor:'white',  strokeColor:'black',  lineWidth : 6 }
 var nose_sub2 = { x : 383,  y : 282,  startAngle :230, endAngle : 130, radius : 15,  fillColor:'white',  strokeColor:'black',  lineWidth : 6 }
 
+var back1 = {
+    startXY : {x: 320, y: 500},
+    con1XY : {x: 320, y: 450},
+    con2XY : {x: 320, y: 405},
+    endXY : {x: 270, y: 350}
+}
+
+var back2 = {
+    startXY : {x: 520, y: 500},
+    con1XY : {x: 520, y: 450},
+    con2XY : {x: 520, y: 405},
+    endXY : {x: 470, y: 350}
+}
+
+
 
 function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawGrid( "lightgray", 10, 10 );
+    circleMove(tOne);
+    circleMove(tOne2);
+    circleMove(tOne3);
+    drawOtherRect(bar2);
     drawArchPillar( arm1 );
     drawCircle( ear1 );
     drawCircle( ear2 );
@@ -258,9 +301,50 @@ function render() {
     drawCircle( nose );
     drawLine(eyeBrush1);
     drawLine(eyeBrush2);
-    drawArchPillar( arm2 );
     drawOtherRect(bar);
+    drawArchPillar( arm2 );
+    bCurve(back1);
+    bCurve(back2);
 }
+
+// - c1x : 첫 번째 곡선을 만드는 컨트롤 x위치
+// - c1y : 첫 번째 곡선을 만드는 컨트롤 y위치
+// - c2x : 두 번째 곡선을 만드는 컨트롤 x위치
+// - c2y : 두 번째 곡선을 만드는 컨트롤 y위치
+// - x : 곡선이 끝나는 x위치
+// - y : 곡선이 끝나는 y위치
+
+function bCurve( target ) {
+    var sX = target.startXY.x,
+        sY = target.startXY.y,
+        eX = target.endXY.x,
+        eY = target.endXY.y,
+        con1X = target.con1XY.x,
+        con1Y = target.con1XY.y,
+        con2X = target.con2XY.x,
+        con2Y = target.con2XY.y;
+
+    // 3차 베지어 곡선을 그린다.
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(sX, sY);
+    ctx.bezierCurveTo(con1X, con1Y, con2X, con2Y, eX, eY);
+    ctx.stroke();
+    
+    // 제어점을 그린다.
+    ctx.strokeStyle = ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+    ctx.beginPath();
+    ctx.moveTo(sX, sY);
+    ctx.lineTo(con1X, con1Y);
+    ctx.lineTo(con2X, con2Y);
+    ctx.lineTo(eX, eY);
+    ctx.stroke();
+    ctx.fillRect(con1X-2, con1Y-2, 4, 4);
+    ctx.fillRect(con2X-2, con2Y-2, 4, 4);
+    ctx.restore();
+    
+}
+
 
 render();
 
@@ -282,6 +366,6 @@ function animate() {
     down ? armAngle.angle-=2 : armAngle.angle+=2 ;
     render();
 }
-// animate();
+animate();
 </script>
 </html>
