@@ -50,29 +50,69 @@ function drawGrid( color, stepx, stepy ) {
     ctx.restore();
 }
 
+// 위치, 방향, 가속도를 전부 랜덤으로 하는 갯수 ballNum인 공을 만든다.
+function makeCircle(ballNum, dRange, rRange) {
+    var result = [];
+    var r;
+    var color;
+    for(var i = 0; i < ballNum; i++) {
+        color = returnRGB();
+        r = random(rRange);
+        result.push({
+            radius: r,
+            x: random(canvas.width-r*2)+r,
+            y: random(canvas.height-r*2)+r,
+            fillColor: color,
+            strokeColor: color,
+            d: {x: bothRandom(dRange), y: bothRandom(dRange)}
+        });
+    }
+    return result;
+}
 
+var circles = makeCircle(200, 2, 20);
+
+function random(range) {
+    return ~~(Math.random() * (range+1) );
+}
+
+// range입력해 주면 -range ~ +range 까지 된다. 소수2자리까지만
+function bothRandom(range, digit) {
+    digit = digit || 2;
+    return +(Math.random() * (range * 2) - range).toFixed(digit);
+}
 
 var tOne = {
-    x: 100, 
-    y: 100,
-    radius : 5,
-    d : {x:5, y:5}
+    x: 100, y: 100,
+    radius : 5, d : {x:5, y:5}
 }
 
 var tOne2 = {
-    x: 400, 
-    y: 400,
-    radius : 5,
-    d : {x:-5, y:5}
+    x: 400, y: 400,
+    radius : 5, d : {x:-5, y:5}
 }
 
 var tOne3 = {
-    x: 300, 
-    y: 300,
-    radius : 5,
-    d : {x:5, y:-5}
+    x: 300, y: 300,
+    radius : 5, d : {x:5, y:-5}
 }
 
+function returnRGB() {
+    // var result =  "#" +  이렇게 짜면 5자리가 나올수 있어 검은색이 많아진다.
+    //     (~~(Math.random() * 256)).toString(16) + 
+    //     (~~(Math.random() * 256)).toString(16) + 
+    //     (~~(Math.random() * 256)).toString(16);
+
+    var code = "0123456789abcdef";
+    var result =  "#";
+    result += code[~~(Math.random() * 16)];
+    result += code[~~(Math.random() * 16)];
+    result += code[~~(Math.random() * 16)];
+    result += code[~~(Math.random() * 16)];
+    result += code[~~(Math.random() * 16)];
+    result += code[~~(Math.random() * 16)];
+    return result;
+}
 
 function drawCircle( target ) {
     var x = target.x, 
@@ -102,10 +142,11 @@ function drawCircle( target ) {
 }
 
 function circleMove( target ) {
-    if(target.x - target.d.x === 0 ){ target.d.x = -target.d.x}
-    if(target.x - target.d.x >= canvas.width ){ target.d.x = -target.d.x}
-    if(target.y - target.d.y === 0 ){ target.d.y = -target.d.y}
-    if(target.y - target.d.y >= canvas.height ){ target.d.y = -target.d.y}
+    var thick = target.radius;
+    if(target.x - target.d.x <= 0 + thick ){ target.d.x = -target.d.x}
+    if(target.x - target.d.x >= canvas.width - thick ){ target.d.x = -target.d.x}
+    if(target.y - target.d.y <= 0 + thick ){ target.d.y = -target.d.y}
+    if(target.y - target.d.y >= canvas.height - thick ){ target.d.y = -target.d.y}
 
     target.x -= target.d.x;
     target.y -= target.d.y
@@ -268,10 +309,10 @@ var nose_sub1 = { x : 367,  y : 282,  startAngle : 35, endAngle : 320, radius : 
 var nose_sub2 = { x : 383,  y : 282,  startAngle :230, endAngle : 130, radius : 15,  fillColor:'white',  strokeColor:'black',  lineWidth : 6 }
 
 var back1 = {
-    startXY : {x: 320, y: 500},
-    con1XY : {x: 320, y: 450},
-    con2XY : {x: 320, y: 405},
-    endXY : {x: 270, y: 350}
+    startXY : {x: 340, y: 500},
+    con1XY : {x: 340, y: 450},
+    con2XY : {x: 340, y: 405},
+    endXY : {x: 290, y: 350}
 }
 
 var back2 = {
@@ -285,26 +326,28 @@ var back2 = {
 
 function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawGrid( "lightgray", 10, 10 );
-    circleMove(tOne);
-    circleMove(tOne2);
-    circleMove(tOne3);
-    drawOtherRect(bar2);
-    drawArchPillar( arm1 );
-    drawCircle( ear1 );
-    drawCircle( ear2 );
-    drawCircle( face );
-    drawCircle( eye1 );
-    drawCircle( eye2 );
-    drawCircle( nose_sub1 );
-    drawCircle( nose_sub2 );
-    drawCircle( nose );
-    drawLine(eyeBrush1);
-    drawLine(eyeBrush2);
-    drawOtherRect(bar);
-    drawArchPillar( arm2 );
-    bCurve(back1);
-    bCurve(back2);
+    // drawGrid( "lightgray", 10, 10 );
+    // circleMove(tOne);
+    // circleMove(tOne2);
+    // circleMove(tOne3);
+    circles.forEach(one => circleMove(one));
+    
+    // drawOtherRect(bar2);
+    // drawArchPillar( arm1 );
+    // drawCircle( ear1 );
+    // drawCircle( ear2 );
+    // drawCircle( face );
+    // drawCircle( eye1 );
+    // drawCircle( eye2 );
+    // drawCircle( nose_sub1 );
+    // drawCircle( nose_sub2 );
+    // drawCircle( nose );
+    // drawLine(eyeBrush1);
+    // drawLine(eyeBrush2);
+    // drawOtherRect(bar);
+    // drawArchPillar( arm2 );
+    // bCurve(back1);
+    // bCurve(back2);
 }
 
 // - c1x : 첫 번째 곡선을 만드는 컨트롤 x위치
