@@ -1,0 +1,163 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>CodeSpitz71-1</title>
+</head>
+<body>
+<section id="data"></section>
+<script>
+const Table = (_=>{
+	// Symbol 무엇일까?
+	const Private = Symbol();
+	// class가 무엇일까?
+	return class{
+		// 생성자
+		constructor(parent){
+			if(typeof parent != 'string' || !parent) throw "invalid param";
+			// Symbol Private를 클로져로 사용
+			this[Private] = {parent, title:null, header:null, items:null};
+		}
+		async load(url){
+			// async, await는 무엇일까? fetch는 무엇일까?
+			// promise는 무엇일까?
+			const response = await fetch(url);
+			if(!response.ok) throw "invaild response";
+			const json = await response.json();
+			const {title, header, items} = json;
+			if(!items.length) throw "no items";
+			// Object.assign은 무엇일까?
+			Object.assign(this[Private], {title, header, items});
+			this._render();
+		}
+		_render(){
+			const fields = this[Private];
+			const parent = document.querySelector(fields.parent);
+			if(!parent) throw "invaild parent";
+			if(!fields.items || !fields.items.length){
+				parent.innerHTML = "no data";
+				return;
+			}else parent.innerHTML = "";
+			const table = document.createElement("table");
+			const caption = document.createElement("caption");
+			caption.innerHTML = fields.title;
+			table.appendChild(caption);
+			table.appendChild(
+				fields.header.reduce((thead, data)=>{
+					const th = document.createElement("th");
+					th.innerHTML = data;
+					thead.appendChild(th);
+					return thead;
+				}, document.createElement("thead"))
+			);
+			// reduce란 무엇인가?
+			parent.appendChild(
+				fields.items.reduce((table, row)=>{
+					table.appendChild(
+						row.reduce((tr, data)=>{
+							const td = document.createElement("td");
+							td.innerHTML = data;
+							tr.appendChild(td);
+							return tr;
+						}, document.createElement("tr"))
+					);
+					return table;
+				}, table)
+			);
+		}
+	};
+})();
+const table = new Table("#data");
+table.load("71_1.json");
+
+
+
+
+
+
+
+//  const Table =(_=>{
+//         // static private
+//         const Private = Symbol();
+//         return class {
+//             // constructor
+//             constructor(parent) {
+//                 if (typeof parent !== 'string' || !parent) throw "invalid param";
+//                 this[Private] = {parent};
+//             }
+//             // public methods
+
+//             /* load(url) {
+//                 fetch(url).then(response=>{
+//                     return response.json();
+//                 }).then(json=>{
+//                     this._render();
+//                 });
+//             } */
+
+//             async load(url) {
+//                 const response = await fetch(url);
+//                 if(!response.ok) throw "invalid response";
+
+//                 const json = await response.json();
+//                 const {title, header, items} = json;
+//                 if(!items.length) throw "no items";
+
+//                 Object.assign(this[Private], {title, header, items});
+//                 this._render();
+//             }
+//             // private methods
+//             _render() {
+//                 const fields = this[Private], 
+//                       parent = document.querySelector(fields.parent);
+
+//                 // 부모, 데이터 체크
+//                 if(!parent) throw "invalid parent";
+//                 if(!fields.items || !fields.items.length) {
+//                     parent.innerHTML = "no data";
+//                     return;
+//                 } else parent.innerHTML = "";
+
+//                 // table 생성
+//                 // 캡션을 title로
+//                 const table = document.createElement("table"),
+//                       caption = document.createElement("caption");
+                
+//                 caption.innerHTML = fields.title;
+//                 table.appendChild(caption);
+                
+//                 // header를 thead로
+//                 table.appendChild(
+//                     fields.header.reduce((thead, data)=>{
+//                         const th = document.createElement("th");
+//                         th.innerHTML = data;
+//                         thead.appendChild(th);
+//                         return thead;
+//                     }, document.createElement("thead"))
+//                 );
+
+//                 // items를 tr로
+//                 // 부모에 table 삽입
+//                 parent.appendChild(
+//                     fields.items.reduce((table, row)=>{
+//                         table.appendChild(
+//                             row.reduce((tr, data)=>{
+//                                 const td = document.createElement("td");
+//                                 td.innerHTML = data;
+//                                 tr.appendChild(td);
+//                                 return tr;
+//                             }, document.createElement("tr"))
+//                         );
+//                         return table;
+//                     }, table)
+//                 );
+
+//             }
+//         }
+//     })();
+
+//     const table = new Table("#data");
+//     table.load("71_1.json");
+</script>
+</body>
+</html>

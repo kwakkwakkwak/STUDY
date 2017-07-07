@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+<script>
+    // es6에서는 var, function이라는 키워드를 쓰면 안된다.
+    // let, const가 var를 대체한다.
+    // class메소드이거나 arrow를 쓴다.
+
+    // es3.1 호환코드로 하면 느려진다.
+    const Table = (_=>{
+        // static private
+        const Private = Symbol();
+        const render = Symbol();
+        // const는 선언과 함께 초기화가 필요하니
+        return class {
+            constructor(parent) {
+                // throw는 런타임에서 기본적인 안전 장치이다.
+                if(typeof parent != 'string' || !parent) throw "invalid param";
+                this[Private] = {parent};   // symbol 대문자
+            }
+            load(url) {
+                fetch(url).then(response=>{ 
+                    //fetch는 프라미스 형태로 값을 반환한다.
+                    //ajax를 대체하는 것으로 콜백형태로 반환.
+                    return response.json();
+                }).then(json=>{
+                    // this._render();
+                    this[render]();
+                });
+
+            }
+            _render() {
+
+            }
+            // constructor
+            // public methods
+            // private methods
+        }
+    })();
+
+    const table = new Table("#data");
+    table.load("71_1.json");
+    // 무엇을 사용할지 알고, 그에 맞는 클래스는 짜주는게 표준적이다.
+
+
+
+    /*
+    async : promise ..
+    await : then을 기다려주는 코드를 만들어준다.
+    2017스펙에서는 함수의 인자에는 await가 안 먹는다.
+
+    */
+</script>
+</html>
