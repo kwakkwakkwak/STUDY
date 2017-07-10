@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvas" width="1200" height="700"></canvas>
+</body>
+<style>
+    body{padding:0;margin:0;overflow:hidden;width:100%}
+/*#canvas{border:1px solid black;}*/
+</style>
+
+<script>
+
+let canvas = document.getElementById('canvas');
+let ctx = canvas.getContext('2d');
+
+canvas.height = window.innerHeight;
+canvas.width = window.innerWidth;
+
+
+let mousePointer = {x:0 , y:0}
+
+// 마우스 오버.
+canvas.addEventListener('mousemove',e=>{
+    mousePointer.x = e.offsetX;
+    mousePointer.y = e.offsetY;
+});
+
+
+// 위치, 방향, 가속도를 전부 랜덤으로 하는 갯수 ballNum인 공을 만든다.
+function makeCircle(ballNum, dRange, rRange) {
+    let result = [];
+    let r;
+    let color;
+    for(let i = 0; i < ballNum; i++) {
+        color = returnRGB();
+        r = random(rRange);
+        result.push(
+            new Circle({
+            radius: r,
+            x: random(canvas.width-r*2)+r,
+            y: random(canvas.height-r*2)+r,
+            fillColor: color,
+            strokeColor: color,
+            d: {x: bothRandom(dRange), y: bothRandom(dRange)}
+        }));
+    }
+    return result;
+}
+
+
+class Circle {
+    constructor(target) {
+        this.radius = target.radius;
+        this.x = target.x;
+        this.y = target.y;
+        this.cRadius = this.radius;
+        this.fillStyle = target.fillColor;
+        this.strokeStyle = target.strokeColor;
+        this.d = target.d;
+        this.startAngle = target.startAngle || 0;
+        this.endAngle = target.endAngle || 360;
+        this.lineWidth = target.lineWidth || 1;
+        this.clock = target.clock || false;
+    }
+    move(){
+        if(this.x <= this.radius + this.d.x || this.x >= canvas.width + this.d.x - this.radius) {this.d.x = -this.d.x}
+        if(this.y <= this.radius + this.d.y || this.y >= canvas.height + this.d.y - this.radius) {this.d.y = -this.d.y}
+        
+        this.x -= this.d.x;
+        this.y -= this.d.y;
+    }
+
+    crash(){
+        let circleLength = circles.length,
+            twoLength = 0,
+            oneCircle,
+            thisSpeed, oneCircleSpeed;
+
+        for(var i = 0; i < circleLength; i++) {
+            if(circles[i] === this) continue;
+
+            oneCircle = circles[i];
+            thisSpeed = twoPointLength(this.d.x, this.d.y, 0, 0);
+            oneCircleSpeed = twoPointLength(oneCircle.d.x, oneCircle.d.y, 0, 0);
+
+            twoLength = twoPointLength(this.x, this.y, oneCircle.x, oneCircle.y);
+            if(twoLength <= this.radius + oneCircle.radius + thisSpeed + oneCircleSpeed) {
+                this.d.x *= -1;
+                this.d.y *= -1;
+                // if(this.d.x * oneCircle.d.x < 0) {
+                //     this.d.x = -this.d.x;
+                //     oneCircle.d.x = -oneCircle.d.x;
+                // } else {
+                //     var temp = this.d.x;
+                //     this.d.x = oneCircle.d.x;
+                //     oneCircle.d.x = temp;
+                // }
+                // if(this.d.y * oneCircle.d.y < 0) {
+                //     this.d.y = -this.d.y;
+                //     oneCircle.d.y = -oneCircle.d.y;
+                // } else {
+                //     var temp = this.d.y;
+                //     this.d.y = oneCircle.d.y;
+                //     oneCircle.d.y = temp;
+                // }
+          
+            }
+        }
+    }
+
+    render(){
+        ctx.save();
+        ctx.beginPath();
+
+        ctx.arc(this.x, this.y, this.cRadius, 
+                Math.PI / 180 * this.startAngle,
+                Math.PI / 180 * this.endAngle, this.clock);
+        ctx.fillStyle = this.fillStyle;
+        ctx.strokeStyle = this.strokeStyle;
+        ctx.lineWidth = this.lineWidth;
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    mousePointerCheck(xNum) {
+        if(isNaN(+xNum)) throw "xNum 은 숫자만 입력해야 합니다.";
+
+        if( twoPointLength(this.x, this.y, mousePointer.x, mousePointer.y) <= this.radius * 4 ) {
+             if(this.cRadius < this.radius * 4) this.cRadius++;
+        } else {
+            if(this.cRadius > this.radius) this.cRadius--;
+        }
+    }
+}
+
+function twoPointLength( x1, y1, x2, y2) {
+    if( isNaN(x1 * y1 * x2 * y2) ) throw "인자값 x1, x2, y1, y2 중 하나가 숫자가 아닙니다.";
+
+    let xLen = x1 - x2,
+        yLen = y1 - y2;
+    return Math.sqrt(xLen * xLen + yLen * yLen);
+
+}
+
+function random(range) {
+    if(isNaN(range*1)) throw "인자값 range 값이 숫자가 아닙니다.";
+
+    return ~~(Math.random() * (range+1) );
+}
+
+// range입력해 주면 -range ~ +range 까지 된다. 소수2자리까지만
+function bothRandom(range, digit) {
+    digit = digit || 2;
+    if(isNaN(range * digit * 1)) throw "인자값 range, digit 가 숫자가 아닙니다."
+
+    return +(Math.random() * (range * 2) - range).toFixed(digit);
+}
+
+
+function returnRGB() {
+    let code = "0123456789abcdef";
+    let result =  "#";
+    result += code[~~(Math.random() * 16)];
+    result += code[~~(Math.random() * 16)];
+    result += code[~~(Math.random() * 16)];
+    result += code[~~(Math.random() * 16)];
+    result += code[~~(Math.random() * 16)];
+    result += code[~~(Math.random() * 16)];
+    return result;
+}
+
+
+function convertLength( angle, length ) {
+    if(isNaN(angle * length * 1)) throw "인자값 angle, length 가 숫자가 아닙니다."
+    
+    let rad = Math.PI / 180 * angle;
+    let x = Math.cos(rad) * length;
+    let y = Math.sin(rad) * length;
+    return {'x' : x, 'y' : y};
+}
+
+
+let circles = makeCircle(300, 3, 20);
+
+
+function render() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for(var i = 0; i < circles.length; i++) {
+        circles[i].move();
+        circles[i].mousePointerCheck(2);
+        // circles[i].crash();
+        circles[i].render();
+    }
+
+}
+
+render();
+
+function animate() {
+    requestAnimationFrame(animate);
+    render();
+}
+
+animate();
+</script>
+</html>

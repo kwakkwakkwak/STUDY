@@ -6,10 +6,10 @@
 `<canvas>` 는 그림, 그레프, 애니메이션 등을 그리는데 사용되는 요소이다.  
 
 웹브라우저 호환성  
-  
-|크롬|파이어폭스|익스플로러|사파리|
-|----|---------|---------|-----|
-|1.0 | 1.5(1.8)|      9.0|  2.0|
+
+| 크롬   | 파이어폭스    | 익스플로러 | 사파리  |
+| ---- | -------- | ----- | ---- |
+| 1.0  | 1.5(1.8) | 9.0   | 2.0  |
 
 height : 기본값 150  
 width : 기본값 300  
@@ -31,8 +31,7 @@ CSS로는 요소의 크기만 설정 가능하다.
 `<canvas>` 요소에서는 2가지 속성과 3가지 메서드만 제공하고 있다.
 
 #### <canvas> 속성
-width : 드로잉 표면의 너비, 기본적으로 브라우저에서는 `<canvas>` 요소를 같은 크기로 생성한다.  
-height : 드로잉 표면의 높이, 기본적으로 브라우저에서는 `<canvas>` 요소를 같은 크기로 생성한다.  
+width : 드로잉 표면의 너비, 기본적으로 브라우저에서는 `<canvas>` 요소를 같은 크기로 생성한다.  height : 드로잉 표면의 높이, 기본적으로 브라우저에서는 `<canvas>` 요소를 같은 크기로 생성한다.  
 
 #### <canvas> 메서드
 getContext() : 캔버스와 연관된 그래픽 콘텍스트를 반환.
@@ -59,36 +58,77 @@ toBlob(callback, type, args...) : 캔버스에 이미지를 포함하고 있는 
 - miterLimit : miter 값으로 선의 연결을 그리는 방법 명시
 - shadowBlur : 브라우저에서 그림자를 흐리는 방법을 결정
 - shadowColor : 그림자의 색상을 정의
-- shadowOffsetX
-- shadowOffsetY
-- strokeStyle
-- textAlign
-- textBaseline
+- shadowOffsetX : 그림자의 가로 오프셋(픽셀)을 명시한다.
+- shadowOffsetY : 그림자의 세로 오프셋(픽셀)을 명시한다.
+- strokeStyle : path를 그릴 때 사용할 스타일을 명시한다. 색상, 그라디언트, 패턴 사용가능
+- textAlign : fillText()나 strokeText()를 사용해 그린 텍스트의 가로 위치 결정
+- textBaseline : fillText()나 strokeText()를 사용해 그린 텍스트의 세로 위치 결정
+
+
+
+
+##### WebGL 3d 컨텍스트
+
+- OpenGL ES 2.0 API에 따른 3d 컨텍스트도 존재한다.
+
 
 
 ### 1.2.2 캔버스 상태 저장 및 복원
-상태 저장이라는 것은 그림 파일 저장인 것일까?
-복원은 무엇에 대한 복원을 말하는 것일까?
+- 캔버스 API에는 캔버스 콘텍스트의 모든 속성을 저장하고 복원할 수 있는 save() 메서드와 restore() 메서드를 제공한다.
+
+```javascript
+function drawGrid(strokeStyle, fillStyle) {
+  controlContext.save();	// 콘텍스트의 현재상태를 스택에 저장한다.
+  controlContext.fillStyle = fillStyle;
+  controContext.strokeStyle = strokeStyle;
+  
+  // 격차무늬 그리기
+  
+  controlContext.restore();	// 스택에 저장된 콘텍스트를 불러와 복원한다.
+  
+}
+```
+
+
+
+| 메서드       | 설명                                       |
+| --------- | ---------------------------------------- |
+| save()    | 캔버스의 현재 상태를 스택에 넣는다. 캔버스 상태는 strokeStyle, fillStyle, globalCompositeOperation 등을 포함한 캔버스 콘텍스트의 모든 속성과 현재 변화 및 클리핑 영역도 포함하고 있다. 하지만 캔버스 상태는 현재 path 나 비트맵을 포함하지 않는다. beginPath()를 호출해야만 path를 재설정할 수 있으며 비트맵은 콘텍스트가 아닌 캔버스의 속성이다. 비트맵은 캔버스의 속성이지만 콘텍스트(getImageData())를 통해 비트맵에 접근할수 있다. |
+| restore() | 스택으로부터 맨 위에 있는 정보를 꺼낸다. 이렇게 정보를 꺼내면 스택의 맨 위에 있는 상태가 현재 상태가 되며 브라우저에서는 그에 맞춰 캔버스 상태를 설정해야 한다. 따라서 save() 메서드와 restore() 메서드 사이에 캔버스 상태를 변화시키고 싶다면 restore() 메서드를 호출할 때 까지만 상태를 유지하면 된다. |
+
+
 
 ## 1.3 책에서 사용하는 표준 형태
-표준형태 소스코드는 어떻게 짜여져 있을까?
+```html
+<body>
+  <canvas id='canvas' width='600' height='300'>
+  	이 글자가 보이면 캔버스 미지원입니다.
+  </canvas>
+  <script src='example.js'></script>
+</body>
+```
+
+```javascript
+var canvas = document.getElementById('canvas'),
+    context = canvas.getContext('2d');
+// 콘텍스트 사용....
+```
+
+- 사용자 에이전트 (User Agent)
+  - 캔버스 명세서에서는 <canvas> 요소의 구현자를 사용자 에이전트로 언급하며, UA 라고도 한다. 브라우저 뿐만 아니라 소프트웨어에서도 <canvas> 엘리먼트를 사용할 수 있으므로 명세서에서는 브라우저 대산 사용자 에이전트란 용어를 사용하고 있다.
+
+
 
 ## 1.4 개발 환경 개요
 ### 1.4.1 명세서
-명세서? 개발 명세서? 아니면 사용언어 명세서?
-
 ### 1.4.2 브라우저
-브라우저들에 대해서 서로 다르게 작동하는 것?
-그에 대한 대응 코드가 있을까?
-
 ### 1.4.3 콘솔 및 디버거
-크롬 개발자 도구일듯, 캔버스내의 디버그는 어떻게 하는 것이지?
 
 ### 1.4.4 성능
-성능이라는 것을 어떤 성능을 말하는 것일까? 비교일까? 렌더링?
+
 
 ## 1.5 기본적인 드로잉 작업
-기본적인 드로잉 작업은 어떤 절차를 통해서 그려질까?
+- arc, beginPath, clearRect, fill, fillText, lineTo, moveTo, stroke
 
 ## 1.6 이벤트 처리
 이벤트처리? 핸들러? 아니면 리스너?
