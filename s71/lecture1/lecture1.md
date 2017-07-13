@@ -167,7 +167,6 @@ class Polygon{
         return this.height * this.width;
     }    
 }
-
 ```
 
 ### Arrow Function
