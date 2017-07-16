@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #canvas {margin-left: 20px;margin-right: 0;margin-bottom: 20px;border: thin solid #aaaaaa;cursor: crosshair;padding:0;}
+        #controls {margin:20px 0px 20px 20px;}
+        #rubberbandDiv {position: absolute;border: 3px solid black; cursor: crosshair; display:none;}
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <input type="button" value="Reset" id="resetButton"/>
+        <input type="button" value="ScaleUp" id="scaleUp">
+        <input type="button" value="ScaleDown" id="scaleDown">
+        <input type="button" value="ScaleUpCenter" id="ScaleUpCenter">
+        <input type="range" min='1' max='3.0' step='0.01' value='1.0' id="scaleSlider">
+    </div>
+    <canvas id="canvas" width='1400' height='940'></canvas>
+</body>
+<script>
+const canvas = document.getElementById("canvas"),
+        ctx = canvas.getContext("2d"),
+        rubberbandDiv = document.getElementById("rubberbandDiv"),
+        scaleUp = document.getElementById("scaleUp"),
+        scaleDown = document.getElementById("scaleDown"),
+        ScaleUpCenter = document.getElementById("ScaleUpCenter"),
+        scaleSlider = document.getElementById('scaleSlider'),
+        MINIMUM_SCALE = 1.0,
+        MAXIMUM_SCALE = 3.0,
+        resetButton = document.getElementById("resetButton");
+
+let image = new Image(),
+    scale = 1.0,
+    mousedown = {},
+    rubberbandRectangle = {},
+    dragging = false;
+    
+
+image.src = "scape.jpg";
+
+image.onload = e => {
+    ctx.drawImage(image, 0, 0);
+}
+let scaleUpPicture = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+}
+let scaleDownPicture = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(image ,0 , 0);
+}
+
+let scaleUpPictureCenter = () => {
+    const w = canvas.width,
+          h = canvas.height,
+          sw = w * scale,
+          sh = h * scale;
+    ctx.clearRect(0, 0, w, h);
+    ctx.drawImage(image, -sw/2 + w/2, -sh/2 + h/2, sw, sh);
+}
+
+ScaleUpCenter.onclick = ()=>scaleUpPictureCenter();
+scaleUp.onclick = scaleUpPicture;
+scaleDown.onclick = scaleDownPicture;
+
+scaleSlider.onchange = e => {
+    scale = e.target.value;
+    scale =  scale < MINIMUM_SCALE ? MINIMUM_SCALE : scale;
+    scale =  scale > MAXIMUM_SCALE ? MAXIMUM_SCALE : scale;
+    scaleUpPictureCenter();
+}
+
+</script>
+</html>
