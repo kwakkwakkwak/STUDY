@@ -311,7 +311,7 @@ const Service1 = class extends Service {
 
 
 ```javascript
-/************************** 소유위임 에서의 포괄적 위임 **************************/
+/************************ 소유위임 에서의 포괄적 위임 ************************/
 const Service = class {
   constructor(baseUrl) {
     this._baseUrl = baseUrl;
@@ -578,6 +578,31 @@ const Child = class extends Parent {
 캡슐화 패턴 : 팩토리, 빌더 패턴
 
 ```javascript
+// 빌터패턴에 쓰이는 Service
+const Service = class {
+  constructor(baseUrl) {
+    this._baseUrl = baseUrl;
+    this._checkers = new Map();	// 라우팅 테이블
+  }
+  addChecker(type, checker) {
+    if(!(checker instanceof Checker)) throw 'invalid checker';
+    this._checkers.set(type, checker);
+  }
+  async getData(type) {
+    if(!this._checkers.has(type)) throw 'no checker';
+    const response = await fetch(`${this._baseurl}/${type}`, {method:"GET", body:""});
+    const json = await response.json();
+    return this._checkers.get(type).check(json);	// 실행시점 전략객체 위임
+  }
+}
+
+const Checker = class {			// 간이 인터페이스
+  constructor(f) {this._f = f;}
+  check(json) {this._f(json);}	// arrow일경우 this는 전역, function() 이면 this
+}
+```
+
+```javascript
 // 생성 레시피 캡슐화
 const M =v=>{throw `${v} is mandatory`;}
 const ServiceBuilder = class {
@@ -586,6 +611,8 @@ const ServiceBuilder = class {
 const MemberServiceBuilder = class extends ServiceBuilder {
   constructor(baseUrl) {this._baseUrl = baseUrl;}
   getService() {
+    // 레시피가 들어가는 곳이다.
+    
     /*************** 기존 실행 시점 레시피를 정의 시점으로 이동 **************/
     /**/ const service = new Service(this._baseUrl);
     /**/ service.addChecker('member', new Checker(
@@ -594,8 +621,8 @@ const MemberServiceBuilder = class extends ServiceBuilder {
     /**/ service.addChecker('join', new Checker(
     /**/ 	({error, isOK=M('isOk')})=>({isOK, error})
     /**/ ));
+    /**/ return service;
     /********************************************************************/
-    return service;
   }
 };
 
@@ -604,10 +631,25 @@ const service = new MemberServiceBuilder('/site').getService();
 service.getData('member').then(console.log)
 ```
 
+지식, 레시피는 특정 도메인에 대한 지식을 의미한다. 서비스가 최초에 가지고 있던 타입에 대한 지식, 타입 조직화 방법, 라우팅 테이블에서의 addCheck에서 더하는 로직 , 이러한 것을 비즈니스 도메인 지식이다. 이러한 것을 레시피라고 한다. 레시피는 비즈니스 도메인과 관련되어 있는 지식이다.
+
+이것을 캡슐화하고 심플하게 외부에 노출하고 싶은게 빌더 패턴이다. 
+
+외부에 노출되는 것은 getService(baseUrl) .
+
+자식은 `MemberServiceBuilder` 이다. 얘는 ServiceBuilder를 상속했으므로 getService()를 제공할 책임이 있다.  baseUrl를 받아서 서비스를 만들었고 이 서비스에 전략패턴을 구현했다. addChecker한다. 그래서 이쪽 ( new Service() 아래 부터 return service 까지 사이) 에 레시피가 들어가는 것이다. 여기에 멤버 빌더의 서비스를 얻는다. 타입으로는 서비스지만, 멤버관련 레시피가 반영된 서비스를 얻게 될 것이다.
+
+빌더 패턴의 목적은 생성에 대한 지식을 캡슐화하기 위해서이다. 
+
+member, join 체커를 넣어준다. 서비스의 유연성은 전략패턴으로 확보했지만, 호스트 코드의 부담은 다시 정의 객체를 만들어서, 캡슐화를 시켜서 사용하는 쪽의 부담은 줄이고 안정성은 확보하게 된다. 실제로 사용하는 것을 보면 정의 시점, 사용시점이 있는데 사용시점에는 멤버 서비스빌더로 겟 서비스로 서비스를 얻으면 이미 멤버, 조인을 체크할수 있는 능력을 갖게 도니다. 
+
+서비스지만, 비즈니스 도메인 지식이 반영되어 있는 서비스를 얻게 되는 것이다.
+
 
 
 ```html
 // 실행시점 위임
+
 <script src="Service.js"></script>
 <script src="Checker.js"></script>
 <script src="ServiceBuilder.js"></script>
@@ -624,3 +666,14 @@ service.getData('member').then(console.log)
 </script>
 ```
 
+어떤 빌더로 빌터 getService를 했느냐에 따라서 어떤 서비스를 사용할수 있는지가 달라진다. 이제는 이 지식이 호스트 코드가 아닌 정의시점으로 올라갔다. 디버깅해도 정의시점 부분 코드만 해도 되고 호스트 부분은 안정적으로 쓸수 있게 되었다.
+
+디자인 패턴은 하나하나 단계별로 배울수가 없다. 디자인 패턴은 무조건 협력한다. 하나의 문제를 해결하면 다른 문제가 생겨나고 그것을 위한 패턴을 쓸수밖에 없다. 일반적으로 내장을 까면, 캡슐화가 깨져서 캡슐화를 다시 강화. 많은 역할 만들면 역할간 너무 많은 복잡한 관계를 만든다. 그러면 역할 중계를 위한 것이 또 나온다. 
+
+객체망을 특정 목적을 달성하면 다른 여파가 일어나면 또다른 패턴으로 막아야 한다. 그래서 디자인 패턴을 쓰면 그것을 위한 디자인 패턴을 연쇄적으로 쓰기 마련이다.
+
+그래서 황금률은 각각의 장단점을 상호보완할수 있는 균형점을 가질수 있는 패턴조합을 사용하는게 좋다. 서로가 서로를 보완하고 어느정도 안정화, 목적을 이루어지게 된다.
+
+빌더패턴은 전략패턴의 단점은 덮어주고 전략 패턴의 장점을 취할수 있다. 이러한 패턴을 컴포넌트 패턴이라고 한다. 대표적인 예를 MVC 패턴이다. 궁극적인 목표는 컴포넌트 패턴을 배우는 것이다.
+
+서로 잘 섞으면 서로의 여파를 상쇄하는 것이 컴포넌트 패턴이다. 단일 패턴으로 문제가 해결되지 않는다.
