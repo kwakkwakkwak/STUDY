@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="todo"></div>
+</body>
+<script>
+    
+    console.log("==========".repeat(10));
+
+    // Task, TaskList, taskSort
+
+
+    ///////////// class Task  /////////////////////
+    
+    // Task는 TodoList에서 개별 task를 의미한다.
+    // title, date, isComplete를 기록한다.
+
+    const Task = class {
+        constructor(title, date) {
+            if (!title) throw 'invalid title';
+
+            this._title = title;
+            this._date = date;
+            this._isComplete = false;
+        }
+
+        isComplete() {
+            return this._isComplete;
+        }
+
+        toggle() {
+            this._isComplete = !this._isComplete;
+        }
+
+        sortTitle(task) {
+            return this._title > task._title;
+        }
+
+        sortDate(task) {
+            return this._date > task._date;
+        }
+    };
+
+    ///////////// class TaskList  /////////////////////
+
+    // 처음에 task 하나 추가하면서 만들긴 해야함.
+    // TaskList는 Task의 리스트일 것이다. 즉, Task를 여러개 가지고 있으며
+    // Task의 값을 가져오거나 더하거나 빼거나 한다.
+    // Task를 정렬한다.
+
+    const TaskList = class {
+        constructor(title) {
+            if (!title) throw 'invalid title';
+
+            this._title = title;
+            this._list = [];
+        }
+
+        // 컨벤션으로 private 메서드
+        _getList(sort, stateGroup) {
+            const list = this._list, s = taskSort[sort];
+
+            if (!stateGroup) return [...list].sort(s);
+
+            return [list.filter(v => !v.isComplete()), list.filter(v => v.isComplete())]
+                .reduce((p, c) => p.concat(c.sort(s)), []);
+        }
+
+        byRegister(stateGroup = true) {
+            return this._getList('register', stateGroup);
+        }
+
+        byTitle(stateGroup = true) {
+            return this._getList('title', stateGroup);
+        }
+
+        byDate(stateGroup = true) {
+            return this._getList('date', stateGroup);
+        }
+
+        add(title, date = Date.now()) {
+            this._list.push(new Task(title, date));
+        }
+
+        remove(task) {
+            const list = this._list;
+
+            if (list.includes(task)) list.splice(list.indexOf(task), 1);
+        }
+    };
+
+     ///////////// taskSort  /////////////////////
+
+    const taskSort = {
+        title: (a, b) => a.sortTitle(b),
+        date: (a, b) => a.sortDate(b),
+        register: null
+    };
+
+    ///////////// Runtime  /////////////////////
+
+    const list = new TaskList('base');
+    list.add('b');
+    list.add('c');
+    list.add('a');
+
+    console.log(JSON.stringify(list.byRegister(), null, '   '));
+    console.log(JSON.stringify(list.byTitle(), null, '   '));
+
+</script>
+
+</html>

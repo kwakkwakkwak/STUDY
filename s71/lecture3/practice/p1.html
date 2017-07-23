@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+        <div id="todo"></div>
+</body>
+<script>
+    const Task = class {
+        constructor(title) {
+            this._title = "";
+            this._date = new Date();;
+            this._completed = false;
+
+            this.changeTitle(title);
+        }
+        changeCompleted() {
+            this._completed = !this._completed;
+        }
+        changeTitle(title) {
+            if(typeof title !== "string") throw "string만 가능";
+            this._title = title;
+            this.changeDate();
+        }
+        changeDate() {
+            this._date = new Date();
+        }
+        getData(...args) {
+            if(args.length) {
+                var result = {};
+                args.forEach(one => {result[one]=this[`_${one}`]});
+                return result;
+            }
+            return {
+                title: this._title, 
+                date: this._date, 
+                completed: this._completed
+            }
+        }
+    }
+
+    const TaskList = class {
+        constructor() {
+            this._taskList = [];
+        }
+        add(title) {
+            if(typeof title !== 'string') throw "string 만 가능합니다."
+            this._taskList.push(new Task(title));
+        }
+        remove(index) {
+            if(this._taskList[index] === undefined) 
+                throw "해당 인덱스 값이 없습니다.";
+
+            this._taskList.splice(index,1);
+        }
+        changeTitle(index, title) {
+            if(this._taskList[index] === undefined || typeof title !== 'string') 
+                throw "해당 인덱스 값이 없거나 타이틀이 string가 아닙니다.";
+
+            this._taskList[index].changeTitle(title);
+        }
+        changeCompleted(index) {
+            if(this._taskList[index] === undefined) 
+                throw "해당 인덱스 값이 없습니다.";
+
+            this._taskList[index].changeCompleted();
+        }
+        getData(...index) {
+            return index.length 
+                   ? index.map(one => this._taskList[one])
+                   : this._taskList.slice();
+        }
+        byDate() {
+            this._taskList.sort((a, b)=> (a._date > b._date));
+            return this.getData();
+        }
+        byTitle() {
+            this._taskList.sort((a, b)=> (a._title > b._title));
+            return this.getData();
+        }
+        byRegister() {
+            this._taskList.sort();
+            return this.getData();
+        }
+    }
+
+    var tl = new TaskList();
+    tl.add("테스트1");
+    tl.add("테스트2");
+    tl.add("테스트3");
+    tl.add("테스트4");
+    tl.add("테스트5");
+    tl.add("테스트6");
+
+    console.table(tl.getData());
+    console.table(tl.getData(0,1,2));
+    console.table(tl.getData(2,5));
+
+    
+</script>
+</html>

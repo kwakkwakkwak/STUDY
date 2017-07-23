@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="todo"></div>
+</body>
+<script>
+    console.log("==========".repeat(10));
+
+    // Task, TaskItem, TaskList
+
+
+    const Task = class {
+        constructor() {
+            this._list = [];
+        }
+
+        add(task) {
+            if (!(task instanceof Task)) throw 'invalid Task';
+
+            this._list.push(task);
+        }
+
+        remove(task) {
+            const list = this._list;
+
+            if (list.includes(task)) list.splice(list.indexOf(task), 1);
+        }
+
+        getResult(sort, stateGroup) {
+            const list = this._list;
+
+            let result;
+
+            if (!stateGroup) result = [...list].sort(sort);
+            else result = [list.filter(v => !v.isComplete()), list.filter(v => v.isComplete())]
+                .reduce((p, c) => p.concat(c.sort(sort)), []);
+
+            return {
+
+                item: this._getResult(),
+                children: result
+            };
+        }
+
+        _getResult() {
+            throw 'must be overried';
+        }
+    };
+
+    const TaskItem = class extends Task {
+        static title(a, b) {
+            return a.sortTitle(b);
+        }
+
+        static date(a, b) {
+            return a.sortDate(b);
+        }
+
+        static register() {
+            return null;
+        }
+
+        constructor(title, date = Date.now()) {
+            if (!title) throw 'invalid title';
+
+            super();
+
+            this._title = title;
+            this._date = date;
+            this._isComplete = false;
+        }
+
+        _getResult(sort, stateGroup) {
+            return this;
+        }
+
+        isComplete() {
+            return this._isComplete;
+        }
+
+        toggle() {
+            this._isComplete = !this._isComplete;
+        }
+
+        sortTitle(task) {debugger;
+            return this._title > task._title;
+        }
+
+        sortDate(task) {
+            return this._date > task._date;
+        }
+    };
+
+    const TaskList = class extends Task {
+        constructor(title) {
+            if (!title) throw 'invalid title';
+
+            super();
+
+            this._title = title;
+        }
+
+        _getResult(sort, stateGroup) {
+            return this._title;
+        }
+
+        byRegister(stateGroup = true) {
+            return this.getResult(TaskItem.register, stateGroup);
+        }
+
+        byTitle(stateGroup = true) {
+            return this.getResult(TaskItem.title, stateGroup);
+        }
+
+        byDate(stateGroup = true) {
+            return this.getResult(TaskItem.date, stateGroup);
+        }
+
+        add(title, date) {
+            super.add(new TaskItem(title, date));
+        }
+    };
+
+    const list = new TaskList('base');
+    list.add('b');
+    list.add('c');
+    list.add('a');
+
+    console.log(JSON.stringify(list.byRegister(), null, '   '));
+
+    console.log(JSON.stringify(list.byTitle(), null, '   '));
+    
+/*
+@startuml
+skinparam classAttributeIconSize 0
+
+class Task {
+  -_list : Array
+
+  +add (task:Task) : void
+  +remove (task : Task) : void
+  +getResult (sort : function, stateGroup : Boolean) : Object
+  -{abstract}_getResult () : void
+}
+
+
+class TaskItem extends Task {
+  -_title : String
+  -_date : Date
+  -_isCompleted : Boolean
+
+  +{static}title (a : TaskItem, b : TaskItem) : Boolean
+  +{static}date (a : TaskItem, b : TaskItem) : Boolean
+  +{static}register () : null
+
+  -_getResult (sort : function, stateGroup : Boolean) : TaskItem
+  +toggle ()
+  +isCompleted () : Boolean
+  +sortTitle (task : TaskItem) : Booelan
+  +sortDate (task : TaskItem) : Booelan
+
+}
+
+class TaskList extends Task {
+  -_title : String
+  
+  +byRegister (stateGroup : Boolean) : Object
+  +byTitle (stateGroup : Boolean) : Object
+  +byDate (stateGroup : Boolean) : Object
+  add (title : String, date : Date) : void
+}
+
+
+
+TaskItem --* TaskList
+@enduml
+*/
+</script>
+
+</html>
