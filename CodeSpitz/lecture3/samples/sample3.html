@@ -9,6 +9,7 @@
 </head>
 
 <body>
+    <img src="./sample3.png" alt="">
     <div id="todo"></div>
 </body>
 <script>
@@ -175,7 +176,7 @@ class TaskList extends Task {
   +byRegister (stateGroup : Boolean) : Object
   +byTitle (stateGroup : Boolean) : Object
   +byDate (stateGroup : Boolean) : Object
-  add (title : String, date : Date) : void
+  +add (title : String, date : Date) : void
 }
 
 
@@ -183,6 +184,7 @@ class TaskList extends Task {
 TaskItem --* TaskList
 @enduml
 */
+console.log();
 </script>
 
 </html>

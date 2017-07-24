@@ -9,8 +9,9 @@
 </head>
 
 <body>
-    <div id="todo">
+    <img src="./sample4.png" alt="">
 
+    <div id="todo">
     </div>
 </body>
 <script>
@@ -282,8 +283,8 @@ class TaskList extends Task {
   +byRegister (stateGroup : Boolean) : Object
   +byTitle (stateGroup : Boolean) : Object
   +byDate (stateGroup : Boolean) : Object
-  add (title : String, date : Date) : void
-  remove (task : TaskItem) : void
+  +add (title : String, date : Date) : void
+  +remove (task : TaskItem) : void
 }
 
 class DomRenderer {

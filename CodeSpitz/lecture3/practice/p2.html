@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="todo"></div>
+</body>
+<script>
+    const Task = class {
+        constructor() {
+            this._list = [];
+        }
+        add(task) {
+            if(task instanceof Task) throw "Task class만 가능";
+            this._list.push(task);
+        }
+        remove(task) {
+            if(task instanceof Task) throw "Task class만 가능";
+            let index = this._list.indexOf(task);
+            index < 0 
+                ? console.log("task is nothing") 
+                : this._list.splice(index, 1);
+        }
+        getData(sort, stateGroup) {
+            return {}
+        }
+        _getData() {
+            throw "구현되어야 합니다.";
+        }
+    }
+
+    const TaskItem = class {
+        
+    }
+    
+</script>
+</html>

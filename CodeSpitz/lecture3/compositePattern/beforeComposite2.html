@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+<script>
+    const Item = class {
+        constructor(name, price = 10000) {
+            if(typeof name !== 'string' || typeof price !== 'number') throw "price, name Type Check";
+
+            this._name = name;
+            this._price = price;
+        }
+        getName() { return this._name; }
+
+        getPrice() { return this._price; }
+
+        printContent() {console.log(`물건 ${this._name} (${this._price})`);}
+    }
+
+    const Box = class {
+        constructor(name, price = 50000) {
+            if(typeof name !== 'string') throw "name should be string type";
+
+            this._name = name;
+            this._price = price;
+            this._boxList = [];
+            this._itemList = [];
+        }
+        addBox(box) {
+            if(!(box instanceof Box)) throw "box should be Box class";
+
+            return (this._boxList.length+1) === this._boxList.push(box);
+        }
+        delBox(box) {
+            if(!(box instanceof Box)) throw "box should be Box class";
+            let len = this._boxList.length,
+                index = this._boxList.indexOf(box);
+            if(index > -1) this._boxList.splice(index, 1);
+
+            return (len - 1) === this._boxList.length;
+        }
+        addItem(item) {
+            if(!(item instanceof Item)) throw "item should be Item class";
+
+            return (this._itemList.length + 1) === this._itemList.push(item);
+        }
+        delItem(item) {
+            if(!(item instanceof Item)) throw "item should be Item class";
+            let len = this._itemList.length,
+                index = this._itemList.indexOf(box);
+            if(index > -1) this._itemList.splice(index, 1);
+
+            return (len - 1) === this._itemList.length;
+        }
+        getName() {
+            return this._name;
+        }
+        getPrice() {
+            let sum = 0;
+            this._itemList.forEach(one => {sum += one.getPrice();});
+            this._boxList.forEach(one => {sum += one.getPrice();});
+
+            sum += this._price;
+            return sum;
+            }
+        printContents() {
+            console.log(`========= ${this._name} 박스 시작 ===========`);
+            this._itemList.forEach(one => {one.printContent();});
+            this._boxList.forEach(one => {one.printContents();});
+            console.log(`========= ${this._name} 박스 끝!!! ===========`);
+
+        }
+
+    }
+    let box1 = new Box("집전체");
+    let box2 = new Box("부엌");
+
+    box2.addItem(new Item("밥그릇", 3000));
+    box2.addItem(new Item("국그릇", 4000));
+
+    box1.addItem(new Item("장식용 그릇", 10000));
+    box1.addBox(box2);
+
+    box1.printContents();   // 이삿짐 박스의 내용물 출력
+    
+    console.log(box1.getName() + "이삿짐의 전체 가격은 " + box1.getPrice() + "원 입니다.");
+</script>
+</html>

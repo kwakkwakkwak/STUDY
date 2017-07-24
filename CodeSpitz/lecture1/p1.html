@@ -27,7 +27,7 @@
             this._data = data;
         }
         // 해당 메서드를 재구성한다.
-        async getData(){
+        async _getData(){
             if(typeof this._data == 'string'){
                 const response = await fetch(this._data);
                 return await response.json();

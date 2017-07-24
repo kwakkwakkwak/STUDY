@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Composite 패턴</h1>
+    <p>
+        Composite pattern을 쓰면, 전체-부분을 표현하기 위해 객체를 트리 구조로 묶을수 있다.<br/>
+        클라이언트 코드는 각 개별적인 객체(부분)와 다른 객체를 포함하는 객체(전체)를 동일한 인터페이스를 통해 사용할 수 있다.<br/>
+        종류 : 구조패턴
+    </p>
+  
+</body>
+<script>
+
+
+    const Bowl = class {
+        constructor(name) {
+            if(typeof name !== 'string') throw "name should be string";
+            this._name = name;
+        }
+        getName() {
+            return this._name;
+        }
+        getPrice() {
+            return 10000;
+        }
+        printContents() {
+            console.log(this.getName() + " 물건");
+        }
+    }
+
+    const Box = class {
+        constructor(name) {
+            if(typeof name !== 'string') throw "name should be string";
+
+            this._name = name;
+            this._boxList = [];
+            this._loadList = [];
+        }
+        addBox(box) {
+            return box instanceof Box
+                    ? (this._boxList.length + 1) === this._boxList.push(box)
+                    : TypeError("box sould be Box class");
+        }
+        delBox(box) {
+            if(!(box instanceof Box)) throw "box sould be Box class";
+
+            let len = this._boxList.length,
+                index = this._boxList.indexOf(box);
+            if(index > -1) this._boxList.splice(index, 1);
+            return (len-1) === this._boxList.length;
+        }
+        addBowl(bowl) {
+            return bowl instanceof Bowl
+                    ? (this._loadList.length + 1) === this._loadList.push(bowl)
+                    : TypeError("bowl sould be Bowl class");
+        }
+        delBowl(bowl) {
+            if(!(bowl instanceof Bowl)) throw "bowl sould be Bowl class";
+
+            let len = this._loadList.length,
+                index = this._loadList.indexOf(bowl);
+
+            if(index > -1) this._loadList.splice(index, 1);
+            return (len-1) === this._loadList.length;
+
+        }
+        getName() {
+            return this._name;
+        }
+        getPrice() {
+            let sum = 0;
+            this._loadList.forEach(one => (sum += one.getPrice()))
+            this._boxList.forEach(one => (sum += one.getPrice()))
+
+            sum += 50000;
+            return sum;
+        }
+        printContents() {
+            console.log(`==== ${this.getName()} 이사짐 박스 시작 =========`);
+            this._loadList.forEach(one => one.printContents());
+            this._boxList.forEach(one => one.printContents());
+            console.log(`==== ${this.getName()} 이사짐 박스 끝 =========`);
+        }
+    }
+
+    let box1 = new Box("집전체");
+    let box2 = new Box("부엌");
+
+    box2.addBowl(new Bowl("밥그릇"));
+    box2.addBowl(new Bowl("국그릇"));
+
+    box1.addBowl(new Bowl("장식용 그릇"));
+    box1.addBox(box2);
+
+    box1.printContents();   // 이삿짐 박스의 내용물 출력
+    
+    console.log(box1.getName() + "이삿짐의 전체 가격은 " + box1.getPrice() + "원 입니다.");
+</script>
+</html>
