@@ -10,30 +10,108 @@
     
 </body>
 <script>
+    /* Component */
     class Load {
-        constructor(name) {
+        constructor(name,price = 0) {
             if(typeof name !== 'string') throw "name should be String";
+            if(typeof price !== 'number') throw "price should be number";
+            
             this._name = name;
+            this._price = price;
         }
-        getName(name){}
-        add(){}
-        del(){}
-        getPrice(){}
-        printContents(){}
+        getName(){
+            return this._name;
+        }
+        add(){throw "it is not implementation";}
+        del(){throw "it is not implementation";}
+        getPrice(){throw "it is not implementation";}
+        printContents(){throw "it is not implementation";}
     }
 
+    /* Composite */
+    class Box extends Load {
+        constructor(name, price = 50000) {
+            super(name, price);
+            this._list = [];
+        }
+        add(load){
+            if(!(load instanceof Load)) throw "load sould be Load class";
+            return (this._list.length + 1) === this._list.push(load);
+        }
+        del(load){
+            if(!(load instanceof Load)) throw "load sould be Load class";
+            
+            let index = this._list.indexOf(load);
+            return (index > -1) ? Boolean(this._list.splice(index,1)) : false;
+        }
+        getPrice(){
+            let sum = this._price;
+            this._list.forEach(one => sum += one.getPrice());
+            return sum;
+        }
+        printContents(){
+            console.log(`============= ${this._name} 박스 시작 =============`);
+            this._list.forEach(one =>one.printContents());
+            console.log(`============= ${this._name} 박스 끝 =============`);
+        }
+    }
+
+    /* leaf */
     class Bowl extends Load {
-        add(){}
-        del(){}
-        getPrice(){}
-        printContents(){}
+        constructor(name, price = 10000) {
+            super(name, price);
+        }
+        add(){return false;}
+        del(){return false;}
+        getPrice(){return this._price;}
+        printContents(){console.log(`${this._name} 물건 : ${this.getPrice()} `)}
     }
 
-    class Box extends Box {
-        add(){}
-        del(){}
-        getPrice(){}
-        printContents(){}
+    
+    // 새로 추가됨. 변경 사항에 대해서 유연하게 대처할수 있다.
+    /* leaf */
+    class Frame extends Load {
+        constructor(name, weight) {
+            super(name);
+
+            if(typeof weight !== 'number') throw "weight should be number";
+            this._weight = weight;
+            this._price = this.getPrice();
+            
+        }
+        add(){return false;}
+        del(){return false;}
+        getPrice(){return this._weight * 5000}
+        printContents(){console.log(`${this._name} 물건 : ${this.getPrice()} `)}
+
     }
+
+
+    /* Client */
+
+    // box1 [ box2, box3 ] : box1에 box2, box3이 담긴다.
+    // box2에는 bowl들이 담긴다.
+    // box3에는 bowl과 frame들이 담긴다. 
+
+    let box1 = new Box("집전체!");
+    let box2 = new Box("부엌");
+    let box3 = new Box("공방");
+
+    box1.add(new Bowl("장식용그릇", 100000));
+    box1.add(box2);
+    box1.add(box3);
+
+    box2.add(new Bowl("밥그릇", 3000));
+    box2.add(new Bowl("국그릇", 4000));
+
+    box3.add(new Bowl("시약그릇", 100000));
+    box3.add(new Bowl("물그릇", 1000));
+    
+    box3.add(new Frame("풍경그림", 5));
+    box3.add(new Frame("인물그림", 3));
+
+    box1.printContents();
+    console.log(`${box1.getName()} 이삿짐 가격은 ${box1.getPrice()} `);
+    
 </script>
 </html>

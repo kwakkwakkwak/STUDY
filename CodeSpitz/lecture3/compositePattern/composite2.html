@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+<script>
+    const Task = class {
+        constructor(title) {
+            if(typeof title !== 'string') throw "title should be string";
+            this._title = title;
+            this._completed = false;
+            this._date = new Date();
+        }
+        getData() {throw "구현되지 않았습니다."}
+        add() {throw "구현되지 않았습니다."}
+        del() {throw "구현되지 않았습니다."}
+
+    }
+
+    const TaskItem = class extends Task {
+        constructor(title) {
+            super(title);
+        }
+        getData() {
+            return JSON.stringify([this._title, this._date, this._completed]);
+        }
+        add() {return false;}
+        del() {return false;}
+    }
+
+    const TaskList = class extends Task {
+        constructor(title) {
+            super(title);
+            this._list = [];
+        }
+        add(task) {
+            if(!(task instanceof Task)) throw "task should be Task class";
+            return (this._list.length + 1) === this._list.push(task);
+        }
+        del(task) {
+            if(!(task instanceof Task)) throw "task should be Task class";
+            let len = this._list.length,
+                index = this._list.indexOf(task);
+            this._list.splice(index, 1);
+            return (len - 1) === this._list.length;
+        }
+        getData() {
+            this._list.forEach(one => {
+                console.log(one.getData());
+            })
+        }
+    }
+
+    var todo = new TaskList("todoList");
+    todo.add(new TaskItem("할일1"));
+    todo.add(new TaskItem("할일2"));
+    todo.add(new TaskItem("할일3"));
+    todo.add(new TaskItem("할일4"));
+</script>
+</html>
