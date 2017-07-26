@@ -26,7 +26,6 @@
 
         add(task) {
             if (!(task instanceof Task)) throw 'invalid Task';
-
             this._list.push(task);
         }
 
@@ -71,7 +70,7 @@
             return null;
         }
 
-        constructor(title, date = Date.now()) {
+        constructor(title, date = new Date()) {
             if (!title) throw 'invalid title';
 
             super();
@@ -90,7 +89,8 @@
         }
 
         get date() {
-            return this._date;
+            // return this._date;
+            return this._date.toISOString();
         }
 
         isComplete() {
@@ -113,9 +113,7 @@
     const TaskList = class extends Task {
         constructor(title) {
             if (!title) throw 'invalid title';
-
             super();
-
             this._title = title;
         }
 
@@ -123,26 +121,25 @@
             return this._title;
         }
 
-        byRegister(stateGroup = true) {
-            return this.getData(TaskItem.register, stateGroup);
-        }
+        // byRegister(stateGroup = true) {
+        //     return this.getData(TaskItem.register, stateGroup);
+        // }
 
-        byTitle(stateGroup = true) {
-            return this.getData(TaskItem.title, stateGroup);
-        }
+        // byTitle(stateGroup = true) {
+        //     return this.getData(TaskItem.title, stateGroup);
+        // }
 
-        byDate(stateGroup = true) {
-            return this.getData(TaskItem.date, stateGroup);
-        }
+        // byDate(stateGroup = true) {
+        //     return this.getData(TaskItem.date, stateGroup);
+        // }
 
         add(title, date) {
             super.add(new TaskItem(title, date));
         }
 
-        remove(task) {
-            debugger;
-            super.remove(task);
-        }
+        // remove(task) {
+        //     super.remove(task);
+        // }
     };
 
     const DomRenderer = class {

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="todo"></div>
+</body>
+<script>
+console.log();
+
+
+/* 컴포지트 패턴을 구현한다. */
+
+// taskA가 더이상 Task 클래스로 들어오질 않는다.
+// 따라서 이것도 수정해 줘야 한다.
+// const TaskSort = {
+//     title: (taskA, taskB) => taskA.sortTitle(taskB),
+//     date: (taskA, taskB) => taskA.sortDate(date),
+//     register: null
+// }
+
+// Task는 인터페이스 겸 부모인데, 컴포지트 패턴과 루프를 위한 공통 인터페이스를 뺀 것이다.
+// 서브 자식과 그 루프, 그다음에 자식에 add, remove를 가지고 있을 부모가 되는 것이다.
+const Task = class {
+    constructor() {
+        this._list = [];
+        this._title = "";
+        this._date;
+    }
+    add(task){
+        this._list.push(task);
+    }
+    remove(task){
+        const l = this._list;
+        if(l.includes(task)) l.splice(l.indexOf(task),1)
+    }
+
+    // _getList ==> _getResult
+    // 하지만, TaskItem에서는 객체를 반환하고 TaskList에서는 배열을 반환한다.
+    // 출력 형식을 일치시킬 것이다.
+    // 컴포지트 패턴의 핵심은 리턴 결과 타입이 동일한 것이다. 파일이나 폴더도 마찬가지로.
+    getResult(sort, state) {
+    // sort가 전달되어야 하는데, 부모의 메소드인 getresult에서 sort를 받는다.
+    // 템플릿 메서드 패턴
+        const l = this._list;
+        
+        // const s = TaskSort[sort];  
+        // sort 문제가 일어난다. 위와 같은 지식을 갖고 있으니 없앤다.(주석)
+        // 그러면 sort라고 함수를 받아야 한다. 그리고 더이상 지식을 받지 않고,
+        // 공급하는애가 sort 를 공급하는게 맞다.
+        // getResult는 바깥에서 부르는 함수가 아닌 것이다.
+        // TaskList가 부르는 메서드가 된 것이다.
+        // TaskList는 byTitle...과 같은 것으로 부르는 것이다. 즉 내부 함수이다.
+
+
+        let result = [];
+        result = state 
+                 ? [l.filter(v => !v.isComplete()), l.filter(v => v.isComplete())]
+                   .reduce( (p, c) => p.concat(c.sort(sort)), [])
+                 : [...l].sort(sort);
+
+        return {
+            item: this._getResult(), 
+            children: result
+        }
+    }
+    _getResult() {
+        throw "must be overrided";
+    }
+}
+
+const TaskItem = class extends Task {
+    static title(a, b) {
+        return a.sortTitle(b);
+    }
+    static date(a, b) {
+        return a.sortDate(b);
+    }
+    // taskList와 taskItem을 아는 관계가 되기 때문에 taskList도 아는 지식이 있어서
+    // register를 할수 있다.
+    static register(a, b) {
+        return null;
+    }
+    constructor(title) {
+        super();
+        this._title = title;
+        this._date = new Date;
+        this._isComplete = false;
+    }
+    isComplete() {
+        return this._isComplete;        
+    }
+    toggle() {
+        this._isComplete !== this._isComplete;
+    }
+
+    _getResult(sort, state) {
+        return this;
+    }
+    sortTitle(task) {
+        return this._title > task._title;  
+    }
+    sortDate(task) {
+        return this._date > task._date;
+    }
+}
+// Task는 add나 remove를 할때 task를 받아서 리턴하고 있다.
+// 실제로 바깥 쪽에서는 taskItem을 만들어서 집어넣는다.
+// 바깥쪽에서는 text를 주는데, task클래스가 taskItem을 만들수는 없다.
+// TaskList가 TaskItem을 알고 있으니, 여기에 add와 remove를 만든다.
+const TaskList = class extends Task {
+    constructor(title) {
+        super();
+        this._title = title;
+    }
+
+    _getResult(sort, state) {
+        return this._title;
+    }
+    add(title) {
+        // es6기능에서는 오버라이드 되면 부모것을 호출할수 있다.
+        // Task는 Task의 인스턴스가 들어오는 것만 알수 있다.
+        super.add(new TaskItem(title));
+    }
+    remove(task) {
+        super.remove(task);
+    }
+
+    // 밑의 것들은 sort에 함수를 넘겨줘야 할 책임이 있다.
+    // 함수들은 taskItem에 넘겨줘 버렸다.
+    // taskItem이  sorting 함수를 공급하는 이유는 실제로 task내부 내용에 대해서 taskItem만 알고있기 때문이다.
+
+    byRegister(state = false) {
+        return this.getResult(TaskItem.register, state);
+    }
+    byTitle(state = false) {
+        return this.getResult(TaskItem.title, state);
+    }
+    byDate(state = false) {
+        return this.getResult(TaskItem.date, state);
+    }
+
+
+}
+
+const list = new TaskList('list1');
+list.add("task1");
+list.add("task3");
+list.add("task2");
+
+const list1 = list.byRegister();
+list1.children[0].add(new TaskItem('sub1'));
+list1.children[0].add(new TaskItem('sub3'));
+list1.children[0].add(new TaskItem('sub2 '));
+
+
+console.log(list.byRegister());
+console.log(list.byTitle());
+
+
+
+
+/*
+중간 단계에 버그가 많았던 이유는 역할이 혼재되어서 이다.
+역할 정리하고 자기것을하고나서는 버그가 다 없어진다.
+
+끊임없이 버그가 나면역할 모델이 잘못된 것이다.
+수정해서 역할 모델을 바르게 옮기면, 버그가 안나는 코드가 될 수 있다.
+
+단일 했던 루프를 getResult, _getResult로 탬플릿 메소드 패턴을 사용
+내려서 컴포지크 패턴이 되어서 task도 getResult에 반응
+taskList도 getResult에 반응하게 된다.
+
+taskList에 있는 getResult만 하면 밑에서도 계속 그 행위가 실행되게 된다.
+
+*/
+
+/*
+개발하라고 하면 난감해 하는게 어떻게 만들어야 할지 모르겠다 인데,
+무조건 남이 짜줬을거야 라고 생각하고 남이 짜줬으면 이렇게 사용해야지 라고 코드를 먼저
+써보라. 그리고 나서 보면 개발할수 있다.
+*/
+
+const Dr = class {
+    static el(type, ...attr) {
+        // const쓰는데 에러나면 let 쓰면 된다.
+        const el = document.createElement(type);
+        for(let i = 0; i < attr.length;) {
+            // 한줄로 쓰는 이유는 인덱스를 한꺼번에 const를 생성한다는 것을 의미한다.
+            const k = attr[i++], v = attr[i++]; 
+
+            // 스타일, 속성 둘다 처리하고 싶다.
+            // 처음에 @로 들어오면 스타일이야
+            if(typeof el[k] === 'function') el[k].apply(el, Array.isArray(v) ? v : [v])
+            else if(k[0] === '@') el.style[k.substr(1)] = v
+            else el[k] = v;
+                  
+        }
+        return el;
+    }
+    constructor(taskList, parent) {
+        this._list = taskList;
+        this._parent = parent;
+        this._sort = 'register';
+    }
+    sort(s) {
+        this._sort = s;
+        this.render();  
+        // 모델렌더 : 모델을 갱신했으면 다시 그려. 뷰 하나하나를 건드리는게 아니라 통째로 그린다.
+        // 모델을 갱신하고 다시 그리면 된다. 모델을 그리고 뷰는 모델에 맞게 다시 그려낸다. 
+        // 그러면 버그가 안생긴다.
+    }
+    // 제일먼저 그려야할게 있는데 많은 작업이 CRUD인데
+    // 그중 가장 먼저 쓰기를 만들어야 한다.
+    render() {
+        const parent = document.querySelector(this._parent);
+        const data = this._list.getResult(this._sort, true);
+
+        parent.innerHTML = '';
+        
+        // parent에 appendChild 된다.
+        [
+            // sorting하는 애들은 내비에 들어가야 하는 요소들이다.
+            Dr.el('h2', 'innerHTML', data.item),
+            'register,title,date'.split(",").reduce((p,c) => {
+                p.appendChild(
+                    Dr.el('button','innerHTML',c,
+                          'addEventListener', ['click', e => this.sort(c)]
+                ));
+                return p;
+            } , Dr.el('nav')),
+            Dr.el('section',
+                    'appendChild', Dr.el('input', 'type', 'text'),
+                    'appendChild', Dr.el('button', 'innerHTML', 'add task'),
+                    'addEventListener', ['click', e => this.add(e.target.previousSibiling.value)]
+                    // es6 에서는 화살표를 써서 thisbinding문제로 인자를 기반으로 만들어야 한다.
+            )
+        ].reduce((p,c) => (p.appendChild(c), p) , parent);
+
+    }
+}
+
+
+// 돔렌더러
+const todo = new Dr(list, '#todo');
+todo.render();
+
+console.log();
+</script>
+</html>

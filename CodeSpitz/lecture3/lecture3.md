@@ -39,7 +39,7 @@ COMPOSITE PATTERN
 디자인 패턴, 엔터프라이즈 패턴 이 있다. 더큰 패턴이다.
 
 어플리케이션에는 2가지 층이 있다.
-비즈니스 모델을 갖고잇는 층,  이것을 응용하는 층
+비즈니스 모델을 갖고잇는 층(핵심),  이것을 응용하는 층
 도메인 레벨, 어플리케이션 레벨을 분리해서 생각한다.
 
 어떠한 앱을 떠올렸을때,
@@ -47,43 +47,9 @@ COMPOSITE PATTERN
 자료구조를 담아낼수 있는 객체 구조를 짤 것인가? 부터 생각해야 한다.
 
 
+
+
 ### Todo Domain
 
 
-
-1. 나의 메모리 상에서 자료구조 만들....................
-2. 알
-
-
-
-
-
-```html
-<style>
-
-</style>
-<body>
-  
-  
-</body>
-<script>
-// 할일 을 task
-// task class
-  const Task = class {
-    
-  };
-  
-  // 사용하는 쪽부터 만들어야 하므로 TaskList부터 구현
-  const TaskList = class {
-    
-  }
-  
-  const list = new TaskList();
-  list.add("task1");
-  list.add("task3");
-  list.add("task2");
-  console.log(list.byRegister());
-  console.log(list.byTitle());
-</script>
-```
 

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+<script>
+// TaskSort는 행위를 할 스태틱 함수만 준비하고, 라우터 해주는 것이고
+// 지식이 없이 task에게 맞긴다.
+const TaskSort = {
+    // a와 b는 누가 큰지 알아야 할까? 타이틀에 들어오는 a,b는 Task가 들어온다.
+    // 누가 판단해야 할까? Task내부 집안 살림으로 하는게 맞을까?
+    // 객체지향이니 위임해야 한다. 
+    // task가 지식을 가져야 한다. task의 내장을 까서도 안된다.
+    // 어떻게 일어나는지 모르고 결과만 알면된다. task한테 물어봐야 한다.
+    title: (taskA, taskB) => taskA.sortTitle(taskB),
+    date: (taskA, taskB) => taskA.sortDate(date),
+    register: null   // sort(null) 하면 정렬되지 않고 그냥 나온다.
+}
+
+const Task = class {
+    constructor(title) {
+        if(typeof title !== 'string') throw "title should be String";        
+        this._title = title;
+        this._date = Date.now();
+        this._isComplete = false;
+    }
+    // 이름과 알고리즘을 일치하게 하는게 좋다.
+    isComplete() {
+        return this._isComplete;        
+    }
+    // 상태전환
+    toggle() {
+        this._isComplete !== this._isComplete;
+    }
+    sortTitle(task) {
+        return this._title > task._title;   // task니까 task의 사정을 안다.
+    }
+    sortDate(task) {
+        return this._date > task._date;
+    }
+
+    // 얘는 등록되었는지 아닌지 알지 못한다.
+    // register은 taskList가 알고 있는 행위이다.
+    // taskList가 task를 알지 반대는 아니다. 그래서 관여할 자격이 없다.
+    // 그래서 true / false를 반환하는지 알수가 없다.
+    // sortRegister() {} 
+
+    // 훈련을 할때 최대한 나에게 맞는 미묘한 표현을 하는 훈련이 되어야
+    // 산업 실무에서 잘 코딩할수 있다. 
+
+}
+
+// 이거먼저 만든다.
+// TaskList가 Task를 사용하기 때문이다.
+// 사용하는 측이 사용하는 기능을 만들어야 한다.
+const TaskList = class {
+    constructor(title) {
+        if(typeof title !== 'string') throw "title should be String";
+        this._title = title;
+        this._list = [];
+    }
+    // 대칭성이 중요하므로 add 다음에 remove도 더해준다.
+    add(title) {
+        this._list.push(new Task(title));
+    }
+    // remove는 기본적으로 task를 지운다.
+    remove(task) {
+        // this._list가 중복되니 줄이자.
+        const l = this._list;
+
+        // 너희는 바보다 vs 너희는 똑똑하다.
+        // 산업 현장에서는 너희는 바보다 컨셉으로, 코드를 안전하게 컨벤션을 요구한다.
+        // 혼자 연습할때에는 섬세한 의미를 쓰는 훈련이 좋다.
+        if(l.includes(task)) l.splice(l.indexOf(task),1)
+    }
+
+    // 인자를 최대한 안 받는 함수가 좋다.
+    // 얘는 공개된 함수가 아니므로 validation할필요 없다. 순수 함수로직만 짜면 된다.
+    _getList(sort, state) {
+        // this._list가 많이 쓰일거 같으니....
+        const l = this._list;
+        // 인자를 객체로 바꾸면 좋지 않다. 인자는 건드리지 않는다.
+        const s = TaskSort[sort];  // 전략패턴, 라우터다. 
+
+        let result = [];
+
+        // state를 체크해서 분기를 준다.
+        if(state) {
+            // complete에 따라서 분리해야 한다면?
+            // [ [완료], [미완료] ]
+            result = [l.filter(v => !v.isComplete()), l.filter(v => v.isComplete())]
+                .reduce( (p, c) => p.concat(c.sort(s)), []);
+        } else {
+        // 안묶는다.
+        // [...] 이러면 배열복사가 된다.
+        // title에 맞게 정렬할수 있는 것은 누가 가져야 할까? 
+        // task가 가져야 할까 제3자가 가져야 할까? 
+        // (아마도)task가 자신외의 것들에 대한 정렬까지 챙겨야 할 책임은 없으므로.
+        // 정렬을 제공하는 별도의 객체를 만들어야 한다.
+            result = [...l].sort(s);
+        }
+
+        // 사실 위의 if else문은 할당이 중복되어 있으므로 삼항연산자로 한다.
+        // 위의 구문에서는 result대신에 다른 변수에 할당이 가능하다.
+        result = state 
+                 ? [l.filter(v => !v.isComplete()), l.filter(v => v.isComplete())]
+                   .reduce( (p, c) => p.concat(c.sort(s)), [])
+                 : [...l].sort(s);
+
+        // 위에서 return이 중복되어 있다. 따라서 중복을 없앤다.
+        return result;
+
+    }
+
+    // 정렬의 차이만 있을뿐 2개는 비슷하다.
+    // 본질은 getList해주는 것이다. (중복제거)
+    // 성공 여부..
+    byRegister(state = false) {
+
+        return this._getList('register', state);
+    }
+    byTitle(state = false) {
+
+        return this._getList('title', state);
+    }
+    // 일반적으로 날짜로 정렬하는 경우도 많다.
+    byDate(state = false) {
+        return this._getList('date', state);
+    }
+
+
+}
+
+// 어떻게 쓰는지 여기서 간단히 먼저 해보자
+// 런타임 상황에서 쓰는 것..
+// 항상 사용하는 측에서 원하는 것만 만들면된다.
+// 폴더 이름을 하나 가지고 있을 것이다.
+const list = new TaskList('list1');
+list.add("task1");
+list.add("task3");
+list.add("task2");
+
+// 우리는 정렬되는 기능을 가진다.
+// 순수데이터를 리턴할 것이다.
+console.table(list.byRegister());
+console.table(list.byTitle());
+
+
+/*
+우리가 알고 있는 일반적인 앱의 기능을 커버하는 개발
+을 하려고 노력해야 한다.
+*/
+console.log();
+</script>
+</html>
