@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+<script>
+// class SensorSystem {
+//     constructor(){
+//         this.list = [];
+//     }
+//     add(device) {
+//         if(!(device instanceof ADevice)) throw "ADeviceClass만 됩니다.";
+//         this.list.push(device);
+//         return this.list.length;
+//     }
+//     giveTheAlarm(alarmSourceName, level) {
+//         this.list.forEach( one => one.alarm(alarmSourceName, level));
+//     }
+// }
+
+// class ADevice{
+//     constructor(){}
+//     alarm() { throw "구현되어야 합니다."; }
+// }
+
+// class Lighting extends ADevice{
+//     alarm(alarmSourceName, level) {
+//         console.log(level + "만큼 불을 켠다.");
+//         console.log(alarmSourceName + "쪽의 불을 켠다.")
+//     }
+// }
+
+
+// class Buzzer extends ADevice{ 
+//     alarm(alarmSourceName, level) {
+//         console.log(level + "만큼 경보음을 울린다.");
+//         console.log(alarmSourceName + "쪽의 경보음을 울린다.")   
+//     }
+// }
+
+// let sensor = new SensorSystem();
+// sensor.add(new Lighting());
+// sensor.add(new Buzzer());
+
+// sensor.giveTheAlarm("대문", 20);
+
+
+// 옵저버 패턴 적용.
+class SensorSystem {
+    constructor() {
+        this._list = [];
+        this._level = 0;
+        this.alarmSource = ""
+    }
+    register(al) {
+        if(!(al instanceof AlarmListener)) throw "AlarmListener 클래스만 가능합니다.";
+        this._list.push(al);
+    }
+    giveTheAlarm(alarmSource, level) {
+        this.alarmSource = alarmSource;
+        this.level = level;
+        this.notifyObservers();
+    }
+    notifyObservers() {
+        this._list.forEach(one => one.alarm(this));
+    }
+    getLevel() {
+        return this.level;
+    }
+    getAlarmSourceName() {
+        return this.alarmSource;
+    }
+}
+
+class AlarmListener {
+    alarm(){throw "구현이 필요합니다."}
+}
+
+class CopCaller extends AlarmListener {
+    alarm(sensorSystem) {
+        if(!(sensorSystem instanceof SensorSystem)) throw "SensorSystem 클래스만 가능합니다.";
+        console.log(sensorSystem.getLevel() + "의 경보를 인근경찰서에 보낸다.");       
+    }
+} 
+
+class Lighting extends AlarmListener {
+    alarm(sensorSystem) {
+        if(!(sensorSystem instanceof SensorSystem)) throw "SensorSystem 클래스만 가능합니다.";
+        console.log(sensorSystem.getLevel() + "만큼 불을 켠다.");
+        console.log(sensorSystem.getAlarmSourceName() + "쪽의 불을 켠다.");
+    }
+}
+
+class Buzzer extends AlarmListener {
+    alarm(sensorSystem) {
+        if(!(sensorSystem instanceof SensorSystem)) throw "SensorSystem 클래스만 가능합니다.";
+        console.log(sensorSystem.getLevel() + "만큼 경보음을 발생한다.");
+        console.log(sensorSystem.getAlarmSourceName() + "쪽의 경보장치를 켠다.");
+    }
+}
+
+let ss = new SensorSystem();
+ss.register(new CopCaller());
+ss.register(new Buzzer());
+ss.register(new Lighting());
+ss.giveTheAlarm("대문", 5);
+
+</script>
+</html>
