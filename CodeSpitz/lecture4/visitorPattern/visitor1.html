@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    h1{text-align: center;}
+    img{width:400px;}
+    .para{
+      margin-top: 20px;
+      float:left;
+      width:49%;
+      padding-right:1%;
+    }
+    .para.img{
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Design Patter : Visitor Pattern</h1>
+  <div class="para">
+    <p>
+      <strong>visitor pattern</strong>은 동작하는 객체구조에서 알고리즘을 분리하는 방식이다.<br/>
+      이러한 분리의 실질적인 결과는 구조를 수정하지 않고 현재의 객체 구조에서 새로운 연산을
+      추가할 수 있다. 이것은 개방 폐쇄 원칙을 따르는 하나의 방법이다.<br/>
+      비지터는 클래스의 수정 없이. 새로운 가상 함수를 클래스의 가족에 추가할수 있다.<br/>
+      대신, 비지터 클래스는 모든 가상 함수의 적절한 특수화를 구현되도록 만들어진다.<br/>
+      비지터는 인스턴스 참조를 입력으로 사용하고 이중 디스패치를 통해 목표를 구현한다.<br/>
+      <blockquote>
+        Virtual function<br/>
+        가상함수론 상속하는 클래스내에서 같은 시그니처의 함수로 오버라이딩 될 수 있는
+        함수 또는 메소드이다.<br/>
+      </blockquote>
+      <blockquote>
+        Double dispatch<br/>
+        dispatch는 쉽게 말하자면 메서드를 호출하는 것이며 static dispatch와 dynamic dispatch가 있다.<br/>
+        static은 구현 클래스를 이용해서 컴파일 타임에 어떤 메서드가 호출될지 정해져 있는 것이다.<br/>
+        dynamic은 인터페이스를 이용해서 호출되는 메서드가 동적으로 정해지는 것을 말한다.<br/>
+      </blockquote>
+    </p>
+    <p>
+
+    </p>
+
+  </div>
+  <div class="para img">
+    <img src="./1.gif" alt="">
+    <img src="./2.png" alt="">
+  </div>
+</body>
+<script src="./dispatch.js"></script>
+<script src="./visitor1.js"></script>
+<script>
+  console.log("===".repeat(10));
+  let car = new Car('롤스로이스');
+  car.accept(new CarElementPrintVisitor());
+  console.log("===".repeat(10));
+  car.accept(new CarElementDoVisitor());
+</script>
+</html>

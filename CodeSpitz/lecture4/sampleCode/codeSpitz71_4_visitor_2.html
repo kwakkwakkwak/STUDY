@@ -17,8 +17,8 @@ const Task = class {
     let result = [];
     if (state) result = [l.filter(v => !v.isComplete()), l.filter(v => v.isComplete())].reduce((p, c) => p.concat(c.sort(sort)), []);
     else result = [...l].sort(sort);
-    return { 
-      item: this._getResult(), 
+    return {
+      item: this._getResult(),
       children: result.map(v => v.getResult(sort, state))
     };
   }
@@ -41,10 +41,10 @@ const TaskItem = class extends Task {
   	this._date = new Date();
   	this._isComplete = false;
   }
-  get date() { 
+  get date() {
     return this._date.toISOString(); // toJSON
   }
-  get title() { 
+  get title() {
     return this._title;
   }
   _getResult(sort, state) {
@@ -62,15 +62,6 @@ const TaskItem = class extends Task {
   sortDate(task) {
   	return this._date > task._date;
   }
-  operation(visitor, sort, state) {
-    const s = TaskItem[sort];
-    visitor.item(this);
-    visitor.startSub();
-    this.getResult(s, state).children.forEach(
-      ({ item }) => item.operation(visitor, s, state)
-    );
-    visitor.endSub();
-  }
 };
 const TaskList = class extends Task {
   constructor(title) {
@@ -79,25 +70,17 @@ const TaskList = class extends Task {
     this._sort = 'register';
   }
   get title() { return this._title; }
-  get sort() { 
-    return this._sort; 
+  get sort() {
+    return this._sort;
   }
-  set sort(v) { 
-    this._sort = v; 
+  set sort(v) {
+    this._sort = v;
   }
   add(title) {
     super.add(new TaskItem(title));
   }
   _getResult(sort, state) {
   	return this._title;
-  }
-  operation(visitor, sort, state) {
-    visitor.list(this);
-    visitor.startSub();
-    this.getResult(sort, state).children.forEach(
-      ({ item }) => item.operation(visitor, sort, state)
-    );
-    visitor.endSub();
   }
 };
 const Dr = class {
@@ -139,7 +122,7 @@ const Dr = class {
     const parent = document.querySelector(this._parent);
     parent.innerHTML = '';
     const visitor = new Visitor(this, parent);
-    this._list.operation(visitor, this._list.sort, true);
+    visitor.accept(this._list, this._list.sort, true);
   }
 };
 const Visitor = class {
@@ -148,16 +131,32 @@ const Visitor = class {
     this._parent = el;
     this._current = null;
   }
-  list(taskList) {
+  accept(task, sort, state) {
+    const s = TaskItem[sort];
+    switch (true) {
+      case task instanceof TaskItem:
+        this._item(task);
+        break;
+      case task instanceof TaskList:
+        this._list(task);
+        break;
+    }
+    this._startSub();
+    task.getResult(s, state).children.forEach(
+      ({ item }) => this.accept(item, s, state)
+    );
+    this._endSub();
+  }
+  _list(taskList) {
     const r = this._renderer;
     [
       Dr.el('h2', 'innerHTML', taskList.title),
-      'register,title,date'.split(',').reduce((p, c) => { 
-        p.appendChild(Dr.el('button', 'innerHTML', c, 
+      'register,title,date'.split(',').reduce((p, c) => {
+        p.appendChild(Dr.el('button', 'innerHTML', c,
           'addEventListener', ['click', e => r.sort(c)]));
         return p;
       }, Dr.el('nav')),
-      Dr.el('section', 
+      Dr.el('section',
         'appendChild', Dr.el('input', 'type', 'text'),
         'appendChild', Dr.el('button', 'innerHTML', 'add task',
           'addEventListener', [
@@ -168,7 +167,7 @@ const Visitor = class {
     this._current = this._parent;
     this._current.color = 255;
   }
-  item(taskItem) {
+  _item(taskItem) {
     const r = this._renderer;
     [
       Dr.el('h3', 'innerHTML', taskItem.title,
@@ -183,22 +182,22 @@ const Visitor = class {
         'addEventListener', [
         'click', e => r.remove(taskItem)
       ]),
-      Dr.el('input', 'type', 'text'), 
+      Dr.el('input', 'type', 'text'),
       Dr.el('button', 'innerHTML', 'add task',
         'addEventListener', [
         'click', e => r.addSubTask(taskItem, e.target.previousSibling.value)
       ])
     ].forEach(v => this._current.appendChild(v));
   }
-  startSub() {
+  _startSub() {
     const c = parseInt(this._current.color, 10) - 25;
-    this._current = this._current.appendChild(Dr.el('section', 
+    this._current = this._current.appendChild(Dr.el('section',
       'color', c,
       '@marginLeft', '15px',
       '@backgroundColor', `rgb(${c}, ${c}, ${c})`
     ));
   }
-  endSub() {
+  _endSub() {
     this._current = this._current.parentNode;
   }
 };
