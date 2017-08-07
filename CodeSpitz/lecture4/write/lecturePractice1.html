@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div>
+      익숙함은 개인차이다. 익숙함이 옳은 것이 아니다.<br/>
+      익숙함과 옳은 것을 착각하지마라. 익숙하지 않은 것은 훈련하지 않은 것이다.<br/>
+      <br/>
+      데이터 구조는 무한 뎁스 이지만,<br/>
+      뷰를 그리는 로직은 별도의 제어문으로 짜서 무한 뎁스가 안된다.<br/>
+      <br/>
+      무한의 데이터 베이스를 같이 탐색하면서 뷰를 그리는 로직을 적용하면 된다.<br/>
+      render를 보면 확정된 문으로 되어 있다. 따라서 그안에서 돌아가는 뎁스를 계속 만들어야 한다.<br/>
+      무한에 맞춰서 계속 진화할수 있는 알고리즘이 되려면 문으로 확정되면 안된다.<br/>
+      어떠한 반복구조를 따라서 우리가 적용하고 싶은 로직을 넣을수 있는 구조<br/>
+      즉 반복되는 아이템마다 반복되는 데이터를 소비해서 무언가 행위할 수 잇는 애를 보내줘서<br/>
+      그때마다 할수 있게 해주면 된다.<br/>
+      <br/>
+      데이터 구조를 계속 탐색, 같이 돌면서 그 구조에 따라서 원하는 렌더링을 하는 애를 만들면 된다.<br/>
+      <br/>
+      이것을 비지터라고 부른다. 방문자. 우리가 순환시키고자하는 구조에 방문자가 맞춰서 들어와서<br/>
+      일감을 주는 것이다. 같은 구조를 순환하면서 그때마다 일감을 비지터가 처리하는 것이다.<br/>
+      <br/>
+      이것이 비지터의 필요성이다.<br/>
+      <br/>
+      비지터를 위한 인터페이스 오퍼레이션을 만들 것이다.<br/>
+      <br/>
+      비지터 패턴이 어려워 하는 이유 <br/>
+      머리가 복잡하다. 계속 외울것, 기억할 것이 많다.<br/>
+      컴퓨터가 변수를 기억하고 재귀 상태 기억하는 거처럼<br/>
+      스택에 따른 상태를 기억해야하기 때문에 그래야 비지터 알고리즘이 이해된다.<br/>
+      그 알고리즘이 어려워서 객체 모델로 비지터 패턴을 한 것이다.<br/>
+      <br/>
+      비지터는 보면 Task를 그냥 인식하는게 아니라 TaskITEM, TaskList일때 그리는 방식이 제각각 다르다.<br/>
+      비지터가 클래스별로 다르게 움직여야 되는 지식을 개별 클래스가 가지고 있으니 사실은 틀리다.<br/>
+      그림그리는 로직을 간섭하기 때문이다.<br/>
+      <br/>
+      Visitor가 Task만 인식하게 할것인가? <br/>
+      아니면 TaskItem, TaskList를 알게하는대신, visitor의 상세 로직을 얘네들한테 감출 것인가<br/>
+      둘중 하나를 선택해야 한다.<br/>
+      <br/>
+      Visitor의 내장을 까는한이 있더라도, 상세내용은, Task만 인식하게 하고 그 밑 자식들은 인식하지 않는게 나은가<br/>
+      아니면 TaskItem, TaskList를 인식할수 있고, 대신 Visitor 내장을 안까는게 맞는것인가?<br/>
+      <br/>
+      Visitor 패턴에서는 내장을 안까는게 중요하다고 볼수 있다.<br/>
+      그럴려면 Visitor의 메소드가 하나밖에 없는 것이다.<br/>
+      <br/>
+      
+
+
+
+
+
+    </div>
+    <div id="todo">
+    </div>
+</body>
+<script>
+    console.log("==========".repeat(10));
+
+    // Task, TaskItem, TaskList, DomRenderer
+
+    const Task = class {
+        constructor() {
+            this._list = [];
+        }
+
+        add(task) {
+            if (!(task instanceof Task)) throw 'invalid Task';
+
+            this._list.push(task);
+        }
+
+        remove(task) {
+            const list = this._list;
+            if (list.includes(task)) list.splice(list.indexOf(task), 1);
+        }
+
+        getData(sort, stateGroup) {
+            const list = this._list;
+
+            let result;
+
+            if (!stateGroup) result = [...list].sort(sort);
+            else result = [list.filter(v => !v.isComplete()), list.filter(v => v.isComplete())]
+                .reduce((p, c) => p.concat(c.sort(sort)), []);
+
+            result = result.map(v => v.getData(sort, stateGroup));
+
+            return {
+                item: this._getData(),
+                children: result
+            };
+        }
+
+        _getData() {
+            throw 'must be overried';
+        }
+        // 여기서 중요한 것은 visitor이 있어야 한다.
+        // 이것은 렌더러가 쓴다.
+        operation(visitor) {
+          throw 'must be overried';
+        }
+    };
+
+    const TaskItem = class extends Task {
+        static title(a, b) {
+            return a.sortTitle(b);
+        }
+
+        static date(a, b) {
+            return a.sortDate(b);
+        }
+
+        static register() {
+            return null;
+        }
+
+        constructor(title) {
+            if (!title) throw 'invalid title';
+
+            super();
+
+            this._title = title;
+            this._date = new Date();
+            this._isComplete = false;
+        }
+
+        _getData(sort, stateGroup) {
+            return this;
+        }
+
+        get title() {
+            return this._title;
+        }
+
+        get date() {
+            return this._date.toISOString();  // toJSON이라고 해도 된다.
+        }
+
+        isComplete() {
+            return this._isComplete;
+        }
+
+        toggle() {
+            this._isComplete = !this._isComplete;
+        }
+
+        sortTitle(task) {
+            return this._title > task._title;
+        }
+
+        sortDate(task) {
+            return this._date > task._date;
+        }
+        // operation(visitor, sort, state) {
+        //   const s = TaskItem[sort];
+        //   // 부모, 자식, 자식의 자식, 자식의 자식의 자식은....?
+        //   // 루프를 돌다 보면 계속 그 section이 그 부모로 가야 하고..
+        //   // 따라서 자식은 자신의 부모만 기억하면 된다.
+        //   // 스택 머신을 사용하는 것인데 이러한 컨텍스트는 visitor가 기억해야 한다.
+        //   /* 내장 숨김
+        //     visitor.item(this);  // 자신을 먼저 그리고 자식을 그린다.
+        //     visitor.startSub();  // 이전 부모를 잡고, 새로운 section를 준다.
+        //     this.getData(s, state).children.forEach(({item}) => item.operation(visitor, s, state));
+        //     visitor.endSub();  // 자식을 순회하고 다시 돌아옴.
+        //   */
+        //
+        //   // Visitor은 Task의 하위 클래스를 다 인식할줄 안다.
+        //   // 캡슐화를 다 하는 것이다.
+        //   visitor.accept(this, sort, state);
+        // }
+    };
+
+    const TaskList = class extends Task {
+        constructor(title) {
+            if (!title) throw 'invalid title';
+            super();
+            this._title = title;
+            this._sort = 'register';
+        }
+
+        get sort() {
+          return this._sort;
+        }
+        set sort(v) {
+          this._sort = v;
+        }
+        get title() {return this._title;}
+
+        _getData(sort, stateGroup) {
+            return this._title;
+        }
+
+        // 필요가 없으니 주석처리한다.
+        // byRegister(stateGroup = true) {
+        //     return this.getData(TaskItem.register, stateGroup);
+        // }
+        //
+        // byTitle(stateGroup = true) {
+        //     return this.getData(TaskItem.title, stateGroup);
+        // }
+        //
+        // byDate(stateGroup = true) {
+        //     return this.getData(TaskItem.date, stateGroup);
+        // }
+
+        // TaskList가 TaskItem을 알고 있고, TaskItem을 만들어서 준다.
+        add(title, date) {
+            super.add(new TaskItem(title, date));
+        }
+        // operation(visitor, sort, state) {
+        //   // visitor가 실제로 해야할 일을 알고 있다.
+        //   // tasklist가 요구하는 것은 아마 list를 그려달라 할 것이다.
+        //   // 렌더러가 getdata한것을 소비하는 것이 아니라
+        //   // 데이터 구조 자체가 자신을 비지터에게 넘기고 부탁하는 것이다.
+        //   /*
+        //   visitor.list(this);
+        //   visitor.startSub();
+        //   visitor.endSub();
+        //
+        //   // 나머지에 대해서도 순환시켜야 한다.
+        //   this.getData(sort, state).children.forEach( ({item}) => {
+        //     item.operation(visitor, sort, state)
+        //   });
+        //   */
+        //   visitor.accept(this, sort, state);
+        // }
+    };
+
+
+    const DomRenderer = class {
+        static el(type, ...attr) {
+            const el = document.createElement(type);
+
+            for (let i = 0; i < attr.length;) {
+                const k = attr[i++], v = attr[i++];
+
+                if (typeof el[k] === 'function') el[k].apply(el, Array.isArray(v) ? v : [v]);
+                else if (k[0] === '@') el.style[k.substr(1)] = v;
+                else el[k] = v;
+            }
+
+            return el;
+        }
+
+        constructor(taskList, parentSelector) {
+            this._parent = parentSelector;
+            this._taskList = taskList;
+            // renderer가 이 정보를 가지고 있는 것은 정상이 아님
+            // List가 sort 정보를 가지고 있는 것이 정상이다.
+            // this._sort = 'byRegister';
+        }
+
+        sort(s) {
+            this._list.sort = s;
+            this.render();
+        }
+        add(title) {
+            this._taskList.add(title), this.render();
+        }
+
+        remove(task) {
+            this._taskList.remove(task), this.render();
+        }
+
+        addSubTask(task, title) {
+            task.add(new TaskItem(title)), this.render();
+        }
+
+        removeSubTask(parent, task) {
+            debugger;
+            parent.remove(task), this.render();
+        }
+
+        toggle(task) {
+            task.toggle(), this.render();
+        }
+
+        render() {
+            const parent = document.querySelector(this._parent);
+
+            if (!parent) throw 'invalid parent';
+
+            parent.innerHTML = '';
+
+            //const data = this._taskList[this._sort]();
+
+            // visitor로 보내니까 data 필요 없다.
+            // const data = this._taskList.getData(this._sort, true);
+
+            // visitor가 그림을 제대로 그릴려면 많은 메소드들이 렌더러에 있어
+            // 렌더러를 보내줘야 한다.
+            // parent는 private 정보이다.
+            const visitor = new Visitor(this, parent);
+            // visitor를 누가 받아들이느냐? task가 operation으로 받아들인다.
+            // visitor가 방문했을때 알아서 해줄 것이다.
+            // visitor를 잘 순환시킬수 있느냐가 관건이다.
+
+            //this._taskList.operation(visitor, this._taskList.sort, true);
+            visitor.accept(this._taskList, this._taskList.sort, true);
+
+        }
+    };
+
+    const Visitor = class {
+        constructor(renderer, el) {
+          this._renderer = renderer;
+          this._parent = el;
+          // 스택 머신 구현을 위해, 현재 컨택스트를 알기 위해서 만든다.
+          this._current = null;
+        }
+        //taskitem인지 taskList인지에 대한 지식은 얘가 갖게 된다.
+        accept(task, sort, state) {
+          const s = TaskItem[sort];
+          switch(true) {
+            case task instanceof TaskItem:
+              this._item(task);  // 자신을 먼저 그리고 자식을 그린다.
+              break;
+
+            case task instanceof TaskList:
+              this._list(task);
+              break;
+          }
+          this._startSub();
+          task.getData(sort, state).children.forEach( ({item}) => {
+            // item.operation(this, sort, state)
+            this.accept(item, s, state);
+          });
+          this._endSub();
+        }
+
+        _list(taskList) {
+          const r = this._renderer;
+          [
+            DomRenderer.el('h2', 'innerHTML', taskList.title),
+            'byTitle,byDate,byRegister'.split(',').reduce((p, c) => (
+                p.appendChild(
+                    DomRenderer.el('button', 'innerHTML', c,
+                        '@fontWeight', this._sort == c ? 'bold' : 'normal',
+                        'addEventListener', ['click', e => (this._sort = c, this.render())])
+                ), p
+            ), DomRenderer.el('nav')),
+            DomRenderer.el('section',
+                'appendChild', DomRenderer.el('input', 'type', 'text'),
+                'appendChild', DomRenderer.el('button', 'innerHTML', 'addTask',
+                    'addEventListener', ['click', e => r.add(e.target.previousSibling.value)])
+            )
+          ].forEach(v => this._parent.appendChild(v));
+          this._current = this._parent;  // 최초의 current
+          this._current.color = 255;
+        }
+        _item(taskItem) {
+          const r = this._renderer;
+          [
+            DomRenderer.el('h3', 'innerHTML', taskItem.title,
+                '@textDecoration', taskItem.isComplete() ? 'line-through' : 'none'),
+            DomRenderer.el('time', 'innerHTML', taskItem.date.toString(), 'datetime', taskItem.date.toString()),
+            DomRenderer.el('button', 'innerHTML', taskItem.isComplete() ? 'progress' : 'complete',
+                'addEventListener', ['click', _ => r.toggle(taskItem)]
+            ),
+            DomRenderer.el('button', 'innerHTML', 'remove',
+                'addEventListener', ['click', _ => r.remove(taskItem)]
+            ),
+            DomRenderer.el('section',
+                'appendChild', DomRenderer.el('input', 'type', 'text'),
+                'appendChild', DomRenderer.el('button', 'innerHTML', 'addSubTask',
+                    'addEventListener', ['click', e => r.addSubTask(taskItem, e.target.previousSibling.value)]
+                )
+            )
+          ].forEach(v => this._current.appendChild(v));
+        }
+        _startSub() {
+          const c = parseInt(this._current.color, 10) - 25;
+          // 새로만든 section에 자식을 붙이는 것.
+          // 최초의 current는 TaskList에서 만들어진다.
+          this._current = this._current.appendChild(DomRenderer.el('section',
+            'color', c,
+            '@marginLeft', '15px',
+            '@backgroundColor', `rgb(${c},${c},${c})`
+          ));
+        }
+        _endSub() {
+          this._current = this._current.parentNode;
+        }
+    }
+
+    const todo = new DomRenderer(new TaskList('list1'), '#todo');
+    todo.render();
+</script>
+
+</html>
