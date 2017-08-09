@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <h1>커맨드 패턴</h1>
+  <div>
+    <p>
+      커맨드 패턴은 행위 디자인 패턴이다.<br/>
+      객체가 나중에 동작을 수행하거나 이벤트를 트리거 하는데 필요한 모든 정보를 캡슐화하는데 사용된다.<br/>
+      명령 패턴과 항상 관련되는 4가지 용어는 comman, receiver, invoker, client 이다.
+      <ol>
+        <li>
+          Command
+          <div>
+            <ul><li>command는 receiver를 알고 있으며 receiver의 메소드를 호출한다.</li></ui>
+          </div>
+        </li>
+
+        <li>
+          Receiver
+          <div>
+            <ul><li></li>
+            <li>receiver 메소드의 매개변수에 대한 값은 명령이 저장된다.</li>
+            <li>그리고 </li>
+            <li>연산하기 전의 상태로 롤백하기 위해서 originator에게 memento 객체를 반환한다.</li></ui>
+          </div>
+        </li>
+
+        <li>
+          The Memento
+          <div>
+            <ul><li>memento 객체는 caretaker가 변경할수 없는 객체이다.</li>
+            <li>이 패턴을 사용할 때, 만약 originator이 다른 객체, 자원을 변경할수 있다면 주의를 기울여야 한다.</li>
+            <li>메멘토 패턴은 단일 객체에 적용된다.</li>
+            <li>내부 상태를 가지는 객체이다.</li></ui>
+          </div>
+      </ol>
+      </li>
+    </p>
+
+  </div>
+</body>
+<script type="text/javascript">
+
+</script>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<h1>메멘토 패턴</h1>
+<div>
+  <p>
+    메멘토 패턴은 이전상태의 객체를 저장하는 능력을 제공하는 디자인 패턴이다.<br/>
+    메멘토 패턴은 3가지 객체로 구현된다.( originator, caretaker, memento )<br/>
+    <ol>
+      <li>
+        The Originator
+        <div>
+          <ul><li>내부 상태를 가지는 객체이다.</li></ui>
+        </div>
+      </li>
+
+      <li>
+        The Caretaker
+        <div>
+          <ul><li>이것은 originator에게 무엇인가를 할 것이지만, 변경을 취소할수 있기를 원한다.</li>
+          <li>처음에 caretaker은 originator에게 memento 객체를 요청한다.</li>
+          <li>그 후에 일련의 작업을 수행한다. </li>
+          <li>연산하기 전의 상태로 롤백하기 위해서 originator에게 memento 객체를 반환한다.</li></ui>
+        </div>
+      </li>
+
+      <li>
+        The Memento
+        <div>
+          <ul><li>memento 객체는 caretaker가 변경할수 없는 객체이다.</li>
+          <li>이 패턴을 사용할 때, 만약 originator이 다른 객체, 자원을 변경할수 있다면 주의를 기울여야 한다.</li>
+          <li>메멘토 패턴은 단일 객체에 적용된다.</li>
+          <li>내부 상태를 가지는 객체이다.</li></ui>
+        </div>
+    </ol>
+    </li>
+  </p>
+
+</div>
+
+</body>
+<script>
+  const NOT_STRING = "string 만 가능합니다.";
+  const NOT_MEMENTO = "Memento 클래스만 가능합니다.";
+  const NOT_MEMENTO2 = "Memento2 클래스만 가능합니다.";
+  const NOT_PERSON = "Person 클래스가 아닙니다.";
+
+
+  class Originator {
+    constructor() {
+      this.state;  // string
+    }
+    set(state) {
+      if(typeof state !== 'string') throw NOT_STRING;
+      console.log(`Originator : Setting state to  + ${state}`);
+      this.state = state;
+    }
+    saveToMemento() {
+      console.log(`Originator : Saving to Memento.`);
+      return new Memento(this.state);
+    }
+    restoreFromMemento(memento) {
+      if(!(memento instanceof Memento)) throw NOT_MEMENTO;
+      this.state = memento.getSavedState();
+      console.log(`Originator : State after restoring from Memento : ${this.state}`);
+    }
+  }
+
+  class Memento {
+    constructor(stateToSave) {
+      if(typeof stateToSave !== 'string') throw NOT_STRING;
+      this.state = stateToSave;
+    }
+    getSavedState() {
+      return this.state;
+    }
+  }
+
+  let savedStates = [];
+  let or1 = new Originator();
+  or1.set("State1");
+  or1.set("State2");
+  savedStates.push(or1.saveToMemento());
+
+  or1.set("State3");
+
+  or1.set("State4");
+  savedStates.push(or1.saveToMemento());
+  or1.restoreFromMemento(savedStates[0]);
+  or1.restoreFromMemento(savedStates[1]);
+
+// ========================================================================
+// ===========s=============================================================
+
+
+  class Person {
+    constructor(name, street, city, state) {
+      this.name = name;
+      this.street = street;
+      this.city = city;
+      this.state = state;
+    }
+    hydrate() {
+      let memento = JSON.stringify(this);
+      return memento;
+    }
+    dehydrate(memento) {
+      let m = JSON.parse(memento);
+      this.name = m.name;
+      this.street = m.street;
+      this.city = m.city;
+      this.state = m.state;
+    }
+  }
+
+  class CareTaker {
+    constructor() {
+      this.mementos = {};
+    }
+    add(key, memento) {
+      this.mementos[key] = memento;
+    }
+    get(key) {
+      return this.mementos[key];
+    }
+  }
+
+  const log = (()=>{
+    let log = "";
+    return {
+      add(msg) {log += msg + "\n";},
+      show() {console.log(log); log = "";}
+    }
+  })();
+
+  let mike = new Person("Mike Foley", "1112 Main", "Dallas", "TX");
+  let john = new Person("John Wang", "48th Street", "San Jose", "CA");
+  let caretaker = new CareTaker();
+
+  // save state
+  caretaker.add(1, mike.hydrate());
+  caretaker.add(2, john.hydrate());
+
+  // mess up their names
+  mike.name = "King Kong";
+  john.name = "SuperMan";
+
+  // restore original state
+  mike.dehydrate(caretaker.get(2));
+  john.dehydrate(caretaker.get(1));
+
+  log.add("mike-name : "+mike.name);
+  log.add("john-name : "+john.name);
+
+  log.show();
+</script>
+
+</html>
