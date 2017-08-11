@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+<script>
+console.log();
+// model
+const NOT_CARD = "카드클래스가 아닙니다.";
+const NOT_CARD_NAME = "카드이름이 아닙니다."
+const NOT_CHANGE_ACE = "ACE 값은 이미 변경되어 변경할수 없습니다.";
+
+class Person {
+    constructor(name) {
+        this._name = name;
+        this._cardList = new CardList();
+        this._stay = false;
+        this._burst = false;
+    }
+    get isStay() {return this._stay;}
+    get isBurst() {return this._burst;}
+    addCard(card) {
+        if(!(card instanceof Card)) throw NOT_CARD;
+        this._cardList.add(card);
+    }
+
+}
+
+class Dealer extends Person {
+    constructor() {
+        super('Dealer');
+    }
+
+}
+
+class Player extends Person {
+    constructor(name, money) {
+        super(name);
+        this._seedMoney = money;
+        this._bettingMoney = 0;
+    }
+
+    betting(money) {
+        this._seedMoney -= money;
+        this._bettingMoney = money;
+    }
+    win(xNum) {
+        this._seedMoney += this._bettingMoney * xNum;
+        this._bettingMoney = 0;
+    }
+    lose() {
+        this._bettingMoney = 0;
+    }
+    draw() {
+        this._seedMoney += this._bettingMoney;
+        this._bettingMoney = 0;
+    }
+}
+
+class GameManager {
+
+}
+
+class Card {
+    constructor(name,value) {
+        this._name = name;
+        this._value = value;
+    }
+    get value() {return this._value;}
+    get name() {return this._name;}
+}
+
+class CardItem extends Card {
+    constructor(name, type, value) {
+        super(name, value);
+        this._type = type;
+    }
+    get type() {return this._type;}
+}
+
+class Ace extends CardItem {
+    constructor(name, type) {
+        super(name, type, 11);
+        this._changeFlag = false;
+    }
+    get isChange() {return this.__changeFlag}
+    changeValue() {
+        if(this._changeFlag) throw NOT_CHANGE_ACE;
+        this._value = 1;
+        this._changeFlag = true;
+    }
+}
+
+class DeckMaker {
+    constructor() {
+        this._types = ['SPADE', 'HEART', 'CLUB', 'DIAMOND'];
+        this._names = ['Ace', 2,3,4,5,6,7,8,9,10,'Jack','Queen', 'King'];
+        this._cardDetail = {};
+    }
+    addCardDetail(cardName, cardDetail) {
+        if(cardName !== 'default' && !this._names.includes(cardName)) throw NOT_CARDNAME;
+        // 클래스가 들어오니 당연히 instanceof가 안됨..
+        // if(!(cardDetail instanceof CardItem)) throw NOT_CARD_ITEM;
+
+        this._cardDetail[cardName] = cardDetail;
+    }
+    removeCardDetail(cardName) {
+        if(!this_names.includes(cardName)) throw NOT_CARDNAME;
+        return delete this._cardDetail[cardName];
+    }
+    makeDeck() {
+        let arr = this._names.reduce( (p,name,index) => {
+            let temp = this._makeSameType(name, index);
+			return p.concat(temp);
+        }, []);
+        return arr;
+    }
+    _makeSameType(name,index) {
+        let oneCardDetail = this._cardDetail[name] || this._cardDetail['default'];
+        return this._types.map(type => new oneCardDetail(name, type,  Math.min(index+1, 10)));
+    }
+}
+
+
+let deckMaker = new DeckMaker();
+deckMaker.addCardDetail('default', CardItem);
+deckMaker.addCardDetail('Ace', Ace);
+let deck = deckMaker.makeDeck();
+
+
+class CardList extends Card {
+    constructor() {
+        super('CardList', null);
+        this._list = [];
+    }
+}
+
+class Game {
+    constructor() {
+        const dealer = new Dealer();
+        const gameManager = GameManager();
+        let playerList = [];
+
+    }
+}
+
+// view
+
+let game = new Game();
+game.play();
+
+let p1 = new Player("Jimmy", 1000);
+p1.stay();
+p1.hit();
+p1.isStay;
+p1.isBurst;
+p1.betting(money);
+p1.win();
+p1.lose();
+p1.draw();
+p1.addCard(card);
+
+let d1 - new Dealer();
+d1.isStay;
+d1.isBurst;
+d1.hit();
+d1.addCard(card);
+
+
+
+console.log();
+</script>
+</html>
