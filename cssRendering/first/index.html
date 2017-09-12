@@ -152,7 +152,7 @@
     .right{float:right;background:blue;color:#fff}
 
     </style>
-    <div style="width:500px">
+    <div style="width:500px; border:1px solid lightblue; height:250px;">
         <div class="left" style="width:200px;height:150px;">1</div>
         <div class="right" style="width:50px;height:150px;">2</div>
         <div class="right" style="width:50px;height:100px;">3</div>
@@ -160,8 +160,105 @@
         <div class="right" style="width:150px;height:70px;">5</div>
         <div class="left" style="width:150px;height:50px;">6</div>
         <div class="left" style="width:150px;height:50px;">7</div>
-        <div style="height:30px;background:red;"></div>
+        <div style="height:30px;background:red;">
+            ABC1 ABC2 ABC3 ABC4 ABC5 ABC6 ABC7 ABC8
+        </div>
     </div>
+    <div style="clear:both;padding:10px;">&nbsp;</div>
+    <div>
+        <img src="./img/1.png" alt="">
+        <p>
+            첫번째를 그리면 이렇게 그려지는데, 본인이 바라보는 라인박스는 
+            이 영역전체 이다. 이 영역 전체에 아무런 플로트 박스가 없어서 이 박스 안에서
+            제일 왼쪽에 영역을 차지해서 자기 높이만큼 라인 박스가 확보되는 것을 보고 
+            확보되니 들어간 것이다.
+        </p>
+    </div>
+    <div>
+        <img src="./img/2.png" alt="">
+        <p>
+            라인 박스를 오른쪽에 그릴려고 봤는데, 이미 또다른 플로트가 있는 것을 보고
+            영역만큼만 잘라서 쓸수 있는 라인 박스를 잡는다. 그 다음 세로, 가로 높이를
+            잡아 보고 그 안에 들어가지는 확인한 다음에 들어온 것이다.
+        </p>
+    </div>
+    <div>
+        <img src="./img/3.png" alt="">
+        <p>
+            이미 좌측, 우측에 영역이 잡혀잇는 것을 본다음에 그 사이에 자신이 들어갈 수 있는
+            높이, 가로 길이를 체크한 다음에 들어갈수 있다는 것을 알수 있다면 그안에 들어가는 것이다.
+            라인 박스 이론은 계속해서 계산해서 들어갈수 잇는 지 확인 하고 못들어가면 다른 라인
+            박스를 찾아야 한다.
+        </p>
+    </div>
+    <div>
+        <img src="./img/4.png" alt="">
+        <p>
+
+        </p>
+    </div>
+    <div>
+        <img src="./img/5.png" alt="">
+        <p>
+            5번째 박스는 왜 저기에 그려졌는가?
+            기존의 라인 박스의 탑라인이 저기 였는데, 그만큼의 가로길이, 세로길이 확보가 되지
+            않는다. 그래서 탑라인을 낮추었더니 걸리는 경계면이 지금의 경계면이다. 
+            지금 베이스 라인을 보앗을때 노란색 dashed 선 영역인 것이다.
+            라인 박스에서 중요한 것은 탑라인의 기준점이 어디까지 내려왓는지가 중요하다.
+            이미 이 라인에서 못그리게 되면 내려서 첫번째 그려질수 잇는 영역까지 내려온 다음에
+            라인박스를 잡는 것이다.
+        </p>
+    </div>
+    <div>
+        <img src="./img/6.png" alt="">
+        <p>
+            탑라인 여역 기준으로 봤을때 가로가 그려질수 없으므로 못들어간다. 그래서 내린다.
+            그래서 지금의 영역에 걸리게 된다. 지금의 영역에서 라인 박스를 잡고 들어온것이다.
+        </p>
+    </div>
+    <div>
+        <img src="./img/7.png" alt="">
+        <p>
+            탑라인은 한번 내리면 끝이다. 다시 올라가지 않는다. 내려온 그 지점부터
+            라인 박스를 잡는다. 6번 라인에서부터 탑라인을 잡아서 내려왔다.
+            하지만 왼쪽도 비었는데 왜 오른쪽에 그려졌는가?
+            float left이기 때문이다. left가 이미 이렇게 전진해있는 상황이기 때문에
+            그 지점으로부터 그려진 것이다. 이것이 라인 박스 이론이다. float는 라인 박스를 통해서
+            배치가 된다.
+        </p>
+    </div>
+    <div>
+        <img src="./img/8.png" alt="">
+        <p>
+            빨간 박스는 뭐다? 다른 것들은 BFC로부터 float요소라서 무시되고 BFC로부터 첫번째 블록 요소가
+            빨간 박스인 것이다. 빨간 박스에 A를 쓰면 해당 영역에 쓰인다. 다른 요소들이 
+            다 가드를 치고 있으니 나머지 영역인 영역에 A가 쓰여지는 것이다.
+        </p>
+    </div>
+    <div>
+        <img src="./img/9.png" alt="">
+        <p>
+            블록박스에 대한 가드로 내려온 것이 아니다. float 라인 박스에 의해서 내려왔다.
+            IFC로 내려 갈때에는 블록 경계면에 의해서 IFC가 내려오는 경우가 있고,
+            IFC가 내리긴 했지만 float 가드에 의해서 내려오게 된 것이 있다.
+            이것은 후자이다. float가드에 의해서 내려갈 때에는 해당하는 요소를 포함한 부모의
+            크기를 늘리지 않는다. 일반적인 블록 가드에 의해서였으면 빨간색 영역이 커졌을 것이다.
+            하지만 float가드에 의한 것이기 때문에 빨간 영역이 늘어나지는 않았다.
+            계속해서 float 가드에 의해서 계속 내려 간다. 
+            ABC6가 위치한 곳은, 그 위의 빈공간에 들어가지는 못한다.
+            인라인은 연속된 공간에 그려져야 한다. 또한 IFC는 베이스 라인을 내려버린 것이다.
+            그래서 채울수가 없으며 다음 밑의 공간에 채워진 것이다. 그다음에는 내릴려고 하다보니
+            어느곳에 채울수가 없었기 때문에 제일 마지막 영역인 ABC8은 맨 아래쪽으로 내려간 것이다.
+
+        </p>
+    </div>
+    <div>
+        <img src="./img/10.png" alt="">
+        <p></p>
+    </div>
+
+    그다음은 OVERFLOW이다.
+    
 </body>
 
 </html>
