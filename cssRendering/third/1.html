@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style id="s">
+        .test {
+            background: #ff0
+        }
+        .test2 {
+            width:100%;
+        }
+
+        @media screen {
+            .test {
+                background: #fff
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+</body>
+<script>
+    const el = document.getElementById("s");
+    const sheet = el.sheet;
+    const rules = sheet.cssRules;
+    const rule = rules[0];
+    console.log(rule, rules);
+    console.log("==".repeat(20));
+    sheet.insertRule('.red{background:red}', rules.length);
+    sheet.insertRule('.blue{background:blue}', rules.length);
+    console.log(
+        Array.from(rules).reduce(
+            (p, c) => p + `${c.cssText}\n`, ''
+        )
+    );
+    console.log("==".repeat(20));
+    sheet.deleteRule(rules.length -1);
+    sheet.deleteRule(rules.length -1);
+    console.log(
+        Array.from(rules).reduce(
+            (p, c) => p + `${c.cssText}\n`, ''
+        )
+    );
+</script>
+
+</html>

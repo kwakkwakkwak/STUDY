@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style></style>
+</head>
+<body>
+    <div id="test"></div>
+</body>
+<script>
+const Style =(_=>{
+    const prop = new Map(),  // runtime cache
+          prefix = 'webkit,moz,ms,chrome,o,khtml'.split(','),
+          NONE = {};  // 다른데서는 쓸수 없는 보호된 값 (주소값)
+
+    const getKey = k => {
+        let key = prop.get(k);
+        if(!key) {
+            const s = document.body.style;
+            if(k in s) prop.set(k, key = k);
+            else if(!prefix.some(v=>{
+                const newKey = v + k[0].toUpperCase() + k.substr(1);
+                if(newKey in s) return prop.set(k, key = newKey);
+            })) prop.set(k, key = NONE);
+        }
+        return key;
+    }
+
+    return class{
+        constructor(style) {
+            this._style = style;
+        }
+
+        set(k, v) {
+            const key = getKey(k);
+            if(key !== NONE) this._style[key] = v;
+        }
+
+        get(k) {
+            const key = getKey(k);
+            return key === NONE ? null : this._style[key];
+        }
+    }
+})();
+
+
+const Rule =(_=>{
+    const trap = {
+        get(rule, key) {return rule._style.get(key);},
+        set(rule, key, val) {rule._style.set(key, val);}
+    }
+    return class{
+        constructor(rule) {
+            this._rule = rule;
+            this._style = new Style(rule.style);
+            return new Proxy(this, trap);
+        }
+    }
+})();
+
+
+// const test = new Style(document.getElementById('test').style);
+// test.set('cssText', 'width:300px;background:red;height:20px;');
+
+// const rule = new Rule(document.getElementById('test'));
+// rule.cssText = 'width:500px; height:20px; background:blue;'
+
+const CSS = class {
+    constructor(sheet) {
+        this._sheet = sheet;
+        this._rules = new WeakMap();
+    }
+    log() {
+        console.log(Array.from(this._sheet.cssRules).reduce(
+            (p, c) => {
+                return p + `${c.cssText}\n`;
+            }, ''
+        ));
+    }
+    add(selector, index = -1) {
+        const sheet = this._sheet, rules = sheet.cssRules;
+        if(index == -1) index = rules.length;
+        const rule = rules[sheet.insertRule(`${selector}{}`, index)];
+        const ret = new Rule(rule);
+        this._rules.set(rule, ret);
+        return ret;
+    }
+}
+const css = new CSS(document.styleSheets[0]);
+console.log(css);
+const test = css.add('.test');
+test.cssText = 'width:500px; height:20px; background:blue;';
+css.add('.test2');
+css.log();
+</script>
+</html>
