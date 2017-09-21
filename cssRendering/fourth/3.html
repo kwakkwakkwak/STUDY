@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        @import "compass";
+
+        @mixin face($w, $h, $x, $y, $z, $rx, $ry, $rz, $tex, $tx, $ty) {
+            position: absolute;
+            transform-style: preserve-3d;
+            width:#{$w}px;
+            height:#{$h}px;
+            margin-top:-#{$h/2}px;
+            margin-left:-#{$w/2}px;
+            transform: translate3d(#{$x}px, #{$y}px, #{$z}px) rotateX(#{$rx}rad) rotateY(#{$ry}rad) rotateZ(#{$rz}rad);
+            background: url('#{$tex}') #{$tx}px #{$ty}px;
+        }
+
+        $pi:3.14159265359;
+        $r:100;
+        $height:196;
+        $sides:20;
+        $sideAngle:$pi / $sides * 2;
+        $sideLen:$r * tan($pi/$sides);
+        $tex:'http://keithclark.co.uk/labs/css-fps/drum2.png';
+        @for $i from 0 through $sides {
+            $x: sin($sideAngle * $i) * $r / 2;
+            $z: cos($sideAngle * $i) * $r / 2;
+            $ry: atan($x/$z);
+            $w: $sideLen + 1;
+            .mesh>div:nth-child(#{$i}) {
+                @include face($w,
+                $height,
+                $x,
+                0,
+                $z,
+                0,
+                $ry,
+                0,
+                $tex,
+                -$sideLen * $i,
+                0);
+            }
+        }
+
+        .mesh>.top {
+            @include face(100,
+            100,
+            0,
+            -98,
+            0,
+            $pi/2,
+            0,
+            0,
+            $tex,
+            0,
+            100);
+        }
+
+        .mesh>.bottom {
+            @include face(100,
+            100,
+            0,
+            98,
+            0,
+            -$pi/2,
+            0,
+            0,
+            $tex,
+            0,
+            100);
+        }
+        /*  */
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            perspective: 600px;
+            background: #404040
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotateY(360deg) rotateZ(360deg) rotateX(720deg)
+            }
+        }
+
+        .mesh {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform-style: preserve-3d
+        }
+
+        .ani {
+            animation: spin 4s linear infinite;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="mesh ani">
+        <div></div><div></div><div></div><div></div>
+        <div></div><div></div><div></div><div></div>
+        <div></div><div></div><div></div><div></div>
+        <div></div><div></div><div></div><div></div>
+        <div></div><div></div><div></div><div></div>
+        <div class="top"></div>
+        <div class="bottom"></div>
+    </div>
+</body>
+
+</html>
