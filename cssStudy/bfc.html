@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Visual Formatting Model</h1>
+    <section>
+        <h2>9.1 Visual formatting model 소개</h2>
+
+        <p>이 장과 이 다음장에서는 visual formatting model, 즉 user agent가 시각적 매체를 
+           위해 문서 트리를 처리하는 방법을 설명한다.</p>
+
+        <p>visual formatting model에서, 문서 트리에 있는 각각의 element는 0개 이상의 
+            박스들을 박스모델에 따라서 생성한다.이 박스들의 레이아웃은 다음과 같이 
+            관리 된다.</p>
+        
+        <ul>
+        <li>box dimensions and type</li><!-- 링크 연결 작업 할것 -->
+        <li>positioning scheme(normal flow, float, and absolute positioning)</li>
+        <li>문서트리의 elements 간의 관계</li>
+        <li>외부 정보(예를 들어, viewport size, intrinsic dimensions of images 등등)</li>
+        </ul>
+
+        <p>이 챕터와 다음 챕터에서 정의하고 있는 프로퍼티들은 continuous media와 
+           paged media(링크연결)에 모두 적용된다. 그러나 margin 속성의 의미는 paged media
+           에 적용될 때 달라진다. (자세한 내용은 page model 참조)</p>
+
+        <p>visual formatting model은 formatting의 모든 측면을 지정하지는 않는다.
+           (예를 들어, 문자 간격 알고리즘을 지정하지는 않는다.)
+           규격에 따르는 user agents는  이 사양에서 다루지 않은 formatting 문제에 대해
+           다르게 동작할 수 있다.</p>
+
+        <h3>9.1.1 The viewport</h3>
+        <p>continuous media(링크) 를 위한 user agent는 일반적으로 사용자가 문서를 보는 동안
+           사용자에게 화면의 창 또는다른 보기영역인 viewport를 제공한다. 
+           user agent는 viewport 크기가 재조정될 때 문서의 레이아웃을 변경할 수 있다.
+           (initial containing block을 참조할 것)</p>
+        
+        <p>viewport가 렌더링된 문서에서 canvas영역보다 작으면 user agent는 스크롤 메커니즘을
+           제공해야 한다. canvas마다 viewport는 최대 한개가 있지만, user agent는 두개 이상의
+           canvas에 핸더링 할수 있다.ㄴ
+           (즉, 동일한 문서에 대해 서로 다른 뷰를 제공할 수 있다.)</p>
+
+        <h3>9.1.2 Containing blocks</h3>
+        <p>CSS 2.1에서 많은 박스 포지션과 사이즈들가 'containing block' 이라고 불리는 
+           직사각형 박스의 가장자리를 기준으로 계산된다. 일반적으로 생성된 상자는
+           하위박스들을 위한 containing blocks로 활동한다. 우리는 박스가 그 자손들을 위한
+           containing block으로 "설정" 한다고 말한다. "박스의 containing block" 이란 문구는
+           containing block이 생성한 박스 하나라는 것이 아니라 
+           그 박스가 살고 있는 containing block 라는 의미이다.</p>
+
+        <p>각 상자에는 각 상자의 containing block에 대한 position이 주어진다. 하지만 
+           containing block에 의해 제한되지는 않는다. it may overflow(css 속성) </p>
+        
+        <p>containing block의 크기 계산 방법에 대한 자세한 내용(l)은 
+           다음장(l)에서 설명한다.</p>
+    </section>
+    <section>
+        <h2>9.2 box 생성 제어</h2>
+        <p>다음 절에서는 CSS2.1에서 생성될 수 있는 박스 타입에 대해 설명한다. 
+           박스 타입은 visual formatting model의 visual formatting model의 동작에
+           부분적으로 영향을 준다. 아래에 설명된 'display' 프로퍼티는 박스의 유형을
+           지정한다.
+        </p>
+
+        <h3>9.2.1 Block-level elements and block boxes</h3>
+        <p></p>
+    </section>
+    
+</body>
+</html>
