@@ -68,7 +68,122 @@
         </p>
 
         <h3>9.2.1 Block-level elements and block boxes</h3>
-        <p></p>
+        <p>Block-level elements는 원본 문서의 엘리먼트로서 시각적으로 block 서식이 
+            지정된다.(ex paragraphs). 'display' 프로퍼티의 다음 값은 
+            'block', 'list-item', 'table' 과 같이 엘리먼트를 block-level로 만든다.</p>
+        
+        <p>block-level 박스들은 block formatting context에 참여하는 박스들이다.
+            각각의 block-level element는 주요한 block-level box를 생성한다.
+            이 주요한 box는 하위 박스들과 생성된 내용을 포함하고 어떠한 위치지정 체계와
+            관련되어 있기도 하다. block level element중 일부는 주요 박스인 'list-item' 
+            엘리먼트에 추가적인 박스들을 생성할 수 있다. 이 추가 박스들은 주요상자와
+            관련하여 배치된다. </p>
+
+        <p>table 박스들을 제외하고, block-level 박스는 또한 block container box이다.
+            block container box 는 block-level 박스만 포함하거나 inline formatting 
+            context를 설정하므로 inline-level 박스들만 포함한다. 모든 block container
+            박스들이 block-level 박스인 것은 아니다. 대체되지 않은 인라인 블록과 
+            대체되지 않는 table cells 은 block container 이지만 block-level 박스들은
+            아니다. block container 이기도한 block-level 박스들을 블록 박스라고 한다.</p>
+
+        <p>'block-level box', 'block container box', 'block box'의 세 용어는
+            모호하지 않는 경우 'block'으로 간략하게 표시되기도 한다. </p>
+
+        <h4>9.2.1.1  Anonymous block boxes</h4>
+<textarea disabled style="background:#fff;height:80px;"><div>
+    Some text
+    <p>More text</p>
+</div></textarea>
+
+        <p>위와 같은 코드가 있다고 하자. DIV에는 인라인 컨텐츠와 블록 컨텐츠가 모두 
+            있어 보인다. formatting을 쉽게 정의할 수 있도록 "Some text" 주위에는
+            익명의 block 박스가 있다고 가정한다.</p>
+
+        <p><img src="./img/anon-block.png" alt="박스 다이어그램" style="display:block">
+            위의 다이어 그램은 3개의 박스들을 보여준다. 그중 하나는 익명이다.</p>
+
+        <p>즉, 위의 생성된 DIV와 같이, 만약 block container box가 내부에
+            block-level 박스(&lt;p&gt;)를 가지고 있다면 그 안에는 block-leve 박스들만 
+            있어야 한다.</p>
+        
+        <p>인라인 박스가 in-flow block-level box를 포함하고 있을 때 
+            (그리고 동일한 인라인 박스안에 inline ancestor가 있다면),
+            인라인 박스는 block-level box 주변에서 끊어지며 인라인 박스는 한쪽이 비어
+            있더라도 두상자로 분할된다.
+
+            When an inline box contains an in-flow block-level box, 
+            the inline box are broken around the block-level box 
+            (and any block-level siblings that are consecutive or separated only by 
+            collapsible whitespace and/or out-of-flow elements), splitting the inline box 
+            into two boxes (even if either side is empty), one on each side of the 
+            block-level box(es). The line boxes before the break and after the break 
+            are enclosed in anonymous block boxes, and the block-level box becomes 
+            a sibling of those anonymous boxes. When such an inline box is affected 
+            by relative positioning, any resulting translation also affects the 
+            block-level box contained in the inline box.</p>
+
+        <p>이 모델은 다음 규칙이 적용되는 경우에 다음 예제에서 적용된다. </p>
+
+
+<textarea disabled style="background:#fff;width:200px;height:40px;padding:5px;">
+p    { display: inline }
+span { display: block }</textarea>
+
+<textarea disabled style="background:#fff;width:400px;height:180px;">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<HEAD>
+<TITLE>Anonymous text interrupted by a block</TITLE>
+</HEAD>
+<BODY>
+<P>
+SPAN앞에 있는 익명 텍스트이다.(c1)
+<SPAN>SPAN 내용이다.</SPAN>
+SPAN뒤에 있는 익명 텍스트이다.
+</P>
+&lt;body></textarea>
+
+        <div style="margin:10px 0px;">
+            <p style="display:inline; border:1px solid black;">
+                SPAN앞에 있는 익명 텍스트이다.(c1)
+                <span style="display:block;">SPAN 내용이다.</span>
+                SPAN 뒤에 있는 익명 텍스트이다.(c2)
+            </p>
+        </div>
+        
+
+        <p>P 엘리먼트는 익명 텍스트의 청크(C1)와 block-level 엘리먼트 뒤에 오는
+            익명 텍스트의 다른 청크(C2)를 포함한다. 그결과 박스들은 
+            BODY를 나타내는 블럭 박스, C1을 둘러싸는 익명 블럭 박스, 
+            SPAN 블럭 박스, C2를 둘러싸는 익명 블럭 박스가 될 것이다.</p>
+
+        <p>익명 박스들의 프로퍼티들은 둘러싸고 있는 익명이 아닌 박스에게서 상속
+            된다.(예를들어, Some text, More text가 있는 예제에서의 DIV ) 
+            상속되지 않은 프로퍼티들은 그들의 초기값을 가진다. 예를 들어,
+            익명 박스의 글꼴은 DIV에서 상속되지만 margin은 0이 될 것이다.</p>
+
+        <p>익명 블럭 박스가 생성되는 엘리먼트에 설정된 프로퍼티들은 해당 엘리먼트의
+            박스 및 내용에도 적용된다. 예를 들어, 위의 예에서 P 엘리먼트에
+            border가 설정된 경우 경계선은 C1, C2 주위에 그려진다.
+            (c1 선끝에서 열림, c2 시작부분에서 열림)</p>
+
+        <p>어떤 user agent는 블럭을 포함하는 인라인에 다른 방법으로 border를 
+            구현했다. 예를 들어 "익명의 라인 박스" 안에 이러한 중첩된 블록을 
+            감싸서 해당 박스 주위에 인라인 border를 그리는 방법이 있다.
+            CSS1과 CSS2는 이러한 행위를 정의하지 않았기 때문에, CSS1 전용
+            user agent와 CSS2 전용 user agent는 여전히 CSS2.1의 이 부분에 대한
+            적합성을 주장할 수 있다. 이거슨 이 규격이 발표된 후 개발된 User agent에는
+            적용되지 않는다.</p>
+
+        <p>익명 블럭 박스들은 참조할 백분율 값을 해석 할 때 무시되며 가장 가까운
+            비 익명의 조상 박스가 대신 사용된다. 예를 들어, 위의 DIV 안의 익명 블록 상자
+            의 자식이 퍼센트 높이를 확인하기 위해 containing block의 높이를 알아야 하는 
+            경우익명 블록이 아닌 DIV에 의해 형성된 containing block의 높이를 사용한다.</p>
+
+
+        <h3>Inline-level elements and inline boxes</h3>
+        <p>
+            
+        </p>
     </section>
     
 </body>
