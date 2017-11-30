@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+<script>
+const backRun = (f, end, ...arg) => {
+    const blob = new Blob([`
+        onmessage =e=>postMessage(${f})(e.data);
+    `], {type:'text/javascript'});
+
+    const url = URL.createObjectURL(blob);
+    const worker = new Worker(url);
+
+    worker.onmessage =e=>end(e.data);
+    worker.onerror =e=>end(e);
+    debugger;
+    worker.postMessage(arg);
+};
+
+backRun( v=>v[0]+v[1], console.log, 3, 5);
+
+
+</script>
+</html>
