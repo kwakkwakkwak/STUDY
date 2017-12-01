@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .line{
+            outline:3px dotted black;
+        }
+
+        div{
+            /* outline:1px solid black; */
+        }
+        .app {
+            max-width:500px;
+            margin:0 auto;
+            border:3px solid lightseagreen;
+            border-radius:10px;
+            padding:0px 15px 10px;
+            height:400px;
+        }
+        h1 { 
+            float: left;
+
+        }
+        form {
+            float:right;
+            margin-right:20px;
+            display:inline-block;
+            line-height:84px;
+        }
+
+        header {
+            border-bottom:1px solid black;
+        }
+        header:after {
+            clear:both;
+            display:block;
+            content:"";
+        }
+        input {
+            border:none;
+            border:1px solid lightslategray;
+            height:18px;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color:orange;
+            border:none;
+            border-radius:5px;
+            height:20px;
+        }
+        .content > div {
+            float:left;
+            width:calc(25% - 30px);
+            padding:15px;
+            
+        }
+    </style>
+</head>
+<body><br/>
+    <div class="app line">
+        <header>
+            <h1 class="line">
+                LOREMIPSUM
+            </h1>
+            <form class="line">
+                <input class="line" type="text">
+                <button class="line">&nbsp;&nbsp;&nbsp;</button>
+            </form>
+        </header>
+        <div class="content">
+            <div class="first">
+                <div class="line" style="background-color:red;height:100px;border-radius:10px;margin-bottom:20px;"></div>
+                <div class="line" style="background-color:blue;height:100px;border-radius:10px;margin-bottom:20px;"></div>                
+            </div>
+            <div class="second">
+                <div class="line" style="background-color:lightsalmon;height:160px;border-radius:10px;margin-bottom:20px;"></div>
+                <div class="line" style="background-color:lightgray;height:100px;border-radius:10px;margin-bottom:20px;"></div>
+            </div>
+            <div class="third">
+                <div class="line" style="background-color:orange;height:70px;border-radius:10px;margin-bottom:20px;"></div>
+                <div class="line" style="background-color:brown;height:30px;border-radius:10px;margin-bottom:20px;"></div>
+                <div class="line" style="background-color:yellow;height:160px;border-radius:10px;margin-bottom:20px;"></div>
+            </div>
+            <div class="fourth">
+                <div class="line" style="background-color:skyblue;height:120px;border-radius:10px;margin-bottom:20px;"></div>
+                <div class="line" style="background-color:pink;height:150px;border-radius:10px;margin-bottom:20px;"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

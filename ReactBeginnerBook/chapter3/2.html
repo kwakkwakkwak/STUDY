@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.0/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.0/react-dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.24/browser.js"></script>
+</head>
+<body>
+    <div id="container"></div>    
+</body>
+<script type="text/babel">
+
+const HelloWorld = React.createClass({
+    render(){
+        return(<p>Hello~!, componentized world! {this.props.target} </p>);
+    }
+});
+
+const Buttonify = React.createClass({
+    render(){
+        return (
+            <button type={this.props.behavior}>
+                {this.props.children}
+            </button>
+        );
+    }
+})
+
+ReactDOM.render(
+    <div>
+        <p>Hello, world!</p>
+        <HelloWorld target="AAAAA"/>
+        <HelloWorld target="BBBBB"/>
+        <HelloWorld target="CCCCC"/>
+        <HelloWorld target="DDDDD"/>
+        <Buttonify behavior="Submit">Send Data</Buttonify>
+    </div>,
+    document.getElementById('container')
+);
+
+
+</script>
+</html>
