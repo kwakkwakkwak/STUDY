@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    비동기로 되어 있는것들은 다 기억할수 없기 때문에 비동기 로직은 점프라 날라다녀서 코드의 일관성을 알기 어렵다. 그러니 어떻게든 동기 로직처럼 보일수 있도록 하기를 원한다. GENERATOR yield를 하게되면 중간에
+    실행흐름을 끊을수 있다. 제네레이터는 프로그램을 중도에 멈췄다가 다시 실행할 수 있다. 코루틴 : 여러번 들어갔다 나올수 있는 로직
+</body>
+<script>
+    // 지역 변수를 사용한다.
+    {
+
+        const loop = function* (n, f, slice = 3) {
+            let i = 0, limit = 0;
+            while (i < n) {
+                if (limit++ < slice) f(i++);
+                else {
+                    limit = 0;
+                    yield;
+                }
+            }
+        }
+
+        const excutor = iter => {
+            const runner = _ => {
+                // if done == true 면 탈출 로직을 추가해야 한다.
+                iter.next();
+                requestAnimationFrame(runner);
+            };
+            requestAnimationFrame(runner);
+        }
+
+    }
+
+
+
+    {
+        // 제네레이터에서 yield는 값을 받아들일수 있다.
+        // 제네레이터 컨슈머 패턴 : 제네레이터가 값을 받아들이는 패턴
+        // next(val) ==> val 값을 받아온다.
+
+        // 할당이 나오며 헷갈린다.
+        const profile = function* (end, next, r) {
+            const userid = yield $.post('member.php', { r }, next);
+            let added = yield $.post('detail.php', { userid }, next);
+            added = added.split(",");
+            end({ userid, nick: added[0], thumb: added[1] });
+        }
+
+    // js는 실행시점에 변수의 정당함을 판단한다.
+    // 
+    ]const executor = (end, gene, ...arg) => {
+            const next = v => iter.next(V);
+            const iter = gene(end, next, ...arg);
+            iter.next();
+        });
+
+        executor(console.log, profile, 123);
+
+    }
+/*
+passive async controll
+콜백을 보낼 수는 있지만 언제 올지는모른다.
+개발자는 순서를 언제 올지 모르지만 순서가 필요하다.
+그러니 첫번째 것이 끝나면 그것에 걸어서 ~~ 처리한다.
+따라서 순서떄문에 한버에 하나만 처리하는 동기형으로 코딩한다.
+
+$.post(url, data, e=>{
+    // 언제 올까...
+})
+
+
+왜 언제가 중요한가?
+let result;
+// 1
+$.post(url, data1, v=> {
+    result = v;
+});
+//2
+$.post(url2, data2, v=> {
+    result.nick = v.nick;
+    repost(result);
+});
+
+1번이 먼저올것이라고 가정하지만...
+과연 그렇게 항상 그렇게 작동할까?
+콜백의 문제점은 패시브 싱크라고 볼수 있다.???
+
+그럼 어떻게 해야할까?
+어떻게 액티브하게 할까?
+
+콜백의 문제점은 언제 함수가 호출될지 모른다는 ㅓㄱㅅ이다. 그러면 우리가 적용할수 있는 액티ㅡ의 범위는 
+콜백이 될떄까지 로딩을 기다릴수 밖에 없다. 보다 액티브하게 하는 방법은
+내가 의지를 가지고 호출하면, 로딩이 안되었을때는 어쩔수 없고, 로딩이 되었을떄는 내가 원할떄 컨트롤할수 있다.
+
+promise는 그것을 할수 있게 ㅏㄴ다.
+
+*/
+    {
+        // 프라미스는then을 호출해야 결과를 얻는다.
+        let result;
+        const promise = new Promise(r=>$.post(url1, data1, r));
+        
+        // promise가 then을 호출하기 전까지는 ㄴㄴ
+        promise.then(v=>{
+            result = v;
+        });
+
+        //우리는 실제적 비동기 행위와 콜백을 분리해서 처리할수 있게 되었다.
+        // 그래서 ㅇ리는 흐름제어에 집중할 수 있다.
+
+        const promise1 = new Promise(r=>$.post(url1, data1, r));
+        const promise2 = new Promise(r=>$.post(url2, data2, r));
+        promise1.then(result=>{
+            promise2.then(v=>{
+                result.nick = v.nick;
+                report(result);
+            });
+        });
+
+        // promise1,2가 동시에 호출되지만 순서를 지킬수 있게 된다.
+        // 이전에는 1이 끝나야 콜백으로 2를 호출했는데 반해서
+        // 이제는 비동기 호출과 그에 대한 처리를 별개로 처리할 수 있게 도니다.
+    
+    }
+
+/*
+GENERATOR + PROMISE
+*/
+    {
+        const profile = function*(end, r) {
+            const userid = yield new Promise(res=>$.post('member.php', {r}, res));
+            let added = yield new Promise(rs=>$.post('detail.php', {userid}, res));
+            added = added.split(",");
+            end({userid, nick:added[0], thumb:added[1]});
+        };
+
+        const executor = (gene, end, ...arg) => {
+            const iter = gene(end, ...arg);
+            const next = ({value, done}) => {
+                if(!done) value.then(v=>next(iter.next(v)));
+            };
+            next(iter.next());
+        };
+
+        executor(profile, console.log, 123);
+    }
+
+/*
+ASYNC AWAIT
+
+좀더 쉽게 할수 있게 만드는게 어싱크, 어웨이트를 만들어줬다.
+
+*/
+
+{
+    const profile = async function(end, r) {
+        const userid = wait new Promise(res=>$.post('member.php', {r}, res));
+        let added = await new Promise(res=>$.post("detail.php", {userid}, res));
+        added = added.split(",");
+        end({userid, nick:added[0], thumb:added[1]});
+    }
+    profile(console.log, 123);
+}
+
+</script>
+
+</html>
