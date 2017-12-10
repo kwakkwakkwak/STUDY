@@ -35,7 +35,7 @@
     //     destination
     // )
 console.dir(React);
-const Letter = class extends React.Component {
+class Letter extends React.Component {
     render() {
         const letterStyle = {
             padding:10, margin:10, backgroundColor:this.props.bgColor,
@@ -49,13 +49,13 @@ const Letter = class extends React.Component {
 
 ReactDOM.render(
     <div>
-        <Letter bgColor="#58B3FF">A</Letter>
-        <Letter bgColor="#FF603F">E</Letter>
-        <Letter bgColor="#FFD52E">I</Letter>
-        <Letter bgColor="#49DD8E">O</Letter>
-        <Letter bgColor="#AE99FF">U</Letter>
+        <Letter bgColor="#58B3FF">A1</Letter>
+        <Letter bgColor="#FF603F">E1</Letter>
+        <Letter bgColor="#FFD52E">I1</Letter>
+        <Letter bgColor="#49DD8E">O1</Letter>
+        <Letter bgColor="#AE99FF">U1</Letter>
     </div>,
     destination
 );
     </script>
-    </html>
+</html>
