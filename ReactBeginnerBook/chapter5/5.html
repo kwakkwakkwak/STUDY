@@ -1,0 +1,154 @@
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.0/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.6.0/react-dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.24/browser.js"></script>
+    <style>
+    </style>
+</head>
+
+<body>
+    <div id="container"></div>
+    <br/>
+    <div id="container2">2</div>
+</body>
+<script type="text/babel">
+const Card = class extends React.Component{
+    render() {
+        const cardStyle = {
+            height:200,
+            width:150,
+            padding:0,
+            backgroundColor:"#FFF",
+            // 카멜케이스인게 보통이지만 아래의 항목은 브라우저 벤더의 특징적인 속성이다. 
+            WebkitFilter:"drop-shadow(0px 0px 5px #666)",
+            filter: "drop-shadow(0px 0px 5px #666)"
+        };
+
+        return (
+            <div style={cardStyle}>
+                <Square/>
+                <Label/>
+            </div>
+        );
+    }
+}
+
+const Square = class extends React.Component{
+    render() {
+        const squareStyle = {
+            height:150,
+            backgroundColor:"#FF6663"
+        };
+
+        return(<div style={squareStyle}></div>);
+    }
+}
+
+const Label = class extends React.Component{
+    render() {
+        const labelStyle = {
+            fontFamily: "sans-serif",
+            fontWeight: "bold",
+            padding: 13,
+            margin: 0,
+            textAlign: "center"
+        };
+        return (
+            <p style={labelStyle}>#FF6663</p>
+        );
+    }
+}
+
+const destination = document.querySelector("#container");
+    ReactDOM.render(
+        <div>
+            <Card/>
+        </div>,
+        destination
+    );
+</script>
+
+
+<script type="text/babel">
+const Card = class extends React.Component{
+  render() {
+    const cardStyle = {
+      display:"inline-block",
+      margin:10,
+      height:200,
+      width:150,
+      padding:0,
+      backgroundColor:"#FFF",
+      // 카멜케이스인게 보통이지만 아래의 항목은 브라우저 벤더의 특징적인 속성이다. 
+      WebkitFilter:"drop-shadow(0px 0px 5px #666)",
+      filter: "drop-shadow(0px 0px 5px #666)"
+    };
+    return (
+      <div style={cardStyle}>
+        <Square backColor={this.props.backColor}/>
+        <Label backColor={this.props.backColor}/>
+      </div>
+    );   
+  }
+}
+
+const Square = class extends React.Component{
+  render() {
+    const squareStyle = {
+      backgroundColor : this.props.backColor,
+      height:150
+    };
+    return (<div style={squareStyle}></div>);
+  }
+}
+
+const Label = class extends React.Component{
+  render() {
+    const labelStyle = {
+      fontFamily: "sans-serif",
+      fontWeight: "bold",
+      padding: 13,
+      margin: 0,
+      textAlign: "center"
+    };
+    return (
+      <div style={labelStyle}>{this.props.backColor}</div>
+    )
+  }
+}
+
+const makeOneColor = () => {
+    const txt = "0123456789abcdef";
+    const l = txt.length;
+    return [0,1,2,3,4,5].reduce( (p,a) => p+ txt[~~(Math.random() * l)],"#" )
+}
+
+const makeColorsArr = num => {
+    const tempArr = new Uint8Array(num);
+    const resultArr = [].map.call(tempArr, _=>makeOneColor());
+    console.log(resultArr);
+    return resultArr;
+}
+const colorArr = [
+    "red", "orange", "yellow", "green", "blue",
+    "indigo", "purple"
+];
+
+
+const destination2 = document.querySelector("#container2");
+
+ReactDOM.render(
+    <div>
+        {makeColorsArr(20).map( (o,i) => <Card key={i} backColor={o} /> )}
+    </div>,
+    destination2
+);
+</script>    
+
+</html>
