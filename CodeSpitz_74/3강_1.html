@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <!--     
+A = <tag>body</tag>
+B - <tag/>
+C = TEXT
+
+BODY = (A|B|C)N -->
+
+    <!-- 
+아래와 같은 파싱들은 코어 개발자에게 항상 발생하는 일들이다.
+과제 : 어튜리뷰트가 지원되는 파서로 업그레이드 하는 것
+-->
+    <div>
+        a
+        <a href=""></a>
+        c
+        <img/> d
+    </div>
+
+</body>
+<script>
+    // 1 : 토큰 나이징, 커서를 증가시킨다. 길이가 다 끝날때 까지 이동한다. 함수의 시그니쳐를 확정. 어떤인풋, 어떤 아웃풋할거냐
+    // 알고리즘 : 변수의 상태와 흐름을 컨트롤
+    {
+        const parser = input => {
+            const result;
+            let cursor = 0;
+            while (cursor < input.length) {
+
+            }
+            return result;
+        }
+
+    }
+
+    // 2 : 
+    {
+        const parser = input => {
+            const result;
+            let cursor = 0;
+
+            while (cursor < input.length) {
+                const char = input[cursor]++;
+                // 시작태그이든 닫히는 태그이든 상관없이 < 가 등장하면 텍스트 노드가 발생
+                if (char === '<') {
+
+                } else {
+
+                }
+            }
+            return result;
+        }
+
+    }
+
+
+
+    // 2 : 
+    {
+        const parser = input => {
+            const result;
+            let cursor = 0;
+
+            while (cursor < input.length) {
+                const char = input[cursor]++;
+
+                if (char === '<') {
+                    if (* text.length) {
+                        text = '';
+                    }
+                } else {
+                    text += char;
+                }
+            }
+            return result;
+        }
+
+    }
+
+
+
+    // 2 : 
+    {
+        const parser = input => {
+            const result;
+            let cursor = 0;
+
+            while (cursor < input.length) {
+                const char = input[cursor++];
+
+                if (char === '<') {
+                    if (text.length) {
+                        // 텍스트 노드 삽입
+                        text = '';
+                    }
+                } else {
+                    text += char;
+                }
+            }
+            return result;
+        }
+
+    }
+
+    // 5 : 함수가 거대해지면 추적하기 힘들다. 기억이 쫓아가기 힘들다.
+    // 변수의 생존기간을 줄여보자.
+    // 함수는 코드상의 알고리즘을 줄이고 어휘로 바꿔준다. 
+    // 가독성이 좋아지는 유일한 방법은 알고리즘을 제거하는 수밖에 없다.
+    // 이름은 역할에 맞는 이름이 들어있으면 가독성이 증가한다.
+    // 구체적인 알고리즘도 짜기도 전에 빼내어야 한다. 바로 그 시점에 빼내는 것이다.
+    {
+        const textNode = (text, target) => {
+            if (text.length) {
+                // target에 삽입
+            }
+            return '';
+        }
+        const parser = input => {
+            const result;
+            let cursor = 0;
+
+            while (cursor < input.length) {
+                const char = input[cursor++];
+                if (char === '<') {
+                    // if(text.length) {
+                    //     // 텍스트 노드 삽입
+                    //     text = '';
+                    // }   
+                    text = '';
+                    text = textNode(text, target)
+                } else {
+                    text += char;
+                }
+            }
+            return result;
+        }
+    }
+
+    // 6. 바닥부터 한다면 내가 어디서 부터해야 하지? 라는 훈련을 하는게 필요하다.
+    {
+        const textNode = (text, target) => {
+            if (text.length) {
+                // target에 삽입
+            }
+            return '';
+        }
+
+        const parser = input => {
+            const result;
+            let cursor = 0;
+
+            while (cursor < input.length) {
+                const char = input[cursor++];
+                if (char === '<') {
+                    textNode(text, target)
+                    text = '';
+                    if (input[cursor++] !== '/') {
+                        let name = input.substring(cursor - 1, cursor = input.indexOf('>', cursor));
+                        const isClose = input[cursor] === '/';
+                        if (isClose) name = name.substr(0, name.length - 1);
+                        const tag = { name, type: 'NODE', children: [] };
+                        cursor++;
+                    }
+                } else {
+                    text += char;
+                }
+            }
+            return result;
+        }
+    }
+
+
+    // 6. 바닥부터 한다면 내가 어디서 부터해야 하지? 라는 훈련을 하는게 필요하다.
+    {
+        const textNode = (text, target) => {
+            if (text.length) target.push({ type: "TEXT', text" });
+            return '';
+        }
+
+        const parser = input => {
+            const result = { tag: { type: 'ROOT', children: [] } }, stacks = [];
+            let cursor = 0, stack = result;
+            do {
+                let text = '';
+                while (cursor < input.length) {
+                    const char = input[cursor++];
+                    if (char === '<') {
+                        textNode(text, stack.tag.children)
+                        if (input[cursor++] !== '/') {
+                            let name = input.substring(cursor - 1, cursor = input.indexOf('>', cursor));
+                            const isClose = input[cursor] === '/';
+                            if (isClose) name = name.substr(0, name.length - 1);
+                            const tag = { name, type: 'NODE', children: isClose ? null : [] };
+                            cursor++;
+                            stack.tag.children.push(tag);
+                            if (!isClosed) {
+                                stacks.push({ tag, back: stack });
+                                break;
+                            }
+                        }
+                    } else {
+                        text += char;
+                    }
+                }
+            } while (stack = stacks.pop());
+            return result;
+        }
+    }
+
+    // 7.
+
+    {
+        const textNode = (text, target) => {
+            if (text.length) target.push({ type: "TEXT', text" });
+            return '';
+        }
+
+        const parser = input => {
+            const result = { tag: { type: 'ROOT', children: [] } }, stacks = [];
+            let cursor = 0, stack = result;
+            do {
+                let text = '';
+                while (cursor < input.length) {
+                    const char = input[cursor++];
+                    if (char === '<') {
+                        textNode(text, stack.tag.children)
+                        if (input[cursor++] !== '/') {
+                            let name = input.substring(cursor - 1, cursor = input.indexOf('>', cursor));
+                            const isClose = input[cursor] === '/';
+                            if (isClose) name = name.substr(0, name.length - 1);
+                            const tag = { name, type: 'NODE', children: isClose ? null : [] };
+                            cursor++;
+                            stack.tag.children.push(tag);
+                            if (!isClosed) {
+                                stacks.push({ tag, back: stack });
+                                break;
+                            }
+                        }
+                    } else {
+                        text += char;
+                    }
+                }
+            } while (stack = stacks.pop());
+            return result;
+        }
+
+
+    }
+
+
+</script>
+
+</html>
