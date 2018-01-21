@@ -19,10 +19,14 @@ const htmlParser = htmlStr => {
     while(cursor < len) {
         const word = words[cursor];
         switch(word) {
+            // < 은 새로운 태그를 생성한다.
             case '<':
                 ({text, isTagStart} = ltSign(text, mainStack)); break;
+            // '/'유무에 따라 태그를 마무리 할수 있다.
+            // '/'가 있을 때에도 /> 와 같은 형태일때는 메인 스택을 팝할 필요가 없다.
             case '>':
                 ({isClosed, isTagStart, mainStack, text} = gtSign(isClosed, isTagStart, text, mainStack, stacks)); break;                
+            // 태그를 마무리 한다. 
             case '/':
                 isClosed = true;
             default:
