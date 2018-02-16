@@ -16,7 +16,7 @@ function makeTag(target, cursor) {
 
     while(word !== " " && word !== "/" && word !== ">") {
         text += word;
-        word = target[++currentCursor];
+        word = target[++currentCursor]; 
     }
 
     result = new Stack({name:text, type:"NODE", attributes:{}, children:[]});
