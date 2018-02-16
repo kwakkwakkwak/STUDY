@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+<script src="./4_1.js"></script>
+<script src="./4_1_blocks.js"></script>
+<script>
+
+const blockFactory = new BlockFactory({block:Block});
+const consoleRenderer = new ConsoleRenderer();
+const board = new Board();
+
+BLOCK_TYPES.forEach(oneType => blockFactory.addType(oneType))
+
+const game = new Game({blockFactory, board, renderer: consoleRenderer});
+game.start();
+</script>
+</html>
