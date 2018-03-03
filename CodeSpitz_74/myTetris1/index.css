@@ -1,0 +1,44 @@
+.none {
+    display:none;
+}
+
+#stage {
+    outline:1px solid black;
+    height:500px;
+    display:inline-block;
+    width:500px;
+}
+
+#title {
+    text-align:center;
+    padding: 30px;
+}
+
+#game.game {
+    outline: 1px solid darkgray;
+    height: 100%;
+    display:flex;
+}
+#game .play {
+    background-color: #eee;
+    width:70%;
+}
+
+#game .info {
+    background-color: #afafaf;
+    width: 30%;
+}
+table {
+    border-spacing:0;    
+}
+
+td{
+    border-spacing:0;
+    height: 23px;
+    width: 35px;
+    border:0px solid black;
+}
+
+.tr22, .tr21, .tr20 {
+    display:none;
+}

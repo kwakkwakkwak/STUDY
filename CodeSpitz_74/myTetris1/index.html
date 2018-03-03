@@ -10,43 +10,35 @@
 </head>
 
 <body>
-    <section id="stage">
+    <section id="stage"></section>
 
-    </section>
-    <nav id="controller">
-        <button class="up"></button>
-        <button class="right"></button>
-        <button class="left"></button>
-        <button class="down"></button>
-        <button class="space"></button>
-    </nav>
-
-    <section style="display:none;" id="title">
+    <section class="none" id="title">
         <h1>TETRIS</h1>
-        <button class="start">START</button>
+        <p>즐거운 테트리스 게임</p>
+        <button type="button" class="start">START</button>
     </section>
-    <section style="display:none;" id="stageIntro">
-        STATE
-        <section class="state"></section>
-    </section>
-    <section style="display:none;" id="game">
-        <section class="next"></section>
+
+    <section class="none" id="game">
         <section class="play"></section>
-        <section class="stage">
-            STATE
-            <seciont class="stage"></seciont>
+        <section class="info">
+            <section class="next"></section>
+            <section>
+                STAGE:
+                <seciont class="stage">stage</seciont>
+            </section><br/>
+            <seciont class="score">
+                <div>SCORE</div>
+                <div>current:
+                    <span class="curr">curr</span>
+                </div>
+                <div>total:
+                    <span class="total">total</span>
+                </div>
+            </seciont>
         </section>
-        <seciont class="score">
-            <div>SCORE</div>
-            <div>current:
-                <span class="curr"></span>
-            </div>
-            <div>total:
-                <span class="total"></span>
-            </div>
-        </seciont>
     </section>
-    <section style="display:none;" id="stateEnd">
+
+    <section class="none" id="stateEnd">
         <div>Stage:
             <span class="stage"></span>
         </div>
@@ -56,21 +48,23 @@
         <div>Total:
             <span class="total"></span>
         </div>
-        <button class="next">NEXT</button>
+        <button type="button" class="next">NEXT</button>
     </section>
-    <section style="display:none;" id="clear">
-        Thank you!
-        <button class="rank">Rank</button>
-        <button class="title">Title</button>
-    </section>
-    <section style="display:none;" id="dead">
-        You are dead.
-        <button class="rank">Rank</button>
-        <button class="title">Title</button>
-    </section>
-    <ul style="display:none;" id="ranking">
 
-    </ul>
+    <section class="none" id="clear">
+        Thank you!
+        <button type="button" class="rank">Rank</button>
+        <button type="button" class="title">Title</button>
+    </section>
+
+    <section class="none" id="dead">
+        You are dead.
+        <button type="button" class="rank">Rank</button>
+        <button type="button" class="title">Title</button>
+    </section>
+
+    <ul class="none" id="ranking"></ul>
+
 </body>
 <script src="setting.js"></script>
 <script src="app.js"></script>

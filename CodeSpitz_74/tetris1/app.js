@@ -56,6 +56,8 @@ const Block = (_ => {
             return new (this.blocks[parseInt(Math.random() * this.blocks.length)]);
         }
         constructor(color, blocks) {
+            // 이건 클래스 자체에서 get block으로 쓰인다.
+            if(Block === new.target){ throw "new Block으로 쓰일수 없습니다."}
             Object.assign(this, { color: '#' + color, blocks: s(blocks), rotate: 0 });
         }
         left() {
@@ -82,22 +84,23 @@ const Block = (_ => {
 
 
 const Data = class extends Array {
-    constructor(r, c) {
+    constructor(rowNum, colNum) {
         super();
-        Object.assign(this, { r, c });
+        Object.assign(this, { rowNum, colNum });
     }
-    cell(r, c, color, test) {
-        if (r > this.r || c > this.c || r < 0 || c < 0 || color == '0') return this;
-        const row = this[r] || (this[r] = []);
-        if (color && row[c]) test.isIntersacted = true;
-        row[c] = color;
+    cell(rowIdx, colIdx, color, test) {
+        if (rowIdx > this.rowNum || colIdx > this.colNum 
+            || rowIdx < 0 || colIdx < 0 || color == '0') return this;
+        const row = this[rowIdx] || (this[rowIdx] = []);
+        if (color && row[colIdx]) test.isIntersacted = true;
+        row[colIdx] = color;
         return this;
     }
-    row(row, ...color) {
-        return color.forEach((v, i) => this.cell(row, i, v)), this;
+    row(rowIdx, ...colors) {
+        return colors.forEach((color, colIdx) => this.cell(rowIdx, colIdx, color)), this;
     }
     all(...rows) {
-        return rows.forEach((v, i) => this.row(i, ...v)), this;
+        return rows.forEach((rowValue, rowIdx) => this.row(rowIdx, ...rowValue)), this;
     }
 }
 
@@ -162,7 +165,8 @@ const Game = class {
         Object.assign(this, { base, col, row, state: {}, curr: 'title', score: new Score, stage: new Stage });
         let i = 0;
         while (i < v.length) this.state[v[i++]] = Panel.get(this, v[i++], v[i++]);
-    } setState(state) {
+    } 
+    setState(state) {
         if (!Object.values(s).includes(state)) throw 'invalid';
         this.curr = state;
         const { state: { [this.curr]: { base: el } } } = this;
