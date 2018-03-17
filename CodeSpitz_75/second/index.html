@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    어떤 구조가 왜 좋은지 이해하면 안까먹고 쓸수 있다.
+    디자인 패턴은 기본, 패턴의 입구이다.
+
+    생성패턴, 구조패턴, 행동패턴
+    GOF는 선수해야 하는 것이, 역할 모델과 객체지향에 대한 이해가 있어야 한다.
+    그렇지 않으면 아무 쓸모가 없다. 즉, 이미 객체지향에 숙달된 사람이 ...
+
+    객체지향 설계를 학습할 수 있는 분류
+    - 캡슐화, 다형성, 객체관계, 변화율, !역할 모델! 
+
+    알고리즘이 변화하는 이유?
+    비즈니스변화, 연관 라이브러리 변화, 호스트측 변화 ==> 대부분 통제불가 요소
+
+    PM은 막을수 없다. 고객이 원하면 그러는 것이다.
+
+    기존 제어문 기반의 알고리즘이 갖는 문제 => "수정하면 전체가 컴파일 된다."
+    변화에 대응하는 프로그램 : 적응형 프로그램 (환경, 변화가 왔을때 유연하게 대응한다.)
+    그중 하나가 객체지향 프로그램
+
+    알고리즘이 변화한 부분만 수정하고 나머지는 건드리고 싶지 않다면?
+    최대한 개별 알고리즘을 함수로 분리한다.
+    이렇게 문제
+    -1 경우가 변경될떄, 경우가 늘어날때, 무한정 늘어날 것인가?₩
+    -2 함수간 공통부분, 이것을 어떻게 관리 할 것인가?
+
+    최소한의 변화가 일어나는 부분을 분리해서 격리한다.
+
+    알고리즘 분화 시 객체지향에서 선택할 수 있는 두가지 방법
+    case 대신 무엇을 사용할 것인가?
+    1. 상속 위임
+    경우의 수를 만들고, 그만큼 자식클래스를 만든다. (내부계약 관계)
+
+    2. 소유 위임
+    베이스를 두고, 경우에 수에 맞는 몇가지 객체를 가지는 것으로 해결한다.(외부계약 관계)
+    GOF DP 방향성이다. : 부가적인 형이 많이 생긴다. (단점)
+
+    짬밥을 먹으면 얼마나 역할을 분리할지를 알게 된다. 주로 변화율, 수정하는 빈도수가 많으냐에 따라서... 
+    해당 하는 도메인에 얼마나 잘 아느냐, 익숙하느냐에 따라서 달려 있기도 하다.
+
+    서버입장에서는 CORS 관련 처리하는 것보다 JSONP 처리해주는게 더 쉽다.
+    앞뒤로 콜백넘어온 것을 해주면 된다. 서버입장에서는.
+
+
+
+
+
+</body>
+<script>
+const Github = class {
+    constructor(id, repo) {
+        this._base = 'https://api.github.com/repos/${id}/${repo}/contents';
+    }
+    load(path) {
+        const id='callback' + Github._id++;
+        const f = Github[id] = ({data:{content}}) => {
+            delete Github[id];      // 1회성
+            document.head.removeChild(s);
+            this._loaded(content);
+        });
+        const s = document.createElement('script');
+        s.src = `${this._base + path}?callback=Github.${id}`;
+        document.head.appendChild(s);
+    }
+    _loaded(v){throw 'override!';}
+};
+Github._id=0;
+
+// if image 라면? 에 대한 것을 클래스로 확장한 것이다.
+const ImageLoader = class extends Github {
+    constructor(id, repo, target) {
+        super(id, repo);
+        this._target = target;
+    }
+    _loaded(v) {
+        this._target.src = 'data:text/plain;base64,' + v; // 앞부분이 이미지 데이터에 대한 형식을 알려줌
+
+    }
+}
+</script>
+<script>
+// if는 문이다. router는 값이다.
+// if를 값으로 바꾸려면 맵, 해쉬맵 등을 사용하면 된다.
+
+// 알고리즘 <==> 용량 서로 대체가능
+// 프로토타입은 용량을 줄이기 위한 기능 이다.
+// 현대 브라우저들은 프로토타입의 키들을 타고가지 않게 캐시로 그냥 다 가지고 있다.
+
+
+
+
+
+</script>
+</html>

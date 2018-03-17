@@ -1,3 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="data"></div>
+</body>
+<script>
+/**
+ * 수정 사항
+ * 1. html 파일안에 코드를 정리하였습니다. json 파일도 html의 script 태그안에 해야 하나 생각이 들었지만 그러면 로직이 변경되니 포함하지 않았습니다.
+ * 2. 기존의 Item 클래스를 itemChecker 함수로 변경하였습니다. Item 클래스를 Info외의 다른 클래스도 알아야 될거 같아 적절치 못하다고 생각했습니다. 
+ * 3. Renderer 클래스 수정 : TableRenderer은 Render._render(renderingData)로 값을 받습니다. 
+ * 4. TableRenderer 클래스 수정 : 기존의 reduce로 _render 에서 하던 것을 메서드로 나눠보았습니다. 해체를 통해 title, header, items를 받습니다.
+ */
+
 const Table =(_=>{
     const Private = Symbol();
     return class {
@@ -79,27 +99,18 @@ const Info = class {
             }
         })};
     }
-    get title() {
-        return this._private.title;
-    }
-    get header() {
-        return this._private.header;
-    }
-    get items() {
-        return this._private.items;
-    }
+    get title() {return this._private.title;}
+    get header() {return this._private.header;}
+    get items() {return this._private.items;}
 }
 
 
 const Renderer = class{
-    constructor(parent) {
-        if(typeof parent !== 'string' || !parent) {throw "invalid param";}
-        this._parent = document.querySelector(parent);
-    }
     async render(data) {
         if(!(data instanceof Data)) {throw "invalid data type";}
         this._info = await data.getData();
-        this._render();
+        const renderingData = { title:this.title, header:this.header, items:this.items }
+        this._render(renderingData);
     }
     clear() {
         this._parent.innerHTML = "";
@@ -127,7 +138,12 @@ const Renderer = class{
 
 const TableRenderer = class extends Renderer {
     constructor(parent) {
-        super(parent);
+        // Table은 얘만 알기 때문에 parent 가 string 인지를 확인하고 
+        // 해당 parent가 dom인지를 체크한뒤에 자신이 속성으로 들고 있어야 한다.
+        if(typeof parent !== 'string') {throw "invalid param";}
+        const parentElement = document.querySelector(parent);
+        if(!parentElement) {throw `${parent} is not in document.`}
+        this._parent = parentElement;
     }
     _createElement(tag, content = "") {
         const oneElement = document.createElement(tag);
@@ -144,27 +160,26 @@ const TableRenderer = class extends Renderer {
         const resultElement = children.reduce((_parent, child) => (_parent.appendChild(child), _parent), parent);
         return resultElement;
     }
-    _render() {
-        const parent = this.parent;
+    _render({title, header, items}) {
         this.clear();
-        const table = this._createElement('table');
-        this._appendChildren(
-            table, 
-                this._createElement('caption', this.title),
-                this._appendChildren( this._createElement('thead'), ...this._createElements('th', this.header)),
-                ...this.items.map(row => this._appendChildren( this._createElement('tr'), ...this._createElements('td', row)))
+        const table = this._appendChildren(
+            this._createElement('table'), 
+                this._createElement('caption', title),
+                this._appendChildren( this._createElement('thead'), ...this._createElements('th', header)),
+                ...items.map(row => this._appendChildren( this._createElement('tr'), ...this._createElements('td', row)))
         );
-        parent.appendChild(table);
+        this.parent.appendChild(table);
     }
 }
 
-
-
-
-
-
+</script>
+<script>
 // ===================== 실행부 ============================
 
 const data = new JsonData("75_1.json");
 const renderer = new TableRenderer('#data');
 renderer.render(data);
+
+
+</script>
+</html>
