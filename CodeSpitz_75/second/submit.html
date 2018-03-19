@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<h1>test</h1>
+<div id="a"></div>    
+<div id="b"></div>
+</body>
+<script>
+
+const Github = (_=>{
+    class Github {
+        constructor(id, repo) {
+            this._base = `http://api.github.com/repos/${id}/${repo}/contents/`;
+        }
+        setParser(parser) {
+            if(!(parser instanceof Loader)) throw "Loader 타입만 가능합니다.";
+            this._parser = parser;
+        }
+        load(path) {
+            if(!this._parser) {throw "parser가 할당되지 않았습니다."}
+            const [_parser, id] = [this._parser, `callback${Github._id++}`];
+            Github[id] = ({data:{content}}) => {
+                delete Github[id];
+                document.head.removeChild(s);
+                _parser.load(content);
+            };
+            const s = document.createElement('script');
+            s.src = `${this._base + path}?callback=Github.${id}`;
+            document.head.appendChild(s);
+        }
+    }
+    Github._id = 0;
+    return Github;
+})();
+
+class Loader {
+    constructor(selector) {
+        if(typeof selector !== 'string') {throw `selector는 string 이어야 합니다.`;}
+        const element = document.querySelector(selector);
+        if(!element) {throw `${selector}는 엘리먼트가 아닙니다.`}
+        this._element = element;
+    }
+    load(data) {
+        this._load(data);
+    }
+    _load(result) {
+        throw "it should be implements!";
+    }
+}
+
+class ImageLoader extends Loader {
+    constructor(selector) {
+        super(selector);
+    }
+    _load(data) {
+        this._parseImage(data);
+        this._element.appendChild(this._imgElement);
+    }
+    _parseImage(data) {debugger;
+        if(!data) {throw "이미지 값이 존재하지 않습니다.";}
+        const imgElement = document.createElement('img');
+        imgElement.src = `data:text/plain;base64,${data}`;
+        this._imgElement = imgElement;
+    }
+}
+const MdLoader = (_=>{
+    const d64 =v=>decodeURIComponent(
+        atob(v).split('').map(c=>'%' + ('00' +c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+    return class extends Loader {
+        constructor(selector) {
+            super(selector);
+        }
+        _load(data) {
+            this._element.innerHTML = this._parseMd(data);
+        }
+        _parseMd(data) {debugger;
+            return d64(data).split('\n').map(v => {
+                let i = 3;
+                while(i) {
+                    if(v.startsWith('#'.repeat(i))) return `<h${i}>${v.substr(i)}</h${i}>`;
+                    i--;
+                }
+                return v;
+            }).join('<br/>');
+        }
+    };
+})();
+
+
+// ============= 실행부 =================
+
+const loader = new Github('hikaMaeng', 'codespitz75');
+
+const img = new ImageLoader('#a');
+loader.setParser(img);
+loader.load('einBig.png');
+
+const md = new MdLoader('#b');
+loader.setParser(md);
+loader.load('README.md')
+</script>
+</html>
