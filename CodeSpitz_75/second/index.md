@@ -136,22 +136,24 @@ const Github = class {   // 정의시점 - 변하지 않는 부분
     constructor(id, repo) {
         this._base = `https://api.github.com/repos/${id}/${repo}/contents/`;
     }
-    // TEMPLATE METHOD
+    // TEMPLATE METHOD : 위임하는 HOOK을 호출하는 메소드
     load(path) {
         // ================== 공통부분 ===================
+        // 정의 시점, 변화하지 않는 부분, 공통 로직
         const id = `callback${Github._id++}`;
         // Github의 속성으로 함수를 할당해서 전역에서 접근 가능하게 처리.
         // 깃헙에 주는 jsonp로 주는 데이터는 meta, data 키가 있고 
         // data안의 content안에 진짜 내용이 들어있다.
-        // 하지만 이 content는 base64로 인코딩이 되어있어 푸렁줘야 한다 20분
+        // 하지만 이 content는 base64로 인코딩이 되어있어 풀어줘야 한다
         const f = Github[id] = ({data:{content}}) => {
             delete Github[id];
             document.head.removeChild(s);
-            this._loaded(content);  // <=== 위임부분
+            this._loaded(content);  // <=== 위임부분(상속위임)
         };
         const s = document.createElement('script');
         // url과 Github의 속성 함수로 붙여줘서 jsonp를 거기로 주라고.
         s.src = `${this._base + path}?callback=Github.${id}`;
+        // document.head는 DOM lv1이다. 
         document.head.appendChild(s);
         // =============================================
     }
@@ -159,17 +161,22 @@ const Github = class {   // 정의시점 - 변하지 않는 부분
 };
 Github._id = 0;
 
-// =============================================================================
+// Concrete : 구상, 구현 이라는 의미
+// ================== ImageLoader ================================================
+
 const ImageLoader = class extends Github {   // 실행시점 선택지 - 변하는 부분
     constructor(id, repo, target) {
         super(id, repo);
         this._target = target;
     }
-    _loaded(v) {  // <=== 위임구현
+    _loaded(v) {  // <=== 위임구현 HOOK
+        // data url : base64로 구운것을 넣을수 있다.
+        // 이미지 데이터 앞에 데이터 형식에 대해서 기술해 주고 src에 넣었을 때 그림이 보이게 된다.
         this._target.src = `data:text/plain;base64,${v}`;
     }
 }
 
+// 경우의 수를 자식클래스를 만들어내는 것으로 처리했다. (상속위임)
 const s75img = new ImageLoader(
 	'hikaMaeng',
     'codespitz75',
@@ -178,6 +185,7 @@ const s75img = new ImageLoader(
 s75img.load('einBig.png');
 
 // =============================================================================
+
 const MdLoader = class extends Github {
     constructor(id, repo, target) {
         super(id, repo);
@@ -198,6 +206,10 @@ const MdLoader = class extends Github {
         }).join('<br/>');
     }
 }
+// atob, btoa 브라우저에 내장됨. base64 디코딩, 인코딩 된다.
+// 하지만 base64는 아스키 코드 기반으로 인코딩하므로 utf8은 다 깨진다.
+// 한글 같은 것은 base64로 인코딩하려면 URL인코딩을 하고 base64를 한다.
+// 풀때도 url디코딩해줘야 한다.
 const d64 =v=>decodeURIComponent(
 	atob(v)
     .split('')
@@ -211,6 +223,8 @@ const s75md = new MdLoader(
     codument.querySelector('#b')
 )
 s75md.load('README.md');
+
+// 경우의 수 if를 제거하고 각자의 경우에 따라서 클래스를 만들어 주었다.
 ```
 
 
@@ -218,9 +232,15 @@ s75md.load('README.md');
 **상속 위임의 정의시점과 실행시점**
 
 ```html
+// 정의시점
+// 처리기를 만들어 놓을 뿐이다.
 <script src="Github.js"></scrip>
 <script src="ImageLoader.js"></script>
 <script src="MdLoader.js"></script>
+
+// 실행시점 선택
+// if를 처리하는 책임을 이 시점에서 한다. 
+// if가 변화해도 바깥쪽에서 대응을 할수 있게 된다.
 <script>
     const img = new ImageLoader(...);
     img.load(...);
@@ -247,17 +267,24 @@ const Github = class {   // 정의시점 - 변하지 않는 부분
             delete Github[id];
             document.head.removeChlid(s);
             this._parser(content);   // <=== 위임 부분
+            // 함수에게 위임한다.
+            // 상속이 아닌 가지고 있는 파서에 따라서 처리하는게 달라진다.
+            // 해당 타입을 처리할 로더 함수를 받아들이면서 할일이 달라진다.
         };
         const s = document.createElement('script');
         s.src = `${this._base + path}?callback=Github.${id}`;
         document.head.appendChild(s);
     }
     // STRATEGY OBJECT   실행시점선택지 - 변하는 부분
-    set parser(v) {this._parser = v;}   // <== 위임 객체
+    set parser(v) {this._parser = v;}   // <== 위임 객체 (전략 객체)
+    // 전략적으로 일부분을 위임할수 있는 무언가가 오기만 하면 된다.
 };
 Github._id = 0;
 
-// =============================================================================
+// 클래스 정의를 할 필요가 없다. 물론 전략 객체도 클래스로 만들면 물론 그럴것이다. 하지만 함수로 보낸다면 클래스 생성비용이 줄어든다. 다만 함수로 넘긴다면 함수에 대한 안정성, 넘기는 것이 그에 맞는 함수라는 보장을 할수가 없다. 
+// 클래스는 타입을 instanceof로 나름의 체크를 할 수 있다.
+// 전략 객체에 클래스 인스턴스를 할지 함수를 할지를 정하는 것은 그것에 대한 중요도에 따라서 달려 있다. 위험할 수록 강타입, 아니면 그냥 편하게 함수로 처리한다.
+// ==================================================================
 
 const el =v=>document.querySelector(v);
 const parseMD =v=> ...;
@@ -265,20 +292,31 @@ const loader = new Github('hikaMaeng', 'codespitz75');
 
 // img
 const img =v=> el('#a').src = `data:text/plain;base64,${v}`;
-loader.parser = img;
+loader.parser = img; // #a에 의존성이 있다.
 loader.load('xx.png');
 
-// md
-const md =v=> el('#b').innerHTML = parseMD(v);
+// md (파서만 교체하면 된다.)
+const md =v=> el('#b').innerHTML = parseMD(v); // #b에 의존성 있다.
 loader.parser = md;
 loader.load('xx.md');
+
+// 전략패턴을 소유하고 있는 것 (host 라고 부른다.)
+// 파서만 바꾸면 계속 사용할 수 있다.
+
+// 전략 패턴 : 케릭이 무기를 바꿔가며 싸우는 것 같은 것을 처리한다.
+// 상속 위임 : NPC, 플레이어, 몹 등 개별 객체에 대한 개별적 처리에 적합하다.
+
+// 계속 훈련한다. 내가 이때 상속/소유 위임중 어떠한 것을 사용할 까? 어떻게 위임? 어디까지 위임? 어디까지 쪼갤까? 이것도 수정할까? 이것까지 변화할까? 이러한 훈련을 끊임없이 해본다.
 ```
+
+깃헙에는 md, image를 처리하는게 없다. 이미지, 마크다운이 변화하더라도 깃헙 클래스를 변경할 필요가 없다.
 
 
 
 **자유변수를 통한 확장**
 
 ```javascript
+// 특정 엘리먼트에 대한 의존성을 약해지도록 추가적인 상태를 기억하게 한다.
 const Github = class {
     constructor(id, repo) {
         this._base = `https://apt.github.com/repos/${id}/${repo}/contents/`;
@@ -289,6 +327,9 @@ const Github = class {
         const f = Github[id] = ({data:{content}}) => {
             delete Github[id];
             document.head.removeChild(s);
+            // 0 파서 함수
+            // 1 추가적인 argument 상태들을 보낸다.
+            // 외부상태때문에 굳이 클래스 안만들고 이런식으로 버틸수도 있다.
             this._parser[0](content, ...this._parser[1]);   // <= 자유변수 활용
         };
         const s = document.createElement('script');
@@ -327,6 +368,7 @@ loader.load('xx.md');
 
 <!-- 실행시점 선택 위임 -->
 <script>
+// Github 객체 하나로만 처리할 수 있게 되었다.
 const loader = new Github('hikaMaeng', 'codespitz75');
 loader.setParser(img, el('#a'));
 loader.load('xx.png');
