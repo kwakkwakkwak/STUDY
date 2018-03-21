@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 
 <head>
     <meta charset="UTF-8">
@@ -9,25 +9,36 @@
 </head>
 
 <body>
+    <h1>CodeSpitz_75</h1>
     <div id="a"></div>
     <div id="b"></div>
+    <br/>
     <div id="c"></div>
     <div id="d"></div>
 </body>
 <script>
+/**
+ * V : validation 용도 객체
+ * Github : github 레파지토리 url을 가지고 있으며, JSONP로 통신
+ * Loader : Loader 추상 클래스
+ * ImageLoader, MdLoader : 구현 클래스
+ * LoadRouter : pdf 예제에는 Loader로 되어있지만 이름이 겹치므로 바꿈
+ */
+
 const V = Object.create(null);
 V.m         = (v)           => {throw `${v}는 필수 값입니다.`;}
 V.areString = (...values)   => {values.forEach(value => V.isString(value));}
 V.isString  = (value)       => {if(typeof value !== 'string') {throw `${value}는 string 타입이어야 합니다.`;}}
 V.isLoader  = (value)       => {if(!(value instanceof Loader)) {throw `${value}는 Loader 클래스이어야 합니다.`;}}
 V.hasMapKey = (map, key)    => {if(!map.has(key)) {throw `key:${key}는 map:${map}에 존재하지 않습니다.`;}}
-V.checkDot  = (fileName)    => {if(fileName.indexOf('.') !== fileName.lastIndexOf('.')) {throw `${fileName}에 "."이 2개 이상 존재합니다.`;}   }
+V.checkDot  = (fileName)    => {
+    if(fileName.indexOf('.') !== fileName.lastIndexOf('.')) {throw `${fileName}에 "."이 2개 이상 존재합니다.`;}   }
 
 const Github = (_=>{
     class Github{
-        constructor(id, repo) {
-            V.areString(id, repo);
-            this._base = `http://api.github.com/repos/${id}/${repo}/contents/`;
+        constructor(id, repo, paths = "") {
+            V.areString(id, repo, paths);
+            this._base = `http://api.github.com/repos/${id}/${repo}/contents/${paths}`;
             console.log(this._base);
         }
         setLoader(loader) {
@@ -35,6 +46,7 @@ const Github = (_=>{
             this._loader = loader;
         }
         load(fileName) {
+
             V.isString(fileName);
             if(!this._loader) {throw "loader가 할당되지 않았습니다."}
 
@@ -108,15 +120,15 @@ const MdLoader = (_=>{
     };
 })();
 
-const LoadManager = (_=> {
+const LoadRouter = (_=> {
     return class {
         constructor() {
             this._repo = new Map;
         }
-        addRepo(key=V.m('key'), id=V.m('id'), repo=V.m('repo')) {
-            V.areString(key, id, repo);
+        addRepo(key=V.m('key'), id=V.m('id'), repo=V.m('repo'), path = "") {
+            V.areString(key, id, repo, path);
 
-            const _github = new Github(id, repo);
+            const _github = new Github(id, repo, path);
             this._repo.set(key, new Map([['github', _github]]));
         }
         addRouter(key=V.m('key'), extensions=V.m('extensions'), loader=V.m('loader')) {
@@ -143,22 +155,24 @@ const LoadManager = (_=> {
 
 </script>
 <script>
-    // 1번과제를 활용하다 보니, 기존의 Loader클래스가 겹치는 문제가 생겨 LoadManager로 변경
-    const loadManager = new LoadManager();
-    loadManager.addRepo('TIL', 'abhbtbb', 'til/etc/img');  // s74 레파지토리 등록
-    loadManager.addRouter('TIL', 'jpg,png,gif', new ImageLoader('#a'));
-    loadManager.addRouter('TIL', 'md', new MdLoader('#b'));
+    // ============= 실행부 =================
 
-    loadManager.addRepo('s75', 'hikaMaeng', 'codespitz75');
-    loadManager.addRouter('s75', 'jpg,png,gif', new ImageLoader('#c'));
-    loadManager.addRouter('s75', 'md', new MdLoader('#d'));
+    const loadRouter = new LoadRouter();
 
-    // loadManager.load('TIL', 'README.md');
-    loadManager.load('TIL', 'classD1.png');
+    // 원래 addRouter의 경우 엘리먼트를 받지만 Loader 구현체에서 엘리먼트를 받는 것으로 변경함.
+    loadRouter.addRepo('s75', 'hikaMaeng', 'codespitz75');
+    loadRouter.addRouter('s75', 'jpg,png,gif', new ImageLoader('#a'));
+    loadRouter.addRouter('s75', 'md', new MdLoader('#b'));
 
-    loadManager.load('s75', 'einBig.png');
-    loadManager.load('s75', 'README.md');
+    loadRouter.load('s75', 'einBig.png');
+    loadRouter.load('s75', 'README.md');
 
+    loadRouter.addRepo('a75', 'abhbtbb', 'STUDY', 'CodeSpitz_75/second/');
+    loadRouter.addRouter('a75', 'jpg,png,gif', new ImageLoader('#c'));
+    loadRouter.addRouter('a75', 'md', new MdLoader('#d'));
+
+    loadRouter.load('a75', 'dogs.jpg');
+    loadRouter.load('a75', 'test.md');
 </script>
 
 </html>
