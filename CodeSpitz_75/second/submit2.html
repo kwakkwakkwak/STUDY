@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="a"></div>
+    <div id="b"></div>
+    <div id="c"></div>
+    <div id="d"></div>
+</body>
+<script>
+const V = Object.create(null);
+V.m         = (v)           => {throw `${v}는 필수 값입니다.`;}
+V.areString = (...values)   => {values.forEach(value => V.isString(value));}
+V.isString  = (value)       => {if(typeof value !== 'string') {throw `${value}는 string 타입이어야 합니다.`;}}
+V.isLoader  = (value)       => {if(!(value instanceof Loader)) {throw `${value}는 Loader 클래스이어야 합니다.`;}}
+V.hasMapKey = (map, key)    => {if(!map.has(key)) {throw `key:${key}는 map:${map}에 존재하지 않습니다.`;}}
+V.checkDot  = (fileName)    => {if(fileName.indexOf('.') !== fileName.lastIndexOf('.')) {throw `${fileName}에 "."이 2개 이상 존재합니다.`;}   }
+
+const Github = (_=>{
+    class Github{
+        constructor(id, repo) {
+            V.areString(id, repo);
+            this._base = `http://api.github.com/repos/${id}/${repo}/contents/`;
+            console.log(this._base);
+        }
+        setLoader(loader) {
+            if(!(loader instanceof Loader)) throw "Loader 타입만 가능합니다.";
+            this._loader = loader;
+        }
+        load(fileName) {
+            V.isString(fileName);
+            if(!this._loader) {throw "loader가 할당되지 않았습니다."}
+
+            const [_loader, id] = [this._loader, `callback${Github._id++}`];
+            Github[id] = ({data:{content}}) => {
+                delete Github[id];
+                document.head.removeChild(s);
+                _loader.load(content);
+            };
+            const s = document.createElement('script');
+            s.src = `${this._base + fileName}?callback=Github.${id}`;
+            document.head.appendChild(s);
+        }
+    }
+    Github._id = 0;
+    return Github;
+})();
+
+class Loader {
+    constructor(selector) {
+        V.isString(selector);
+        const element = document.querySelector(selector);
+        if(!element) {throw `${selector}는 엘리먼트가 아닙니다.`}
+        this._element = element;
+    }
+    load(data) {
+        if(!data) {throw "이미지 값이 존재하지 않습니다.";}        
+        this._load(data);
+    }
+    _load(result) {
+        throw "it should be implements!";
+    }
+}
+
+class ImageLoader extends Loader {
+    constructor(selector) {
+        super(selector);
+    }
+    _load(data) {
+        this._element.appendChild(this._createImgElement(data));
+    }
+    _createImgElement(data) {
+        const imgElement = document.createElement('img');
+        imgElement.src = `data:text/plain;base64,${data}`;
+        return imgElement;
+    }
+}
+
+const MdLoader = (_=>{
+    const d64 =v=>decodeURIComponent(
+        atob(v).split('').map(c=>'%' + ('00' +c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+
+    return class extends Loader {
+        constructor(selector) {
+            super(selector);
+        }
+        _load(data) {
+            this._element.innerHTML = this._parseMd(data);
+        }
+        _parseMd(data) {
+            return d64(data).split('\n').map(this._parseOne).join('<br/>');
+        }
+        _parseOne(line) {
+            let i = 3;
+            while(i) {
+                if(line.startsWith('#'.repeat(i))) return `<h${i}>${line.substr(i)}</h${i}>`;
+                i--;
+            }
+            return line;
+        }
+    };
+})();
+
+const LoadManager = (_=> {
+    return class {
+        constructor() {
+            this._repo = new Map;
+        }
+        addRepo(key=V.m('key'), id=V.m('id'), repo=V.m('repo')) {
+            V.areString(key, id, repo);
+
+            const _github = new Github(id, repo);
+            this._repo.set(key, new Map([['github', _github]]));
+        }
+        addRouter(key=V.m('key'), extensions=V.m('extensions'), loader=V.m('loader')) {
+            V.areString(key, extensions), V.isLoader(loader);
+
+            extensions.split(',').forEach(extension => {
+                this._repo.get(key).set(extension, loader);
+            });
+        }
+        load(key=V.m('key'), fileName=V.m('fileName')) {
+            V.hasMapKey(this._repo, key);
+            V.isString(fileName), V.checkDot(fileName);
+
+            const ext = fileName.split('.').pop();
+            V.hasMapKey(this._repo.get(key), ext);
+            
+            const github= this._repo.get(key).get('github');
+            const loader = this._repo.get(key).get(ext);
+            github.setLoader(loader);
+            github.load(fileName);
+        }
+    }
+})();
+
+</script>
+<script>
+    // 1번과제를 활용하다 보니, 기존의 Loader클래스가 겹치는 문제가 생겨 LoadManager로 변경
+    const loadManager = new LoadManager();
+    loadManager.addRepo('TIL', 'abhbtbb', 'til/etc/img');  // s74 레파지토리 등록
+    loadManager.addRouter('TIL', 'jpg,png,gif', new ImageLoader('#a'));
+    loadManager.addRouter('TIL', 'md', new MdLoader('#b'));
+
+    loadManager.addRepo('s75', 'hikaMaeng', 'codespitz75');
+    loadManager.addRouter('s75', 'jpg,png,gif', new ImageLoader('#c'));
+    loadManager.addRouter('s75', 'md', new MdLoader('#d'));
+
+    // loadManager.load('TIL', 'README.md');
+    loadManager.load('TIL', 'classD1.png');
+
+    loadManager.load('s75', 'einBig.png');
+    loadManager.load('s75', 'README.md');
+
+</script>
+
+</html>

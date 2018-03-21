@@ -22,8 +22,10 @@ const Github = (_=>{
             if(!(parser instanceof Loader)) throw "Loader 타입만 가능합니다.";
             this._parser = parser;
         }
-        load(path) {
+        load(fileName) {
+            if(typeof fileName !== 'string') {throw "fileName은 string 타입이어야 합니다."}
             if(!this._parser) {throw "parser가 할당되지 않았습니다."}
+
             const [_parser, id] = [this._parser, `callback${Github._id++}`];
             Github[id] = ({data:{content}}) => {
                 delete Github[id];
@@ -31,7 +33,7 @@ const Github = (_=>{
                 _parser.load(content);
             };
             const s = document.createElement('script');
-            s.src = `${this._base + path}?callback=Github.${id}`;
+            s.src = `${this._base + fileName}?callback=Github.${id}`;
             document.head.appendChild(s);
         }
     }
@@ -59,19 +61,19 @@ class ImageLoader extends Loader {
         super(selector);
     }
     _load(data) {
-        this._parseImage(data);
-        this._element.appendChild(this._imgElement);
-    }
-    _parseImage(data) {debugger;
         if(!data) {throw "이미지 값이 존재하지 않습니다.";}
+        this._element.appendChild(this._createImgElement(data));
+    }
+    _createImgElement(data) {
         const imgElement = document.createElement('img');
         imgElement.src = `data:text/plain;base64,${data}`;
-        this._imgElement = imgElement;
+        return imgElement;
     }
 }
 const MdLoader = (_=>{
     const d64 =v=>decodeURIComponent(
         atob(v).split('').map(c=>'%' + ('00' +c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+
     return class extends Loader {
         constructor(selector) {
             super(selector);
@@ -79,15 +81,16 @@ const MdLoader = (_=>{
         _load(data) {
             this._element.innerHTML = this._parseMd(data);
         }
-        _parseMd(data) {debugger;
-            return d64(data).split('\n').map(v => {
-                let i = 3;
-                while(i) {
-                    if(v.startsWith('#'.repeat(i))) return `<h${i}>${v.substr(i)}</h${i}>`;
-                    i--;
-                }
-                return v;
-            }).join('<br/>');
+        _parseMd(data) {
+            return d64(data).split('\n').map(this._parseOne).join('<br/>');
+        }
+        _parseOne(line) {
+            let i = 3;
+            while(i) {
+                if(line.startsWith('#'.repeat(i))) return `<h${i}>${line.substr(i)}</h${i}>`;
+                i--;
+            }
+            return line;
         }
     };
 })();
